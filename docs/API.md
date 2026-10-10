@@ -135,11 +135,13 @@ Renvoie `KillSwitchState`. (L'activation se fait côté dashboard, voir 4.)
 | GET / POST | `/api/dashboard/api-keys` | lister / créer une clé (la clé en clair n'est renvoyée **qu'une fois**) |
 | DELETE | `/api/dashboard/api-keys/:id` | révoquer |
 | GET | `/api/dashboard/decisions?status=PENDING_CONFIRMATION` | file d'attente des HOLD |
-| POST | `/api/dashboard/decisions/:id/approve` | humain approuve ⇒ `pay()` ⇒ status `APPROVED` |
-| POST | `/api/dashboard/decisions/:id/reject` | ⇒ status `REJECTED` |
-| GET / POST | `/api/dashboard/killswitch` | `{ active, reason }` ⇒ flag DB **et** `pause()/unpause()` on-chain |
+| POST | `/api/dashboard/decisions/:id/approve` | humain approuve ⇒ `pay()` sous l'id on-chain `<id>:approved` (le HOLD est déjà ancré sous `<id>`, même hash) ⇒ status `APPROVED` |
+| POST | `/api/dashboard/decisions/:id/reject` | `record(<id>:rejected, 3, hash)` ⇒ status `REJECTED` |
+| GET / POST | `/api/dashboard/killswitch` | `{ active, reason }` ⇒ flag DB **et** `activateKillSwitch()/deactivateKillSwitch()` on-chain ; la réponse ajoute `onchain_error` (null si OK). Le flag DB reste la barrière principale si la chaîne ne répond pas |
 | GET | `/api/dashboard/audit?limit=100` | entrées `AuditEntry` + vérification de la chaîne de hachage |
-| GET | `/api/dashboard/compliance` | agrégat des 4 cadres sur les 24 h (nombre de warn/fail par cadre) |
+| GET | `/api/dashboard/compliance` | agrégat des 4 cadres sur les 24 h (état, nombre de warn/fail, 3 raisons les plus fréquentes) + compteurs de décisions + incidents kill switch |
+| GET | `/api/dashboard/balance` | solde du wallet gardien, adresse du contrat, mode (mock/fuji) |
+| GET | `/api/dashboard/me` | compte courant (401 si pas de session) |
 
 ## 5. Moteur de décision (apps/web/src/lib/guardian/)
 
