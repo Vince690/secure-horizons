@@ -29,7 +29,7 @@ cp .env.example .env            # remplir, ne jamais commiter
 npm install
 npm run db:push -w apps/web     # crée la base SQLite (apps/web/prisma/dev.db)
 npm run db:seed -w apps/web     # compte demo@payguard.dev / demo1234, affiche la clé API UNE fois
-#   -> copier la clé dans .env : PAYGUARD_API_KEY=pg_test_...
+#   -> copier la clé dans .env : PAYGUARD_API_KEY=pg_test_...  (les resets suivants la réutilisent)
 npm run dev:web                 # http://localhost:3000
 bash apps/web/scripts/curl-demo.sh   # rejoue légitime / piège / HOLD contre l'API
 npm run dev:merchants           # :4001 et :4002 (étape 4)

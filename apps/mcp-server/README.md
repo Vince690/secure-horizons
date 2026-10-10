@@ -50,7 +50,7 @@ Lance les deux serveurs en sous-processus, liste les outils, joue un paiement l�
 
 Si Claude hésite ou demande une confirmation avant d'appeler l'outil : c'est normal et c'est même un bon moment de démo. Dire « oui, vas-y ».
 
-Avant la démo : `npm run db:reset -w apps/web` (sinon la règle de vélocité se déclenche à cause des tests précédents) puis remettre la clé API affichée dans `.env`.
+Avant la démo : `npm run db:reset -w apps/web` (sinon la règle de vélocité se déclenche à cause des tests précédents). La clé API de `.env` est conservée par le seed, rien à recopier.
 
 ## Ce que l'agent reçoit
 

@@ -5,7 +5,7 @@
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { DEFAULT_POLICY } from "@payguard/shared";
-import { generateApiKey } from "../src/lib/auth/apiKey";
+import { API_KEY_PREFIX, generateApiKey, hashApiKey } from "../src/lib/auth/apiKey";
 import { toPolicyRow } from "../src/lib/mappers";
 
 const prisma = new PrismaClient();
@@ -42,8 +42,16 @@ async function main() {
     create: { accountId: account.id, active: false },
   });
 
-  const { key, keyHash, prefix } = generateApiKey();
-  await prisma.apiKey.create({ data: { accountId: account.id, keyHash, prefix, label: "seed" } });
+  // Stable key: if .env already holds PAYGUARD_API_KEY, re-seed exactly that one,
+  // so `db:reset` never breaks the MCP server / Claude Desktop configuration.
+  const fromEnv = process.env.PAYGUARD_API_KEY?.trim();
+  const reuse = fromEnv && fromEnv.startsWith(API_KEY_PREFIX) ? fromEnv : null;
+  const { key, keyHash, prefix } = reuse ? { key: reuse, keyHash: hashApiKey(reuse), prefix: reuse.slice(0, 12) } : generateApiKey();
+  await prisma.apiKey.upsert({
+    where: { keyHash },
+    update: { revokedAt: null },
+    create: { accountId: account.id, keyHash, prefix, label: reuse ? "from .env" : "seed" },
+  });
 
   console.log("");
   console.log("Demo account ready");
@@ -51,8 +59,12 @@ async function main() {
   console.log(`  password: ${DEMO_PASSWORD}`);
   console.log(`  company:  Horizon SAS`);
   console.log("");
-  console.log("API key (shown once, copy it to the root .env as PAYGUARD_API_KEY):");
-  console.log(`  ${key}`);
+  if (reuse) {
+    console.log(`API key: reused PAYGUARD_API_KEY from .env (${prefix}…). Nothing to copy.`);
+  } else {
+    console.log("API key (shown once, copy it to the root .env as PAYGUARD_API_KEY):");
+    console.log(`  ${key}`);
+  }
   console.log("");
 }
 
