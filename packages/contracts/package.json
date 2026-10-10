@@ -9,7 +9,9 @@
     "test": "hardhat test",
     "deploy:fuji": "dotenv -e ../../.env -- hardhat run scripts/deploy.ts --network fuji",
     "verify-decision": "dotenv -e ../../.env -- tsx scripts/verify-decision.ts",
-    "typecheck": "tsc --noEmit -p tsconfig.client.json"
+    "typecheck": "tsc --noEmit -p tsconfig.client.json",
+    "new-wallet": "tsx scripts/new-wallet.ts",
+    "balance": "tsx scripts/balance.ts"
   },
   "dependencies": {
     "@payguard/shared": "*",
