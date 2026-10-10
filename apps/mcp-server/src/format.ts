@@ -71,6 +71,7 @@ export function formatPolicy(p: SpendingPolicy): string {
     `  Max per 24h: ${p.max_daily} AVAX`,
     `  Minimum balance to keep: ${p.min_balance} AVAX`,
     `  Any payment above ${p.require_confirmation_above} AVAX requires human confirmation`,
+    `  First payment to a new recipient requires human confirmation: ${p.confirm_new_recipients ? "yes" : "no"}`,
     `  Auto-approve when trust score >= ${p.auto_approve_score}; hold between ${p.hold_score} and ${p.auto_approve_score - 1}; block below ${p.hold_score}`,
     `  Trusted merchants: ${p.trusted_recipients.length ? p.trusted_recipients.join(", ") : "none"}`,
     `  Trusted domains: ${p.trusted_domains.length ? p.trusted_domains.join(", ") : "none"}`,

@@ -40,6 +40,19 @@ describe("evaluate — demo scenarios", () => {
     expect(result.verdict).toBe("HOLD");
   });
 
+  it("first payment to an unknown recipient => HOLD even with a good score (confirm_new_recipients)", () => {
+    const request = legitRequest({
+      recipient: { address: TRAP_ADDRESS, name: "AudioPlanet", domain: "audioplanet.fr" },
+      context: { conversation: [{ role: "user", content: "Commande le casque NordSound ANC Pro chez AudioPlanet." }] },
+    });
+    const alive = { address: TRAP_ADDRESS, tx_count: 40, balance: "3.1", is_contract: false };
+    const result = evaluate(makeContext({ request, recipientInfo: alive }));
+    expect(result.score).toBe(75);
+    expect(result.verdict).toBe("HOLD");
+    const relaxed = evaluate(makeContext({ request, recipientInfo: alive, policy: { ...DEMO_POLICY, confirm_new_recipients: false } }));
+    expect(relaxed.verdict).toBe("APPROVED");
+  });
+
   it("mid score lands in HOLD", () => {
     // unknown recipient (-25) + urgency (-10) = 65 => HOLD
     const request = legitRequest({

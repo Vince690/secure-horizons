@@ -67,6 +67,13 @@ export default function PolicyPage() {
             <Field label="Confirmation humaine obligatoire au-dessus de (AVAX)" hint="Quel que soit le score, un humain tranche.">
               <input id="require_confirmation_above" className={inputClass} value={form.require_confirmation_above} onChange={(e) => set("require_confirmation_above", e.target.value)} />
             </Field>
+            <label className="flex items-start gap-3 rounded-lg border border-line p-3">
+              <input id="confirm_new_recipients" type="checkbox" className="mt-1" checked={form.confirm_new_recipients} onChange={(e) => setForm({ ...form, confirm_new_recipients: e.target.checked })} />
+              <span>
+                <span className="text-sm font-medium">Confirmer le premier paiement à tout nouveau bénéficiaire</span>
+                <span className="mt-0.5 block text-xs text-muted">Même avec un bon score, un marchand jamais payé passe par vous la première fois. Ensuite il entre dans l'historique.</span>
+              </span>
+            </label>
           </div>
         </Card>
         <Card title="Seuils de score">

@@ -173,6 +173,7 @@ Score de départ 100. Chaque règle qui se déclenche ajoute un `Reason` avec un
 Verdict :
 - `KILL_SWITCH_ACTIVE`, `RECIPIENT_BLOCKLISTED`, `PROMPT_INJECTION_SUSPECTED` ou `HIDDEN_INSTRUCTIONS` présent ⇒ `BLOCKED` direct (règles terminales) ;
 - montant > `require_confirmation_above` ⇒ au mieux `HOLD`, jamais APPROVED automatique ;
+- `confirm_new_recipients` (défaut `true`) et `RECIPIENT_UNKNOWN` présent ⇒ au mieux `HOLD` : le premier paiement à un bénéficiaire jamais payé passe par un humain, quel que soit le score ;
 - `score ≥ auto_approve_score` ⇒ `APPROVED` ;
 - `hold_score ≤ score < auto_approve_score` ⇒ `HOLD` ;
 - `score < hold_score` ⇒ `BLOCKED`.

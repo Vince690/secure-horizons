@@ -15,5 +15,7 @@ export function decideVerdict(score: number, reasons: Reason[], policy: Spending
   if (score < policy.auto_approve_score) return "HOLD";
   // Large amounts always need a human, whatever the score.
   if (parseAvax(amount) > parseAvax(policy.require_confirmation_above)) return "HOLD";
+  // First payment to a recipient never paid before: a human confirms, whatever the score.
+  if (policy.confirm_new_recipients && reasons.some((r) => r.code === "RECIPIENT_UNKNOWN")) return "HOLD";
   return "APPROVED";
 }

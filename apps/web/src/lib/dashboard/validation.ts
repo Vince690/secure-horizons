@@ -18,6 +18,7 @@ export const policySchema = z.object({
   auto_approve_score: z.number().int().min(0).max(100),
   hold_score: z.number().int().min(0).max(100),
   require_confirmation_above: decimal,
+  confirm_new_recipients: z.boolean().default(true),
   trusted_recipients: z.array(address).max(100),
   blocked_recipients: z.array(address).max(100),
   trusted_domains: z.array(z.string().min(1).max(253)).max(100),

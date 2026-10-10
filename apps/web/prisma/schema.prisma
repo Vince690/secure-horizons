@@ -47,6 +47,7 @@ model Policy {
   autoApproveScore         Int
   holdScore                Int
   requireConfirmationAbove String
+  confirmNewRecipients     Boolean @default(true)
   /// JSON string[] of lowercase addresses
   trustedRecipients        String  @default("[]")
   blockedRecipients        String  @default("[]")

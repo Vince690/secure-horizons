@@ -165,6 +165,8 @@ export interface SpendingPolicy {
   hold_score: number;
   /** Any amount above this always requires human confirmation, whatever the score. */
   require_confirmation_above: string;
+  /** First payment to a recipient never paid before always requires human confirmation. */
+  confirm_new_recipients: boolean;
   /** Addresses (lowercase) the human has explicitly trusted. */
   trusted_recipients: string[];
   /** Addresses (lowercase) that are always blocked. */
@@ -243,6 +245,7 @@ export const DEFAULT_POLICY: SpendingPolicy = {
   auto_approve_score: 70,
   hold_score: 40,
   require_confirmation_above: "0.08",
+  confirm_new_recipients: true,
   trusted_recipients: [],
   blocked_recipients: [],
   trusted_domains: [],
