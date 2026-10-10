@@ -48,7 +48,9 @@ Score 100 moins des pénalités : site injoignable, pas de HTTPS, domaine très 
 
 Le serveur `payguard` envoie des **instructions MCP** que Claude Desktop intègre à son contexte : parcours complet (recherche → `find_best_offer` / `check_merchant` → `read_merchant_page` → `request_payment` → suivre la ligne INSTRUCTION), interdiction d'utiliser un navigateur pour lire une page marchande, interdiction de payer ou de suggérer de payer hors PayGuard, interdiction d'acheter chez un marchand FRAUDULENT. Il expose aussi le prompt `buy_with_payguard` (« Acheter avec PayGuard », arguments produit et budget) visible dans le menu de Claude Desktop. Côté produit, l'onboarding peut en plus proposer une ligne de préférence dans Claude : « Pour tout achat, passe par PayGuard. »
 
-Phrase naturelle à tester en priorité : « Utilise PayGuard pour m'acheter un casque NordSound ANC Pro au meilleur prix, budget 0.06 AVAX max. »
+Phrase naturelle, **validée en live le 11 oct. vers 02:50** (après relance de Claude Desktop, connecteurs cochés, navigateur décoché) : « Utilise PayGuard pour m'acheter un casque NordSound ANC Pro au meilleur prix, budget 0.06 AVAX max. » ⇒ recherche, classement, piège écarté, paiement APPROVED sur Fuji.
+
+En démo, `search_products` renvoie les trois sites locaux (reproductible). En production, cette étape est la recherche web de l'hôte ; `check_merchant`, `find_best_offer`, le paiement et le dashboard sont déjà indépendants de l'origine des sites.
 
 ## Formulations de démo (à compléter pendant les répétitions)
 

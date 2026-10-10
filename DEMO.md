@@ -31,7 +31,7 @@ Depuis le 11 oct. 02:30, les serveurs MCP envoient des **instructions** à Claud
 
 `Utilise PayGuard pour m'acheter un casque NordSound ANC Pro au meilleur prix, budget 0.06 AVAX max.`
 
-Si Claude dévie quand même (navigateur intégré, pas d'appel à PayGuard), les phrases détaillées ci-dessous restent le filet. Nommer **PayGuard** dans la phrase reste la meilleure garantie.
+✅ Validée en live le 11 oct. vers 02:50. Si Claude dévie quand même (navigateur intégré, pas d'appel à PayGuard), les phrases détaillées ci-dessous restent le filet. Nommer **PayGuard** dans la phrase reste la meilleure garantie. Pour le jury : « en démo la recherche est locale pour être reproductible, tout le reste est réel ».
 
 **Navigateur intégré de Claude Desktop : à désactiver pendant la démo** (réglages de l'application, outils / navigateur). Quand Claude passe par son navigateur, ses propres garde-fous sur les actions financières l'empêchent d'appeler `request_payment`, même à la demande de l'utilisateur. Si l'option est introuvable : quand il annonce « je charge les outils du navigateur », répondre « non, utilise read_merchant_page de demo-shop ». Une **nouvelle conversation par scénario** : dans une conversation où il a déjà utilisé le navigateur, il y retourne.
 
