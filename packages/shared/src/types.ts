@@ -237,7 +237,7 @@ export interface ApiError {
 export const DEFAULT_POLICY: SpendingPolicy = {
   max_per_tx: "0.1",
   max_daily: "0.3",
-  min_balance: "0.5",
+  min_balance: "0.1",
   auto_approve_score: 70,
   hold_score: 40,
   require_confirmation_above: "0.08",

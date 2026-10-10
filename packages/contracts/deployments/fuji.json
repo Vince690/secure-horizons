@@ -1,0 +1,10 @@
+{
+  "network": "fuji",
+  "chainId": 43113,
+  "contract": "PayGuardLedger",
+  "address": "0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1",
+  "deployer": "0xcc86bb75d603aa474ddda53930cf4252c6257764",
+  "deployedAt": "2026-10-10T21:51:51.350Z",
+  "firstPaymentTx": "0xb78631b431adde45bacf13f8a520f821bbbb7a94d8b42b58ebca0d45e9f9aea6",
+  "explorer": "https://testnet.snowtrace.io/address/0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1"
+}

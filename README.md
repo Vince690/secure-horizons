@@ -40,7 +40,10 @@ Le journal d'audit interne s'écrit dans `apps/web/logs/audit.jsonl` (ignoré pa
 ## Contrat déployé (Fuji C-Chain, chainId 43113)
 | Contrat | Adresse | Explorer |
 |---|---|---|
-| PayGuardLedger | _à remplir après déploiement_ | https://testnet.snowtrace.io/address/… |
+| PayGuardLedger | `0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1` | https://testnet.snowtrace.io/address/0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1 |
+| Wallet gardien (owner) | `0xCc86BB75d603aA474dddA53930cf4252C6257764` | https://testnet.snowtrace.io/address/0xCc86BB75d603aA474dddA53930cf4252C6257764 |
+
+Déployé le 11 octobre 2026, détails dans `packages/contracts/deployments/fuji.json`. Premier paiement de test : https://testnet.snowtrace.io/tx/0xb78631b431adde45bacf13f8a520f821bbbb7a94d8b42b58ebca0d45e9f9aea6
 
 ## Sécurité
 - Testnet uniquement, wallet dédié hackathon, aucune clé personnelle.

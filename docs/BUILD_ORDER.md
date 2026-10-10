@@ -85,6 +85,8 @@ Option « deux terminaux » : si deux personnes veulent avancer en parallèle su
 ```
 **Critère** : `curl-demo.sh` renvoie des `payment_tx` et `ledger_tx` réels, cliquables sur testnet.snowtrace.io ; Claude Desktop montre le lien. Garder `CHAIN_MODE=mock` comme repli documenté dans README.
 
+✅ Fait le 11 oct. 00:50 : contrat `0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1`, wallet gardien `0xCc86…7764`, `verify-decision` renvoie INTÈGRE. Plancher de solde par défaut abaissé à 0,1 AVAX (le wallet de test a 0,4 AVAX).
+
 ## Étape 6 — Dashboard : routes puis pages (2:30)
 
 **Fichiers** : `apps/web/src/app/api/dashboard/**`, `apps/web/src/app/(dashboard)/**`, `src/app/login`, `src/components/**`.
