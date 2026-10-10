@@ -23,8 +23,10 @@ async function main() {
     create: { email: DEMO_EMAIL, passwordHash, companyName: "Horizon SAS" },
   });
 
+  // Demo mandate: the test wallet is small, so the floor is lower than the product default.
   const policyRow = toPolicyRow(account.id, {
     ...DEFAULT_POLICY,
+    min_balance: process.env.DEMO_MIN_BALANCE ?? "0.02",
     trusted_recipients: [LEGIT_ADDRESS],
     trusted_domains: [LEGIT_DOMAIN],
   });
