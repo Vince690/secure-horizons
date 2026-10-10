@@ -1,5 +1,7 @@
 # PayGuard — plan de travail (4 personnes, ~12 h, pitch dimanche 11 oct. 12:00)
 
+> **Mode actuel : une seule machine, construction séquentielle.** L'ordre des étapes, les prompts et les critères de passage sont dans **`docs/BUILD_ORDER.md`**. Ce fichier garde le cadrage (projet, stack, démo cible, règles, risques) ; le tableau des rôles ci-dessous devient indicatif : il dit qui est au clavier pour quelle étape.
+
 ## Le projet en une phrase
 **PayGuard est le gardien entre un agent IA et son argent** : l'agent demande un paiement via un plugin MCP, PayGuard vérifie la demande contre le mandat de l'humain et le contexte (page lue, conversation), exécute lui-même le paiement en AVAX test sur Avalanche Fuji si tout est bon, met en attente ou bloque sinon, grave chaque décision on-chain, et coupe tout avec un kill switch si une faille critique apparaît.
 

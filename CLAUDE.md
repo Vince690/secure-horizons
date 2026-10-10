@@ -22,7 +22,7 @@
 - Pour qui : entreprises qui confient des achats/paiements à des agents IA (PME, DAF, équipes plateforme), et à terme assureurs/auditeurs qui veulent la preuve.
 - Démo en 3 minutes : Claude Desktop achète chez un marchand légitime (APPROVED, tx Fuji) puis chez un marchand piège (BLOCKED, injection détectée), un HOLD confirmé sur le dashboard, kill switch auto après 3 blocages, panneau conformité DORA/MiCA/AML-CFT/AI Act. Détail dans `DEMO.md`.
 - Hors scope : fine-tuning, vraie banque, multi-devises, détection vocale, mobile, mainnet.
-- Documents de référence : `docs/API.md` (contrat, source de vérité), `docs/PLAN.md` (rôles, timeline), `docs/COMPLIANCE.md`, `docs/prompts/` (prompts de démarrage par rôle).
+- Documents de référence : `docs/API.md` (contrat, source de vérité), **`docs/BUILD_ORDER.md` (ordre de construction étape par étape, mode une machine)**, `docs/PLAN.md` (cadrage), `docs/COMPLIANCE.md`, `docs/prompts/` (prompts détaillés).
 
 ## Règles de travail pour Claude
 1. **La démo d'abord.** On construit le chemin principal de bout en bout avant toute fonctionnalité secondaire. Une chose qui marche vaut mieux que cinq à moitié faites.
@@ -44,3 +44,4 @@
 - 2026-10-10 21:45 — Règles déterministes en première ligne, LLM uniquement pour l'explication en français (cache + fallback). Raison : zéro aléa en démo.
 - 2026-10-10 21:45 — Freeze fixé à H+8 (≈ 06:00 dimanche). Pitch 12:00.
 - 2026-10-10 22:30 — Vincent prend le **dashboard (front)** ; Dev A garde API + moteur + base. Frontière dans `apps/web` : `api/`, `lib/`, `prisma/` à Dev A ; `(dashboard)/`, `components/`, `fixtures/` à Vincent. Raison : Vincent veut une part de dev et le dashboard est la partie produit ; le juridique réduit à `compliance.rules.json` (1 h).
+- 2026-10-10 23:00 — **Tout se construit sur la machine de Vincent, en séquence** (voir `docs/BUILD_ORDER.md`). Ordre : cerveau (moteur testable) → chemin complet avec mocks → chaîne Fuji → dashboard → fiabilité. Raison : une démo mockée complète existe dès l'étape 4, la blockchain ne peut plus tout bloquer. Dépôt GitHub privé créé : https://github.com/Vince690/secure-horizons

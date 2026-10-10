@@ -1,5 +1,7 @@
 # Prompts de démarrage
 
+> **Mode une machine** : suivre `docs/BUILD_ORDER.md`, qui indique pour chaque étape le prompt court à coller (toujours précédé du 00). Les prompts 01 à 05 ci-dessous restent la référence détaillée que ces prompts courts citent.
+
 Chacun ouvre Claude Code à la racine du repo et colle **00 + son numéro** dans le premier message.
 
 | Fichier | Pour qui | Quand |
