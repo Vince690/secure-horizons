@@ -35,9 +35,27 @@ const VERDICT_STYLE: Record<Verdict, string> = {
   BLOCKED: "bg-crit/15 text-crit border-crit/40",
 };
 
+/** The pill shows the FINAL state: a HOLD approved by a human reads "Payé (humain)", not "En attente". */
 export function VerdictPill({ verdict, status }: { verdict: Verdict; status?: DecisionStatus }) {
-  const label = status && status !== "APPROVED" && status !== "BLOCKED" ? STATUS_LABEL[status] : VERDICT_LABEL[verdict];
-  return <span className={`inline-block rounded-full border px-3 py-1 text-sm font-semibold ${VERDICT_STYLE[verdict]}`}>{label}</span>;
+  let label = VERDICT_LABEL[verdict];
+  let style = VERDICT_STYLE[verdict];
+  if (status === "APPROVED") {
+    label = verdict === "HOLD" ? "Payé (humain)" : "Approuvé";
+    style = VERDICT_STYLE.APPROVED;
+  } else if (status === "REJECTED") {
+    label = "Rejeté (humain)";
+    style = VERDICT_STYLE.BLOCKED;
+  } else if (status === "PENDING_CONFIRMATION") {
+    label = STATUS_LABEL.PENDING_CONFIRMATION;
+    style = VERDICT_STYLE.HOLD;
+  } else if (status === "FAILED") {
+    label = STATUS_LABEL.FAILED;
+    style = VERDICT_STYLE.HOLD;
+  } else if (status === "BLOCKED") {
+    label = VERDICT_LABEL.BLOCKED;
+    style = VERDICT_STYLE.BLOCKED;
+  }
+  return <span className={`inline-block rounded-full border px-3 py-1 text-sm font-semibold ${style}`}>{label}</span>;
 }
 
 export function scoreColor(score: number): string {

@@ -38,11 +38,13 @@ export function KillSwitchButton() {
       {!confirming ? (
         <button
           onClick={() => setConfirming(true)}
-          className={`rounded-xl px-5 py-3 text-base font-extrabold uppercase tracking-wider shadow-lg transition ${
-            active ? "bg-ok text-white hover:bg-ok/90" : "bg-crit text-white hover:bg-crit/90"
+          title={active ? "Tous les paiements sont suspendus. Cliquer pour réarmer." : "Arrêt d'urgence : suspend tous les paiements des agents, en base et sur le contrat."}
+          className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-semibold transition ${
+            active ? "border-crit bg-crit/15 text-crit hover:bg-crit/25" : "border-line text-fg/80 hover:border-crit hover:text-crit"
           }`}
         >
-          {active ? "Réarmer les paiements" : "Kill switch"}
+          <span className={`h-2.5 w-2.5 rounded-full ${active ? "animate-pulse bg-crit" : "bg-ok"}`} />
+          {active ? "Paiements suspendus · réarmer" : "Kill switch"}
         </button>
       ) : (
         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-surface-2 p-3">
