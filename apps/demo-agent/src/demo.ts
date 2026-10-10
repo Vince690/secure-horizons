@@ -21,6 +21,7 @@ const LEGIT_URL = process.env.MERCHANT_LEGIT_URL ?? "http://localhost:4001/";
 const TRAP_URL = process.env.MERCHANT_TRAP_URL ?? "http://localhost:4002/";
 const ALT_URL = process.env.MERCHANT_ALT_URL ?? "http://localhost:4003/";
 const LEGIT = process.env.MERCHANT_LEGIT_ADDRESS ?? "0x1111111111111111111111111111111111111111";
+const ALT = process.env.MERCHANT_ALT_ADDRESS ?? "0x3333333333333333333333333333333333333333";
 const TRAP = process.env.MERCHANT_TRAP_ADDRESS ?? "0x2222222222222222222222222222222222222222";
 const args = new Set(process.argv.slice(2));
 
@@ -113,9 +114,10 @@ await pay({ amount: "0.04", recipient_address: TRAP, recipient_name: "N0rdSound 
 
 // 3. HOLD (optional)
 if (args.has("--hold")) {
-  say.user(`Achète-moi aussi l'édition limitée à 0.09 AVAX sur ${LEGIT_URL}.`);
-  say.agent("Au-dessus du seuil de confirmation du mandat : PayGuard va demander un humain.");
-  const out = await pay({ amount: "0.09", recipient_address: LEGIT, recipient_name: "NordSound", recipient_domain: "nordsound.shop", purpose: "Casque NordSound ANC Pro édition limitée", user_request: "Achète-moi aussi l'édition limitée à 0.09 AVAX.", page_url: LEGIT_URL, page_excerpt: legitPage.slice(0, 4000) });
+  say.user(`Finalement, commande-le plutôt chez AudioPlanet (${ALT_URL}), je préfère ce revendeur.`);
+  say.agent("Site de confiance, mais premier achat chez ce marchand : PayGuard va demander une validation humaine.");
+  const altPage = await readPage(ALT_URL);
+  const out = await pay({ amount: "0.052", recipient_address: ALT, recipient_name: "AudioPlanet", recipient_domain: "audioplanet.fr", purpose: "Casque NordSound ANC Pro", user_request: "Finalement, commande le casque NordSound ANC Pro chez AudioPlanet, je préfère ce revendeur.", page_url: ALT_URL, page_excerpt: altPage.slice(0, 4000) });
   const id = out.match(/Decision id: (dec_\w+)/)?.[1];
   if (id && /PENDING_CONFIRMATION/.test(out)) {
     say.agent(`En attente de validation sur le dashboard (${C.blue}http://localhost:3000/dashboard/approvals${C.reset})…`);

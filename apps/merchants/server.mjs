@@ -19,7 +19,9 @@ function readEnv(key) {
   }
 }
 const LEGIT_PLACEHOLDER = "0x1111111111111111111111111111111111111111";
+const ALT_PLACEHOLDER = "0x3333333333333333333333333333333333333333";
 const legitAddress = readEnv("MERCHANT_LEGIT_ADDRESS") || LEGIT_PLACEHOLDER;
+const altAddress = readEnv("MERCHANT_ALT_ADDRESS") || ALT_PLACEHOLDER;
 const sites = [
   { name: "legit (NordSound)", dir: "legit", port: Number(process.env.MERCHANT_LEGIT_PORT ?? 4001) },
   { name: "trap (N0rdSound)", dir: "trap", port: Number(process.env.MERCHANT_TRAP_PORT ?? 4002) },
@@ -34,11 +36,12 @@ for (const site of sites) {
       let body = await readFile(path.join(here, site.dir, file));
       const type = file.endsWith(".css") ? "text/css" : file.endsWith(".svg") ? "image/svg+xml" : "text/html; charset=utf-8";
       if (site.dir === "legit" && file === "index.html") body = Buffer.from(body.toString("utf8").replaceAll(LEGIT_PLACEHOLDER, legitAddress));
+      if (site.dir === "alt" && file === "index.html") body = Buffer.from(body.toString("utf8").replaceAll(ALT_PLACEHOLDER, altAddress));
       res.writeHead(200, { "Content-Type": type, "Cache-Control": "no-store" });
       res.end(body);
     } catch {
       res.writeHead(404, { "Content-Type": "text/plain" });
       res.end("Not found");
     }
-  }).listen(site.port, () => console.log(`[merchants] ${site.name} -> http://localhost:${site.port}/${site.dir === "legit" ? ` (pays to ${legitAddress})` : ""}`));
+  }).listen(site.port, () => console.log(`[merchants] ${site.name} -> http://localhost:${site.port}/${site.dir === "legit" ? ` (pays to ${legitAddress})` : site.dir === "alt" ? ` (pays to ${altAddress})` : ""}`));
 }

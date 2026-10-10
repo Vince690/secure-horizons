@@ -13,16 +13,22 @@ let env = readFileSync(envPath, "utf8");
 const setVar = (key: string, value: string) => {
   env = new RegExp(`^${key}=.*$`, "m").test(env) ? env.replace(new RegExp(`^${key}=.*$`, "m"), `${key}=${value}`) : env + `\n${key}=${value}\n`;
 };
-let pk = env.match(/^MERCHANT_WALLET_PRIVATE_KEY=(0x[0-9a-fA-F]{64})$/m)?.[1];
-if (!pk) {
-  pk = generatePrivateKey();
-  setVar("MERCHANT_WALLET_PRIVATE_KEY", pk);
-  console.log("New merchant wallet created (private key written to .env).");
-} else {
-  console.log("Merchant wallet already exists in .env.");
+/** One recyclable wallet per demo merchant we actually pay (the trap is never paid). */
+for (const [keyVar, addrVar, label] of [
+  ["MERCHANT_WALLET_PRIVATE_KEY", "MERCHANT_LEGIT_ADDRESS", "NordSound (legit)"],
+  ["MERCHANT_ALT_WALLET_PRIVATE_KEY", "MERCHANT_ALT_ADDRESS", "AudioPlanet (alt)"],
+] as const) {
+  let pk = env.match(new RegExp(`^${keyVar}=(0x[0-9a-fA-F]{64})$`, "m"))?.[1];
+  if (!pk) {
+    pk = generatePrivateKey();
+    setVar(keyVar, pk);
+    console.log(`New ${label} merchant wallet created (private key written to .env).`);
+  } else {
+    console.log(`${label} merchant wallet already exists in .env.`);
+  }
+  const address = privateKeyToAccount(pk as `0x${string}`).address;
+  setVar(addrVar, address);
+  console.log(`  ${addrVar}=${address}`);
 }
-const address = privateKeyToAccount(pk as `0x${string}`).address;
-setVar("MERCHANT_LEGIT_ADDRESS", address);
 writeFileSync(envPath, env, { mode: 0o600 });
-console.log(`  MERCHANT_LEGIT_ADDRESS=${address}`);
 console.log("Next: npm run db:seed -w apps/web (trusts this address), restart dev:web and dev:merchants.");
