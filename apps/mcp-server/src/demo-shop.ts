@@ -10,7 +10,49 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { extractText, hasHiddenContent } from "./extract.js";
 
-const server = new McpServer({ name: "demo-shop", version: "0.1.0" });
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { config as loadEnv } from "dotenv";
+
+loadEnv({ path: path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../.env") });
+
+const SHOPS = [
+  { url: process.env.MERCHANT_LEGIT_URL ?? "http://localhost:4001/", title: "NordSound — Casque ANC Pro", snippet: "Casque sans fil à réduction de bruit active, 0.05 AVAX TTC, livraison 48 h. Boutique officielle NordSound." },
+  { url: process.env.MERCHANT_TRAP_URL ?? "http://localhost:4002/", title: "N0rdSound Deals — Casque ANC Pro -20%", snippet: "Le vrai NordSound moins cher : 0.04 AVAX, offre flash, paiement sécurisé, revendeur officiel." },
+  { url: process.env.MERCHANT_ALT_URL ?? "http://localhost:4003/", title: "AudioPlanet — NordSound ANC Pro", snippet: "Revendeur hi-fi indépendant, NordSound ANC Pro à 0.052 AVAX TTC, livraison 72 h, garantie 2 ans." },
+];
+
+const server = new McpServer(
+  { name: "demo-shop", version: "0.1.0" },
+  {
+    instructions:
+      "demo-shop is the shopping side of the demo: search_products finds merchant pages for a product, read_merchant_page returns the full text of a page (hidden parts marked). Use these instead of a browser when buying with PayGuard, and always hand the page text to PayGuard's request_payment as page_excerpt.",
+  },
+);
+
+server.registerTool(
+  "search_products",
+  {
+    title: "Search merchants selling a product",
+    description: "Finds candidate merchant pages for a product (demo catalogue standing in for a web search). Returns URLs to pass to PayGuard's find_best_offer.",
+    inputSchema: { query: z.string().min(1).max(200).describe("Product to look for, e.g. 'casque NordSound ANC Pro'") },
+  },
+  async ({ query }) => {
+    const q = query.toLowerCase();
+    const hits = SHOPS.filter((s) => /casque|nordsound|anc|audio|headphone/.test(q) || q.length < 3);
+    const list = (hits.length ? hits : SHOPS).map((s, i) => `${i + 1}. ${s.title}
+   ${s.url}
+   ${s.snippet}`).join("\n");
+    return {
+      content: [
+        {
+          type: "text",
+          text: `${hits.length || SHOPS.length} result(s) for "${query}":\n${list}\n\nINSTRUCTION: Pass all these URLs to PayGuard's find_best_offer before choosing; do not pick by price alone.`,
+        },
+      ],
+    };
+  },
+);
 
 
 server.registerTool(

@@ -27,7 +27,11 @@
 | 2:45 | Slide finale | Pitch | « Score, preuve, kill switch. PayGuard n'est pas un prestataire de paiement : il outille la conformité. 10 vérifications par mois gratuites, puis 10 € les 1 000. Cinq lignes pour l'intégrer à tout hôte MCP. » |
 
 ## Règle d'or des phrases
-Chaque phrase nomme **PayGuard** et l'outil (`find_best_offer`, `read_merchant_page`, `request_payment`). Sans ça, Claude Desktop peut choisir son navigateur intégré, lire la page et refuser de payer tout seul : aucune décision PayGuard n'est alors créée.
+Depuis le 11 oct. 02:30, les serveurs MCP envoient des **instructions** à Claude Desktop (parcours complet : recherche → vérification des sites → lecture de page avec notre outil → paiement, jamais de navigateur, jamais de paiement hors PayGuard) et un **modèle de prompt** « Acheter avec PayGuard » apparaît dans le menu. La phrase naturelle doit donc suffire :
+
+`Utilise PayGuard pour m'acheter un casque NordSound ANC Pro au meilleur prix, budget 0.06 AVAX max.`
+
+Si Claude dévie quand même (navigateur intégré, pas d'appel à PayGuard), les phrases détaillées ci-dessous restent le filet. Nommer **PayGuard** dans la phrase reste la meilleure garantie.
 
 **Navigateur intégré de Claude Desktop : à désactiver pendant la démo** (réglages de l'application, outils / navigateur). Quand Claude passe par son navigateur, ses propres garde-fous sur les actions financières l'empêchent d'appeler `request_payment`, même à la demande de l'utilisateur. Si l'option est introuvable : quand il annonce « je charge les outils du navigateur », répondre « non, utilise read_merchant_page de demo-shop ». Une **nouvelle conversation par scénario** : dans une conversation où il a déjà utilisé le navigateur, il y retourne.
 

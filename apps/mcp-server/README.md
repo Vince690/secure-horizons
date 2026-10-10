@@ -5,7 +5,7 @@ Deux serveurs MCP (transport stdio) :
 | Serveur | Outils | Rôle |
 |---|---|---|
 | `payguard` | `find_best_offer`, `check_merchant`, `request_payment`, `check_payment_status`, `get_spending_policy`, `get_balance` | Le plugin que l'agent appelle pour vérifier des sites, comparer des offres et payer via le gardien |
-| `demo-shop` | `read_merchant_page` | Lecteur de page volontairement naïf (texte caché et commentaires HTML inclus) pour la démo |
+| `demo-shop` | `search_products`, `read_merchant_page` | Côté « boutique » de la démo : une recherche de produits qui tient lieu de recherche web, et un lecteur de page volontairement naïf (texte caché et commentaires HTML marqués) |
 
 Les serveurs lisent `PAYGUARD_API_URL` et `PAYGUARD_API_KEY` dans le `.env` **à la racine du repo** (résolu depuis le fichier, quel que soit le dossier de lancement). Aucun secret dans la config Claude Desktop.
 
@@ -43,6 +43,12 @@ Lance les deux serveurs en sous-processus, liste les outils, joue un paiement l�
 ## Score de confiance marchand (`check_merchant` / `find_best_offer`)
 
 Score 100 moins des pénalités : site injoignable, pas de HTTPS, domaine très récent (RDAP), extension à risque, domaine imitant une marque connue ou un marchand de confiance, aucune mention légale, e-mail de contact sur un autre domaine, langage de pression, aucun prix lisible, **instructions destinées aux agents IA** (−70, rédhibitoire), **blocs invisibles contenant des ordres ou des coordonnées** (−50, rédhibitoire), prix trop beau pour être vrai par rapport aux autres offres (−20, dans `find_best_offer`). TRUSTED ≥ 70, SUSPICIOUS 40-69, FRAUDULENT < 40. `find_best_offer` classe les offres de confiance par prix et renvoie à l'agent les champs exacts à passer à `request_payment`.
+
+## Pourquoi « utilise PayGuard » suffit (instructions serveur)
+
+Le serveur `payguard` envoie des **instructions MCP** que Claude Desktop intègre à son contexte : parcours complet (recherche → `find_best_offer` / `check_merchant` → `read_merchant_page` → `request_payment` → suivre la ligne INSTRUCTION), interdiction d'utiliser un navigateur pour lire une page marchande, interdiction de payer ou de suggérer de payer hors PayGuard, interdiction d'acheter chez un marchand FRAUDULENT. Il expose aussi le prompt `buy_with_payguard` (« Acheter avec PayGuard », arguments produit et budget) visible dans le menu de Claude Desktop. Côté produit, l'onboarding peut en plus proposer une ligne de préférence dans Claude : « Pour tout achat, passe par PayGuard. »
+
+Phrase naturelle à tester en priorité : « Utilise PayGuard pour m'acheter un casque NordSound ANC Pro au meilleur prix, budget 0.06 AVAX max. »
 
 ## Formulations de démo (à compléter pendant les répétitions)
 

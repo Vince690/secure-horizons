@@ -26,8 +26,13 @@ const shop = await connect("demo-shop.ts");
 
 console.log("== payguard tools ==");
 console.log((await payguard.listTools()).tools.map((t) => t.name).join(", "));
+console.log("instructions:", (payguard.getInstructions() ?? "(none)").slice(0, 100).replace(/\n/g, " ") + "…");
+console.log("prompts:", (await payguard.listPrompts()).prompts.map((p) => p.name).join(", ") || "-");
 console.log("== demo-shop tools ==");
 console.log((await shop.listTools()).tools.map((t) => t.name).join(", "));
+console.log("instructions:", (shop.getInstructions() ?? "(none)").slice(0, 100).replace(/\n/g, " ") + "…");
+console.log("\n== search_products ==");
+console.log(firstText(await shop.callTool({ name: "search_products", arguments: { query: "casque NordSound ANC Pro" } })).split("\n").slice(0, 4).join("\n"));
 
 console.log("\n== get_spending_policy ==");
 console.log(firstText(await payguard.callTool({ name: "get_spending_policy", arguments: {} })));
