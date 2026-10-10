@@ -1,0 +1,33 @@
+import type { Rule } from "../types";
+import { killSwitch } from "./killSwitch";
+import { recipientBlocklisted } from "./recipientBlocklisted";
+import { minBalance } from "./minBalance";
+import { amountOverTxLimit } from "./amountOverTxLimit";
+import { dailyLimit } from "./dailyLimit";
+import { promptInjection } from "./promptInjection";
+import { purposeNotRequested } from "./purposeNotRequested";
+import { recipientChanged } from "./recipientChanged";
+import { domainLookalike } from "./domainLookalike";
+import { recipientUnknown } from "./recipientUnknown";
+import { velocity } from "./velocity";
+import { priceAnomaly } from "./priceAnomaly";
+import { urgency } from "./urgency";
+import { recipientTrusted } from "./recipientTrusted";
+
+/** Order = order of the table in docs/API.md §5. Order never changes the score. */
+export const RULES: Rule[] = [
+  killSwitch,
+  recipientBlocklisted,
+  minBalance,
+  amountOverTxLimit,
+  dailyLimit,
+  promptInjection,
+  purposeNotRequested,
+  recipientChanged,
+  domainLookalike,
+  recipientUnknown,
+  velocity,
+  priceAnomaly,
+  urgency,
+  recipientTrusted,
+];
