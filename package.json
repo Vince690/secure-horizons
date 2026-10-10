@@ -1,0 +1,16 @@
+{
+  "name": "secure-horizons",
+  "private": true,
+  "version": "0.1.0",
+  "description": "PayGuard — a guardian between AI agents and their payments (ESSEC Secure Horizons hackathon, Oct 2026)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:web": "npm run dev -w apps/web",
+    "dev:mcp": "npm run dev -w apps/mcp-server",
+    "dev:merchants": "npm run dev -w apps/merchants",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}
