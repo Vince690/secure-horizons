@@ -12,6 +12,8 @@
     "dev:mcp": "npm run smoke -w apps/mcp-server",
     "dev:merchants": "npm run dev -w apps/merchants",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "smoke:mcp": "npm run smoke -w apps/mcp-server"
+    "smoke:mcp": "npm run smoke -w apps/mcp-server",
+    "demo": "npm run demo -w apps/demo-agent",
+    "demo:all": "npm run demo:all -w apps/demo-agent"
   }
 }

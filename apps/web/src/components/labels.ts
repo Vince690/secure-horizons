@@ -1,4 +1,4 @@
-import type { DecisionStatus, Framework, ReasonCode, Verdict } from "@payguard/shared";
+import { COMPLIANCE_RULES, type DecisionStatus, type Framework, type ReasonCode, type Verdict } from "@payguard/shared";
 
 export const FRAMEWORK_LABEL: Record<Framework, { short: string; long: string }> = {
   DORA: { short: "DORA", long: "Résilience opérationnelle (DORA)" },
@@ -17,28 +17,13 @@ export const STATUS_LABEL: Record<DecisionStatus, string> = {
   FAILED: "Échec on-chain",
 };
 
-export const REASON_LABEL: Record<ReasonCode, string> = {
-  KILL_SWITCH_ACTIVE: "Kill switch actif",
-  AMOUNT_OVER_TX_LIMIT: "Plafond par achat dépassé",
-  DAILY_LIMIT_EXCEEDED: "Plafond quotidien dépassé",
-  MIN_BALANCE_BREACH: "Solde plancher menacé",
-  RECIPIENT_UNKNOWN: "Bénéficiaire inconnu",
-  RECIPIENT_BLOCKLISTED: "Bénéficiaire interdit",
-  RECIPIENT_TRUSTED: "Marchand de confiance",
-  DOMAIN_LOOKALIKE: "Domaine imitant",
-  PROMPT_INJECTION_SUSPECTED: "Injection de prompt",
-  URGENCY_LANGUAGE: "Langage de pression",
-  VELOCITY_ANOMALY: "Rafale de demandes",
-  PRICE_ANOMALY: "Prix anormal",
-  PURPOSE_NOT_REQUESTED_BY_USER: "Achat non demandé",
-  RECIPIENT_CHANGED_MID_CONVERSATION: "Adresse changée en cours de route",
-  HIDDEN_INSTRUCTIONS: "Instructions invisibles",
-  PAGE_PRICE_MISMATCH: "Prix différent de la page",
-  PAGE_ADDRESS_MISMATCH: "Adresse différente de la page",
-  PAGE_PRODUCT_MISMATCH: "Produit absent de la page",
-  RECIPIENT_NO_ONCHAIN_HISTORY: "Adresse sans historique on-chain",
-  SEMANTIC_MANIPULATION_SUSPECTED: "Manipulation détectée par analyse sémantique",
-};
+export const REASON_LABEL: Record<ReasonCode, string> = Object.fromEntries(
+  Object.entries(COMPLIANCE_RULES).map(([code, rule]) => [code, rule.label_fr]),
+) as Record<ReasonCode, string>;
+
+export function reasonReferences(code: ReasonCode): string[] {
+  return COMPLIANCE_RULES[code]?.references ?? [];
+}
 
 export const AUDIT_LABEL: Record<string, string> = {
   DECISION_CREATED: "Décision créée",

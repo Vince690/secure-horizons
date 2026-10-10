@@ -14,15 +14,15 @@
 
 | # | Étape | Durée | Démontrable après l'étape |
 |---|---|---|---|
-| 0 | Squelette monorepo + Next.js | 0:20 | `npm run dev:web` affiche une page |
-| 1 | Moteur de décision pur + tests | 1:00 | `npx vitest` vert : APPROVED / HOLD / BLOCKED sur 3 cas |
-| 2 | API `evaluate` + SQLite + clé API + audit log (chaîne mockée) | 1:15 | `scripts/curl-demo.sh` affiche 3 verdicts |
-| 3 | Serveur MCP + Claude Desktop | 1:00 | Claude Desktop appelle `request_payment` et affiche un verdict |
-| 4 | Pages marchands + scénario d'attaque | 0:45 | Légitime ⇒ APPROVED, piège ⇒ BLOCKED, dans Claude Desktop |
-| 5 | Contrat Fuji + client viem, remplace le mock | 1:30 | Lien Snowtrace réel dans la réponse de Claude |
-| 6 | Routes + pages du dashboard | 2:30 | Un HOLD approuvé à la main, kill switch manuel, historique avec liens |
-| 7 | Kill switch auto on-chain + explications LLM en cache | 0:45 | 3 pièges ⇒ `pause()` visible ; explication en français sans latence |
-| 8 | Script de secours + conformité JSON + README/DEMO | 1:00 | `npm run demo -w apps/demo-agent` rejoue tout en terminal |
+| 0 ✅ | Squelette monorepo + Next.js | 0:20 | `npm run dev:web` affiche une page |
+| 1 ✅ | Moteur de décision pur + tests | 1:00 | `npx vitest` vert : APPROVED / HOLD / BLOCKED sur 3 cas |
+| 2 ✅ | API `evaluate` + SQLite + clé API + audit log (chaîne mockée) | 1:15 | `scripts/curl-demo.sh` affiche 3 verdicts |
+| 3 ✅ | Serveur MCP + Claude Desktop | 1:00 | Claude Desktop appelle `request_payment` et affiche un verdict |
+| 4 ✅ | Pages marchands + scénario d'attaque | 0:45 | Légitime ⇒ APPROVED, piège ⇒ BLOCKED, dans Claude Desktop |
+| 5 ✅ | Contrat Fuji + client viem, remplace le mock | 1:30 | Lien Snowtrace réel dans la réponse de Claude |
+| 6 ✅ | Routes + pages du dashboard | 2:30 | Un HOLD approuvé à la main, kill switch manuel, historique avec liens |
+| 7 ✅ | Kill switch auto on-chain + explications LLM en cache | 0:45 | 3 pièges ⇒ `pause()` visible ; explication en français sans latence |
+| 8 ✅ | Script de secours + conformité JSON + README/DEMO | 1:00 | `npm run demo -w apps/demo-agent` rejoue tout en terminal |
 | 9 | **FREEZE**, répétitions, vidéo, scan secrets | 2:00 | Démo < 3 min, trois fois de suite |
 
 Si une étape dépasse sa durée de plus de 20 minutes : on demande à Claude une version plus simple, ou on garde le mock et on avance. Si une étape est optionnelle pour la démo (7, 8), on peut la sauter en cas de retard.

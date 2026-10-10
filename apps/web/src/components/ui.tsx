@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import type { ComplianceState, DecisionStatus, Reason, Verdict } from "@payguard/shared";
-import { REASON_LABEL, STATUS_LABEL, VERDICT_LABEL } from "./labels";
+import { REASON_LABEL, reasonReferences, STATUS_LABEL, VERDICT_LABEL } from "./labels";
 
 export function Card({ title, children, className = "", action }: { title?: string; children: ReactNode; className?: string; action?: ReactNode }) {
   return (
@@ -110,7 +110,11 @@ export function ReasonList({ reasons, compact = false }: { reasons: Reason[]; co
           <div className="min-w-0">
             <div className={`text-sm ${SEVERITY_STYLE[r.severity]}`}>{REASON_LABEL[r.code] ?? r.code}</div>
             {!compact && <div className="text-sm text-fg/80">{r.message}</div>}
-            {!compact && r.frameworks.length > 0 && <div className="mt-0.5 text-xs text-muted">{r.frameworks.join(" · ")}</div>}
+            {!compact && (r.frameworks.length > 0 || reasonReferences(r.code).length > 0) && (
+              <div className="mt-0.5 text-xs text-muted">
+                {[...r.frameworks, ...reasonReferences(r.code)].join(" · ")}
+              </div>
+            )}
           </div>
         </li>
       ))}

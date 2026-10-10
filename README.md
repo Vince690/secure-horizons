@@ -17,25 +17,34 @@ Les protocoles de paiement par agents signent la transaction, pas la décision. 
 apps/web            Next.js 15 : dashboard + API (/api/v1, /api/dashboard), Prisma/SQLite, moteur de décision
 apps/mcp-server     serveurs MCP « payguard » et « demo-shop » (stdio)
 apps/merchants      2 pages marchands de démo (légitime :4001, piège :4002), serveur Node sans dépendance
-apps/demo-agent     script de secours qui rejoue la démo sans Claude Desktop
+apps/demo-agent     démo scriptée (plan B) qui pilote les mêmes serveurs MCP sans LLM ni Claude Desktop
 packages/contracts  PayGuardLedger.sol (Hardhat, Fuji 43113) + client viem
-packages/shared     types TypeScript communs
+packages/shared     types TypeScript communs, hash de décision, interface chaîne, compliance.rules.json
 docs/               API.md (contrat), PLAN.md, COMPLIANCE.md, prompts/
 ```
 
-## Lancer (à compléter au fil de la nuit)
+## Lancer
 ```bash
 cp .env.example .env            # remplir, ne jamais commiter
 npm install
 npm run db:push -w apps/web     # crée la base SQLite (apps/web/prisma/dev.db)
 npm run db:seed -w apps/web     # compte demo@payguard.dev / demo1234, affiche la clé API UNE fois
 #   -> copier la clé dans .env : PAYGUARD_API_KEY=pg_test_...  (les resets suivants la réutilisent)
-npm run dev:web                 # http://localhost:3000
-bash apps/web/scripts/curl-demo.sh   # rejoue légitime / piège / HOLD contre l'API
-npm run dev:merchants           # :4001 et :4002 (étape 4)
-# Claude Desktop : voir apps/mcp-server/README.md pour la config (étape 3)
+npm run dev:web                 # dashboard + API : http://localhost:3000
+npm run dev:merchants           # marchand légitime :4001, marchand piège :4002
+npm run demo                    # démo scriptée sans Claude Desktop (plan B) ; npm run demo:all = + HOLD + kill switch
+bash apps/web/scripts/curl-demo.sh   # 3 appels bruts à l'API : légitime / piège / HOLD
+npm run smoke:mcp               # pilote les 2 serveurs MCP comme Claude Desktop le ferait
+# Claude Desktop : config exacte dans apps/mcp-server/README.md
 ```
+Chaîne : `CHAIN_MODE=fuji` (vrai contrat, voir ci-dessous) ou `CHAIN_MODE=mock` (simulateur en mémoire, aucun réseau). Modèle de langage : optionnel, `ANTHROPIC_API_KEY` vide = explications template et règles par motifs uniquement.
+
 Le journal d'audit interne s'écrit dans `apps/web/logs/audit.jsonl` (ignoré par git), en plus de la base.
+
+## Comment ça décide
+Score de confiance 100 au départ, chaque signal retire des points (`docs/API.md` §5, 20 règles) : mandat du dirigeant (plafonds, plancher, bénéficiaires), manipulation de l'agent (ordres dans la page, **texte invisible pour un humain**, achat non demandé, prix ou adresse différents de la page), comportement (rafale, prix anormal, adresse sans historique on-chain), et un second avis sémantique par le modèle si une clé est fournie. ≥ 70 APPROVED, 40-69 HOLD (un humain tranche), < 40 BLOCKED. Quatre signaux bloquent seuls : kill switch, liste noire, injection de prompt, instructions invisibles. Trois blocages en dix minutes déclenchent le kill switch automatique, qui met le contrat en pause.
+
+Chaque point retiré est relié à un cadre (DORA, MiCA, AML/CFT, AI Act) et à une référence d'article dans `packages/shared/src/compliance.rules.json`, maintenu par le juriste de l'équipe.
 
 ## Contrat déployé (Fuji C-Chain, chainId 43113)
 | Contrat | Adresse | Explorer |

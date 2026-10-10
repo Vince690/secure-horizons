@@ -17,6 +17,8 @@ Mention obligatoire dans le pitch : **PayGuard n'est pas un prestataire de servi
 
 ## 2. Règle → cadre (reprise dans `Reason.frameworks`)
 
+> **Fichier source : `packages/shared/src/compliance.rules.json`.** C'est lui que le moteur (cadres) et le dashboard (libellés, références d'articles) chargent. Le tableau ci-dessous n'est qu'une lecture ; modifier le JSON suffit.
+
 | Code règle | Cadres | Justification courte (pour le dashboard, FR, 1 phrase) |
 |---|---|---|
 | `KILL_SWITCH_ACTIVE` | AI_ACT, DORA | Contrôle humain et arrêt d'urgence (AI Act art. 14) ; incident TIC en cours (DORA art. 17). |
