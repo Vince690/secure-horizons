@@ -1,4 +1,9 @@
 import type { NextConfig } from "next";
+import path from "node:path";
+import { config as loadEnv } from "dotenv";
+
+// Single .env at the monorepo root, shared by every app. Never committed.
+loadEnv({ path: path.resolve(__dirname, "../../.env") });
 
 const nextConfig: NextConfig = {
   // Classic dynamic rendering: the dashboard polls live data and the API

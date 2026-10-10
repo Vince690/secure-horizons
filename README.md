@@ -25,12 +25,17 @@ docs/               API.md (contrat), PLAN.md, COMPLIANCE.md, prompts/
 
 ## Lancer (à compléter au fil de la nuit)
 ```bash
-cp .env.example .env   # remplir, ne jamais commiter
+cp .env.example .env            # remplir, ne jamais commiter
 npm install
-npm run dev:web        # http://localhost:3000
-npm run dev:merchants  # :4001 et :4002
-# Claude Desktop : voir apps/mcp-server/README.md pour la config
+npm run db:push -w apps/web     # crée la base SQLite (apps/web/prisma/dev.db)
+npm run db:seed -w apps/web     # compte demo@payguard.dev / demo1234, affiche la clé API UNE fois
+#   -> copier la clé dans .env : PAYGUARD_API_KEY=pg_test_...
+npm run dev:web                 # http://localhost:3000
+bash apps/web/scripts/curl-demo.sh   # rejoue légitime / piège / HOLD contre l'API
+npm run dev:merchants           # :4001 et :4002 (étape 4)
+# Claude Desktop : voir apps/mcp-server/README.md pour la config (étape 3)
 ```
+Le journal d'audit interne s'écrit dans `apps/web/logs/audit.jsonl` (ignoré par git), en plus de la base.
 
 ## Contrat déployé (Fuji C-Chain, chainId 43113)
 | Contrat | Adresse | Explorer |

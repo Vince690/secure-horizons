@@ -1,0 +1,134 @@
+// PayGuard data model. Lists and nested objects are stored as JSON strings
+// (SQLite has no JSON column type in Prisma 6); the mapping lives in src/lib/mappers.ts.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  companyName  String
+  createdAt    DateTime @default(now())
+
+  apiKeys      ApiKey[]
+  policy       Policy?
+  recipients   Recipient[]
+  decisions    Decision[]
+  auditEntries AuditEntry[]
+  killSwitch   KillSwitch?
+}
+
+model ApiKey {
+  id        String    @id @default(cuid())
+  accountId String
+  account   Account   @relation(fields: [accountId], references: [id])
+  /// sha256 of the full key; the clear key is shown once and never stored
+  keyHash   String    @unique
+  /// first 12 chars (e.g. "pg_test_ab12") so the dashboard can identify the key
+  prefix    String
+  label     String
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+}
+
+model Policy {
+  accountId                String  @id
+  account                  Account @relation(fields: [accountId], references: [id])
+  maxPerTx                 String
+  maxDaily                 String
+  minBalance               String
+  autoApproveScore         Int
+  holdScore                Int
+  requireConfirmationAbove String
+  /// JSON string[] of lowercase addresses
+  trustedRecipients        String  @default("[]")
+  blockedRecipients        String  @default("[]")
+  trustedDomains           String  @default("[]")
+  updatedAt                DateTime @updatedAt
+}
+
+model Recipient {
+  id          String   @id @default(cuid())
+  accountId   String
+  account     Account  @relation(fields: [accountId], references: [id])
+  address     String
+  name        String?
+  domain      String?
+  trusted     Boolean  @default(false)
+  firstSeenAt DateTime @default(now())
+
+  @@unique([accountId, address])
+}
+
+model Decision {
+  id              String    @id
+  accountId       String
+  account         Account   @relation(fields: [accountId], references: [id])
+  agentId         String
+  requestId       String
+  amount          String
+  currency        String    @default("AVAX")
+  recipientAddress String
+  recipientName   String?
+  recipientDomain String?
+  purpose         String
+  score           Int
+  verdict         String
+  status          String
+  /// JSON Reason[]
+  reasonsJson     String
+  /// JSON ComplianceSummary
+  complianceJson  String
+  explanation     String
+  decisionHash    String
+  /// JSON ChainReference | null
+  paymentTxJson   String?
+  ledgerTxJson    String?
+  /// JSON of the request context (page excerpt, conversation) for the detail page
+  contextJson     String?
+  createdAt       DateTime  @default(now())
+  resolvedAt      DateTime?
+  resolvedBy      String?
+
+  @@unique([accountId, requestId])
+  @@index([accountId, createdAt])
+}
+
+model AuditEntry {
+  id          String   @id @default(cuid())
+  accountId   String
+  account     Account  @relation(fields: [accountId], references: [id])
+  seq         Int
+  event       String
+  payloadJson String
+  prevHash    String
+  hash        String
+  createdAt   DateTime @default(now())
+
+  @@unique([accountId, seq])
+}
+
+model KillSwitch {
+  accountId    String    @id
+  account      Account   @relation(fields: [accountId], references: [id])
+  active       Boolean   @default(false)
+  reason       String?
+  activatedAt  DateTime?
+  /// JSON ChainReference | null
+  onchainTxJson String?
+  updatedAt    DateTime  @updatedAt
+}
+
+/// Step 7: LLM explanations cached by decision hash so the demo never waits twice.
+model ExplanationCache {
+  decisionHash String   @id
+  text         String
+  createdAt    DateTime @default(now())
+}
