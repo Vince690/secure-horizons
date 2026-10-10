@@ -33,6 +33,7 @@ npm run db:seed -w apps/web     # compte demo@payguard.dev / demo1234, affiche l
 npm run dev:web                 # dashboard + API : http://localhost:3000
 npm run dev:merchants           # marchand légitime :4001, marchand piège :4002
 npm run demo                    # démo scriptée sans Claude Desktop (plan B) ; npm run demo:all = + HOLD + kill switch
+npm run sweep -w packages/contracts   # rapatrie les AVAX de démo du wallet marchand vers le gardien (à faire entre deux répétitions)
 bash apps/web/scripts/curl-demo.sh   # 3 appels bruts à l'API : légitime / piège / HOLD
 npm run smoke:mcp               # pilote les 2 serveurs MCP comme Claude Desktop le ferait
 # Claude Desktop : config exacte dans apps/mcp-server/README.md
@@ -51,6 +52,7 @@ Chaque point retiré est relié à un cadre (DORA, MiCA, AML/CFT, AI Act) et à 
 |---|---|---|
 | PayGuardLedger | `0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1` | https://testnet.snowtrace.io/address/0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1 |
 | Wallet gardien (owner) | `0xCc86BB75d603aA474dddA53930cf4252C6257764` | https://testnet.snowtrace.io/address/0xCc86BB75d603aA474dddA53930cf4252C6257764 |
+| Wallet marchand de démo (NordSound) | `0x97c5Cf046b267b4BD6496391E65e1C762bB90839` | https://testnet.snowtrace.io/address/0x97c5Cf046b267b4BD6496391E65e1C762bB90839 |
 
 Déployé le 11 octobre 2026, détails dans `packages/contracts/deployments/fuji.json`. Premier paiement de test : https://testnet.snowtrace.io/tx/0xb78631b431adde45bacf13f8a520f821bbbb7a94d8b42b58ebca0d45e9f9aea6
 

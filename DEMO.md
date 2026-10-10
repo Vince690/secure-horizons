@@ -3,7 +3,7 @@
 ## Pré-vol (15 min avant, dans cet ordre)
 - [ ] Terminal 1 : `npm run dev:web` (vérifier dans le log : `[chain] mode=fuji`).
 - [ ] Terminal 2 : `npm run dev:merchants`.
-- [ ] `npm run balance -w packages/contracts` ≥ 0,1 AVAX (sinon faucet / Yassir).
+- [ ] `npm run sweep -w packages/contracts` (rapatrie les AVAX des répétitions depuis le wallet marchand) puis `npm run balance -w packages/contracts` ≥ 0,2 AVAX (sinon faucet / Yassir avec l'adresse du gardien `0xCc86BB75d603aA474dddA53930cf4252C6257764`).
 - [ ] Depuis le terminal : `npm run db:reset -w apps/web` (vide l'historique, sinon « rafale de demandes » dès le 3e appel). La clé API de `.env` est conservée.
 - [ ] Claude Desktop : Cmd+Q puis relancer ; vérifier que `payguard` et `demo-shop` apparaissent dans les outils.
 - [ ] Dashboard ouvert sur http://localhost:3000/dashboard, connecté (demo@payguard.dev / demo1234), kill switch au vert, file « À confirmer » vide.
@@ -33,4 +33,4 @@
 - Tout casse ⇒ vidéo de secours, commentée en direct.
 
 ## Après chaque répétition
-`npm run db:reset -w apps/web` puis réarmer le kill switch si besoin. Noter ici ce qui a hésité.
+`npm run sweep -w packages/contracts` (les 0,05 AVAX payés à NordSound reviennent au gardien), `npm run db:reset -w apps/web`, puis réarmer le kill switch si besoin. Noter ici ce qui a hésité.
