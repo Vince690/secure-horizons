@@ -1,5 +1,5 @@
 import type { Rule } from "../types";
-import { tokens, visiblePageText } from "../text";
+import { homoglyphNormalize, tokens, visiblePageText } from "../text";
 
 const MIN_PAGE_TOKENS = 15;
 
@@ -8,10 +8,12 @@ const MIN_PAGE_TOKENS = 15;
  * read. Only fires on pages with enough text to judge.
  */
 export const pageProductMismatch: Rule = (ctx) => {
-  const pageTokens = new Set(tokens(visiblePageText(ctx)));
+  // Homoglyphs collapsed on both sides so "N0rdSound" still matches "NordSound":
+  // the lookalike rule handles the imitation, this rule only checks the product.
+  const pageTokens = new Set(tokens(visiblePageText(ctx)).map(homoglyphNormalize));
   if (pageTokens.size < MIN_PAGE_TOKENS) return null;
   // Purpose only: the merchant name is on its own page by definition.
-  const wanted = tokens(ctx.request.purpose);
+  const wanted = tokens(ctx.request.purpose).map(homoglyphNormalize);
   if (wanted.length === 0) return null;
   if (wanted.some((t) => pageTokens.has(t))) return null;
   return {
