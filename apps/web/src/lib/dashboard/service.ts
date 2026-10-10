@@ -1,12 +1,12 @@
 import bcrypt from "bcryptjs";
 import type { Account } from "@prisma/client";
-import { DEFAULT_POLICY, toBytes32, type ChainReference, type Decision, type Framework, type KillSwitchState, type SpendingPolicy } from "@payguard/shared";
+import { DEFAULT_POLICY, toBytes32, type ChainReference, type Decision, type Framework, type SpendingPolicy } from "@payguard/shared";
 import { appendAudit } from "@/lib/audit";
 import { generateApiKey } from "@/lib/auth/apiKey";
 import { getChainClient } from "@/lib/chain";
 import { prisma } from "@/lib/db";
 import { HttpError } from "@/lib/http";
-import { toDecisionDto, toKillSwitchDto, toPolicyRow } from "@/lib/mappers";
+import { toDecisionDto, toPolicyRow } from "@/lib/mappers";
 
 // ---------------------------------------------------------------------------
 // Accounts
@@ -141,28 +141,8 @@ export async function rejectDecision(accountId: string, id: string): Promise<Dec
   return toDecisionDto(updated);
 }
 
-// ---------------------------------------------------------------------------
-// Kill switch (DB flag = primary gate, on-chain pause = defense in depth)
-// ---------------------------------------------------------------------------
-
-export async function setKillSwitch(accountId: string, active: boolean, reason: string, by: "human" | "auto"): Promise<KillSwitchState & { onchain_error: string | null }> {
-  const chain = getChainClient();
-  let onchainTx: ChainReference | null = null;
-  let onchainError: string | null = null;
-  try {
-    onchainTx = await chain.setKillSwitch(active, reason);
-  } catch (err) {
-    onchainError = err instanceof Error ? err.message : String(err);
-    console.error("[dashboard] kill switch: chain error", err);
-  }
-  const row = await prisma.killSwitch.upsert({
-    where: { accountId },
-    update: { active, reason: active ? reason : null, activatedAt: active ? new Date() : null, onchainTxJson: onchainTx ? JSON.stringify(onchainTx) : null },
-    create: { accountId, active, reason: active ? reason : null, activatedAt: active ? new Date() : null, onchainTxJson: onchainTx ? JSON.stringify(onchainTx) : null },
-  });
-  await appendAudit(accountId, active ? "KILL_SWITCH_ON" : "KILL_SWITCH_OFF", { reason, by, onchain_tx: onchainTx?.tx_hash ?? null, onchain_error: onchainError });
-  return { ...toKillSwitchDto(row), onchain_error: onchainError };
-}
+// Kill switch lives in src/lib/killswitch.ts (shared with the guardian's auto trigger).
+export { setKillSwitch } from "@/lib/killswitch";
 
 // ---------------------------------------------------------------------------
 // Compliance panel: last 24h, per framework

@@ -163,6 +163,7 @@ Score de départ 100. Chaque règle qui se déclenche ajoute un `Reason` avec un
 | `RECIPIENT_CHANGED_MID_CONVERSATION` | une autre adresse 0x apparaît dans la conversation pour le même achat | −35 | high | AML_CFT |
 | `DOMAIN_LOOKALIKE` | distance de Levenshtein ≤ 2 avec un `trusted_domain`, ou substitution 0/o, 1/l, rn/m | −30 | high | AML_CFT |
 | `RECIPIENT_UNKNOWN` | adresse ni trusted ni dans l'historique | −25 | medium | AML_CFT |
+| `SEMANTIC_MANIPULATION_SUSPECTED` | second avis du modèle sur la page (`src/lib/llm/semantic.ts`, mis en cache par texte de page) : `manipulation=true` avec confiance ≥ 0,6. Jamais terminale : le modèle ajoute des points, les règles déterministes gardent le dernier mot | −40 | high | AI_ACT, DORA |
 | `RECIPIENT_NO_ONCHAIN_HISTORY` | l'adresse n'a jamais émis de transaction et a un solde nul sur Fuji (données chaîne via `getAddressInfo`) ; muette pour les adresses de confiance | −15 | medium | AML_CFT |
 | `VELOCITY_ANOMALY` | ≥ 3 demandes en 10 min | −20 | medium | AML_CFT, DORA |
 | `PRICE_ANOMALY` | montant > 3× la médiane des achats passés ou > montant max cité par l'utilisateur | −15 | medium | MiCA |
@@ -180,7 +181,7 @@ Verdict :
 
 Kill switch automatique : 3 décisions `BLOCKED` en 10 min, ou une raison `PROMPT_INJECTION_SUSPECTED` de niveau critical avec montant > `max_per_tx` ⇒ activation du kill switch (DB + on-chain) + entrée d'audit `KILL_SWITCH_ON` avec `reason: "auto"`.
 
-Explication LLM : prompt système court, entrée = la décision JSON, sortie = 2 phrases en français pour un dirigeant non technique. Mise en cache par `decision_hash`. Fallback template si erreur ou > 4 s.
+Explication LLM (`src/lib/llm/explain.ts`) : prompt système court, entrée = la décision JSON, sortie = 2 phrases en français pour un dirigeant non technique, modèle `claude-opus-5-5` à effort bas. **Cache par (verdict, score, codes, montant, bénéficiaire, objet)**, pas par `decision_hash` : deux répétitions identiques de la démo doivent toucher le cache, or le hash contient l'id et l'horodatage. Fallback template si clé absente, erreur, refus ou > 4 s (`LLM_TIMEOUT_MS`). Une erreur d'authentification désactive le LLM pour le processus.
 
 ## 6. Hash de décision
 

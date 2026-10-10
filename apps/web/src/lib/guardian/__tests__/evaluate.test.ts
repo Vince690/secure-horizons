@@ -84,7 +84,7 @@ describe("evaluate — individual guards", () => {
   });
 
   it("min balance breach fires when the wallet would drop under the floor", () => {
-    const result = evaluate(makeContext({ balance: "0.52" }));
+    const result = evaluate(makeContext({ balance: "0.12" })); // 0.12 - 0.05 < min_balance 0.1
     expect(codes(result)).toContain("MIN_BALANCE_BREACH");
   });
 

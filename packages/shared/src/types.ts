@@ -57,7 +57,9 @@ export type ReasonCode =
   | "PAGE_ADDRESS_MISMATCH"
   | "PAGE_PRODUCT_MISMATCH"
   // On-chain reputation (added at step 5)
-  | "RECIPIENT_NO_ONCHAIN_HISTORY";
+  | "RECIPIENT_NO_ONCHAIN_HISTORY"
+  // Model second opinion on the page (added at step 7)
+  | "SEMANTIC_MANIPULATION_SUSPECTED";
 
 export interface Reason {
   code: ReasonCode;

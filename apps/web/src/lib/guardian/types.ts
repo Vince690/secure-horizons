@@ -33,6 +33,8 @@ export interface GuardianContext {
   history: HistoricalDecision[];
   /** On-chain facts about the recipient, when the chain answered. */
   recipientInfo?: AddressInfo;
+  /** The model's second opinion on the page, when available (src/lib/llm/semantic.ts). */
+  semanticScreen?: { manipulation: boolean; confidence: number; summary: string };
   /** Evaluation time; injected so tests are deterministic. */
   now: Date;
 }

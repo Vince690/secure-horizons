@@ -33,6 +33,7 @@ Mention obligatoire dans le pitch : **PayGuard n'est pas un prestataire de servi
 | `RECIPIENT_CHANGED_MID_CONVERSATION` | AML_CFT | Schéma classique de fraude au changement de coordonnées. |
 | `DOMAIN_LOOKALIKE` | AML_CFT | Usurpation d'identité d'un marchand connu. |
 | `RECIPIENT_UNKNOWN` | AML_CFT | Bénéficiaire non identifié : vigilance. |
+| `SEMANTIC_MANIPULATION_SUSPECTED` | AI_ACT, DORA | Un second contrôle par modèle de langage détecte une tentative de manipulation que les motifs connus n'avaient pas. |
 | `RECIPIENT_NO_ONCHAIN_HISTORY` | AML_CFT | Adresse sans aucun historique sur la chaîne : profil typique d'un wallet jetable. |
 | `VELOCITY_ANOMALY` | AML_CFT, DORA | Rafale de demandes : comportement anormal de l'agent. |
 | `PRICE_ANOMALY` | MiCA | Montant incohérent avec l'historique ou le budget énoncé. |

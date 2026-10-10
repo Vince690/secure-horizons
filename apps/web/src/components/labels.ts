@@ -37,6 +37,7 @@ export const REASON_LABEL: Record<ReasonCode, string> = {
   PAGE_ADDRESS_MISMATCH: "Adresse différente de la page",
   PAGE_PRODUCT_MISMATCH: "Produit absent de la page",
   RECIPIENT_NO_ONCHAIN_HISTORY: "Adresse sans historique on-chain",
+  SEMANTIC_MANIPULATION_SUSPECTED: "Manipulation détectée par analyse sémantique",
 };
 
 export const AUDIT_LABEL: Record<string, string> = {

@@ -5,9 +5,11 @@ import { prisma } from "@/lib/db";
 import { appendAudit } from "@/lib/audit";
 import { getChainClient } from "@/lib/chain";
 import { HttpError } from "@/lib/http";
+import { maybeAutoKillSwitch } from "@/lib/killswitch";
+import { explainDecision } from "@/lib/llm/explain";
+import { semanticScreen } from "@/lib/llm/semantic";
 import { toDecisionDto, toKillSwitchDto, toPolicyDto } from "@/lib/mappers";
 import { evaluate } from "./evaluate";
-import { templateExplanation } from "./explain";
 import { computeDecisionHash, toBytes32 } from "./hash";
 import type { GuardianContext, HistoricalDecision } from "./types";
 
@@ -54,7 +56,7 @@ export async function processPaymentRequest(account: Account, request: EvaluateP
   if (existing) return { decision: toDecisionDto(existing), replayed: true };
 
   const chain = getChainClient();
-  const [policy, killSwitch, history, balance, recipientInfo] = await Promise.all([
+  const [policy, killSwitch, history, balance, recipientInfo, screen] = await Promise.all([
     loadPolicy(account.id),
     loadKillSwitch(account.id),
     loadHistory(account.id),
@@ -63,9 +65,19 @@ export async function processPaymentRequest(account: Account, request: EvaluateP
       console.warn("[guardian] getAddressInfo failed, skipping on-chain reputation", err);
       return undefined;
     }),
+    semanticScreen(request.context?.page_excerpt),
   ]);
 
-  const ctx: GuardianContext = { request, policy, balance, killSwitchActive: killSwitch.active, history, recipientInfo, now: new Date() };
+  const ctx: GuardianContext = {
+    request,
+    policy,
+    balance,
+    killSwitchActive: killSwitch.active,
+    history,
+    recipientInfo,
+    semanticScreen: screen,
+    now: new Date(),
+  };
   const evaluation = evaluate(ctx);
 
   const decisionId = newDecisionId();
@@ -83,7 +95,9 @@ export async function processPaymentRequest(account: Account, request: EvaluateP
     reasons: evaluation.reasons,
     created_at: createdAt.toISOString(),
   });
-  const explanation = templateExplanation(evaluation.verdict, evaluation.score, evaluation.reasons, request);
+  const explained = await explainDecision({ verdict: evaluation.verdict, score: evaluation.score, reasons: evaluation.reasons, request });
+  const explanation = explained.text;
+  console.log(`[guardian] ${decisionId} ${evaluation.verdict} score=${evaluation.score} explanation=${explained.source}${screen ? ` screen=${screen.source}` : ""}`);
 
   // Chain step: APPROVED pays, everything else is recorded as proof.
   let status: DecisionStatus;
@@ -164,6 +178,17 @@ export async function processPaymentRequest(account: Account, request: EvaluateP
   }
 
   const decision = toDecisionDto(row);
+
+  // The guardian pulls the plug itself when the pattern is critical.
+  await maybeAutoKillSwitch({
+    accountId: account.id,
+    decisionId,
+    verdict: evaluation.verdict,
+    reasonCodes: evaluation.reasons.map((r) => r.code),
+    amountOverTxLimit: evaluation.reasons.some((r) => r.code === "AMOUNT_OVER_TX_LIMIT"),
+    alreadyActive: killSwitch.active,
+  });
+
   if (killSwitch.active) {
     throw new HttpError("KILL_SWITCH_ACTIVE", "All payments are suspended by the account owner (kill switch active).", {
       decision_id: decision.decision_id,

@@ -14,4 +14,7 @@ export const env = {
   merchantLegitAddress: process.env.MERCHANT_LEGIT_ADDRESS ?? "0x1111111111111111111111111111111111111111",
   snowtraceBaseUrl: process.env.SNOWTRACE_BASE_URL ?? "https://testnet.snowtrace.io",
   auditLogPath: process.env.AUDIT_LOG_PATH ?? "logs/audit.jsonl",
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY?.trim() ?? "",
+  llmModel: process.env.LLM_MODEL?.trim() || "claude-opus-5-5",
+  llmTimeoutMs: Number(process.env.LLM_TIMEOUT_MS ?? 4000) || 4000,
 };
