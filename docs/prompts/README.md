@@ -5,10 +5,10 @@ Chacun ouvre Claude Code à la racine du repo et colle **00 + son numéro** dans
 | Fichier | Pour qui | Quand |
 |---|---|---|
 | `00-shared-context.md` | tout le monde | en tête de chaque prompt |
-| `01-dev-a-backend-dashboard.md` | Dev A | H+0 |
+| `01-dev-a-backend-api.md` | Dev A | H+0 (après le squelette) |
 | `02-dev-b-blockchain.md` | Dev B | H+0 |
 | `03-dev-c-mcp-merchants-demo.md` | Dev C | H+0 |
-| `04-vincent-juriste-pitch.md` | Vincent | H+0 |
+| `04-vincent-dashboard-pitch.md` | Vincent | H+0, **le premier** : il crée le squelette Next.js |
 | `05-integration-freeze.md` | tout le monde | H+6, puis au freeze |
 
 Conseils :

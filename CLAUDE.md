@@ -3,7 +3,7 @@
 ## Qui je suis
 - Vincent, étudiant en M2 « IA & Propriété intellectuelle » (droit). Pas développeur : je ne code pas à la main, je pilote des agents IA.
 - J'ai déjà publié une app iOS. Je comprends les concepts produit, pas forcément le détail technique.
-- Équipe de **4** : 3 développeurs (Dev A backend+dashboard, Dev B blockchain, Dev C MCP+démo) et moi (juriste : conformité, pitch, démo). Explique-moi tes choix en 1–2 phrases simples, en français. Code, noms de variables et commentaires en anglais.
+- Équipe de **4** : 3 développeurs (Dev A API+moteur+base, Dev B blockchain, Dev C MCP+démo) et moi (dashboard front avec Claude Code, conformité légère, pitch, démo). Explique-moi tes choix en 1–2 phrases simples, en français. Code, noms de variables et commentaires en anglais.
 
 ## L'événement
 - Hackathon IA & cybersécurité de 36 h à l'ESSEC Cergy, ~150 étudiants, 15 000 € en cash et crédits.
@@ -43,3 +43,4 @@
 - 2026-10-10 21:45 — Contrat unique `PayGuardLedger` (pay / record / pause). Raison : le kill switch devient on-chain, les refus sont aussi des preuves, une seule adresse à montrer.
 - 2026-10-10 21:45 — Règles déterministes en première ligne, LLM uniquement pour l'explication en français (cache + fallback). Raison : zéro aléa en démo.
 - 2026-10-10 21:45 — Freeze fixé à H+8 (≈ 06:00 dimanche). Pitch 12:00.
+- 2026-10-10 22:30 — Vincent prend le **dashboard (front)** ; Dev A garde API + moteur + base. Frontière dans `apps/web` : `api/`, `lib/`, `prisma/` à Dev A ; `(dashboard)/`, `components/`, `fixtures/` à Vincent. Raison : Vincent veut une part de dev et le dashboard est la partie produit ; le juridique réduit à `compliance.rules.json` (1 h).

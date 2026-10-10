@@ -11,20 +11,20 @@
 
 | Qui | Rôle | Dossier(s) | Livrable à H+3 (mocks OK) | Livrable à H+6 (intégré) |
 |---|---|---|---|---|
-| **Dev A** | Backend gardien + dashboard | `apps/web` | `POST /api/v1/payments/evaluate` fonctionne avec curl, règles + score, SQLite, clé API, kill switch en DB | Dashboard : policy, clé API, file HOLD approve/reject, historique avec liens explorer, bouton kill switch, panneau conformité |
+| **Dev A** | Backend gardien (API + moteur + base) | `apps/web/src/app/api/**`, `apps/web/src/lib/**`, `apps/web/prisma/` | `POST /api/v1/payments/evaluate` fonctionne avec curl, règles + score, SQLite, clé API, kill switch en DB | Routes `/api/dashboard/*` complètes, vrai client chain branché, kill switch auto, explications LLM en cache |
 | **Dev B** | Blockchain Fuji | `packages/contracts` | `PayGuardLedger.sol` déployé sur Fuji, adresse dans README, client viem exporté | Client branché dans l'API de Dev A ; page « preuve on-chain » ; script de vérification de hash ; export JSON de la preuve |
 | **Dev C** | MCP + marchands + intégration démo | `apps/mcp-server`, `apps/merchants`, `apps/demo-agent` | Serveur MCP visible dans Claude Desktop (verdict mocké), 2 pages marchands servies | Chaîne complète Claude Desktop → MCP → API → Fuji ; script de secours ; config Claude Desktop documentée |
-| **Vincent** (juriste) + Claude | Conformité, pitch, démo, README/DEMO.md, tests utilisateur | `docs/`, `README.md`, `DEMO.md`, slides | `docs/COMPLIANCE.md` rempli (règle → article), texte des pages marchands, 1re version du script de démo | Slides, DEMO.md minute par minute, répétition, vidéo de secours, vérif « zéro secret » |
+| **Vincent** + Claude Code | Dashboard (front) + conformité légère + pitch | `apps/web/src/app/(dashboard)/**`, `apps/web/src/components/**`, `apps/web/src/fixtures/`, `docs/COMPLIANCE.md`, `DEMO.md`, slides | Toutes les pages du dashboard sur données factices (fixtures typées) : login, résumé, mandat, clés API, file HOLD, décisions, kill switch, conformité. `docs/compliance.rules.json` (1 h max) | Pages branchées sur les vraies routes de Dev A, polling 3 s, détail d'une décision avec liens Snowtrace, DEMO.md, slides |
 
-Si Dev A est en retard sur le dashboard à H+5, Vincent prend les pages UI avec Claude Code (prompt 05, section « renfort dashboard »).
+Deux personnes dans `apps/web` : Dev A ne touche jamais `(dashboard)/` ni `components/`, Vincent ne touche jamais `api/`, `lib/` ni `prisma/`. Le squelette Next.js est créé une seule fois (par Vincent + Claude au kickoff) avant que quiconque n'ajoute un fichier.
 
 ## Timeline (heure H = lancement, ~22:00 samedi)
 
 | Heure | Étape | Critère de passage |
 |---|---|---|
 | H+0 → H+0:30 | Kickoff : lire `docs/API.md`, cloner, `npm install`, chacun crée sa branche `feat/<role>` | Tout le monde a le repo et a lu le contrat |
-| H+0:30 → H+3 | **Build en parallèle avec mocks**. Dev A : API + règles. Dev B : contrat + déploiement. Dev C : MCP + marchands. Vincent : COMPLIANCE.md + copie marchands. | **Jalon 1** : curl evaluate ⇒ Decision JSON ; contrat sur Snowtrace ; outil `request_payment` visible dans Claude Desktop ; pages marchands ouvertes |
-| H+3 → H+6 | **Intégration**. Dev B branche le client chain dans l'API. Dev C pointe le MCP sur la vraie API. Dev A : dashboard. | **Jalon 2 (happy path)** : dans Claude Desktop, « achète le casque NordSound » ⇒ APPROVED ⇒ tx Fuji ⇒ ligne dans le dashboard |
+| H+0:30 → H+3 | **Build en parallèle avec mocks**. Dev A : API + règles. Dev B : contrat + déploiement. Dev C : MCP + marchands. Vincent : squelette Next.js poussé en 15 min, puis pages du dashboard sur fixtures. | **Jalon 1** : curl evaluate ⇒ Decision JSON ; contrat sur Snowtrace ; outil `request_payment` visible dans Claude Desktop ; pages marchands ouvertes ; dashboard navigable sur données factices |
+| H+3 → H+6 | **Intégration**. Dev B branche le client chain dans l'API. Dev C pointe le MCP sur la vraie API. Dev A : routes dashboard. Vincent : branche les pages sur les vraies routes. | **Jalon 2 (happy path)** : dans Claude Desktop, « achète le casque NordSound » ⇒ APPROVED ⇒ tx Fuji ⇒ ligne dans le dashboard |
 | H+6 → H+8 | **Scénario d'attaque**. Marchand piège ⇒ BLOCKED. Cas HOLD ⇒ confirmation dashboard. Kill switch manuel + auto. Explications LLM en cache. | **Jalon 3** : les 3 verdicts démontrables, kill switch on-chain visible |
 | **H+8 (≈ 06:00)** | **FREEZE** | Plus aucune feature. Fiabilité, polish, README, DEMO.md |
 | H+8 → H+10 | 3 répétitions chrono, vidéo de secours (enregistrement écran du happy path), scan secrets | Démo < 3 min, vidéo sauvegardée hors repo |
