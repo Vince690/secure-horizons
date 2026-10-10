@@ -50,7 +50,12 @@ export async function maybeAutoKillSwitch(input: {
   if (injection && input.amountOverTxLimit) {
     reason = `auto: injection critique avec montant hors plafond (décision ${input.decisionId})`;
   } else {
-    const since = new Date(Date.now() - WINDOW_MS);
+    // Count only since the last re-arm: a human who just re-armed must not be
+    // tripped again by the blocked decisions that caused the previous trip.
+    const row = await prisma.killSwitch.findUnique({ where: { accountId: input.accountId } });
+    const windowStart = Date.now() - WINDOW_MS;
+    const lastRearm = row && !row.active ? row.updatedAt.getTime() : 0;
+    const since = new Date(Math.max(windowStart, lastRearm));
     const blocked = await prisma.decision.count({ where: { accountId: input.accountId, status: "BLOCKED", createdAt: { gte: since } } });
     if (blocked >= BLOCKED_THRESHOLD) reason = `auto: ${blocked} paiements bloqués en moins de 10 minutes (dernier : ${input.decisionId})`;
   }

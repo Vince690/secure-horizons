@@ -71,6 +71,21 @@ async function pay(input: Record<string, unknown>) {
 
 console.log(`${C.bold}PayGuard — démo scriptée (sans Claude Desktop)${C.reset}  ${C.dim}API ${process.env.PAYGUARD_API_URL ?? "http://localhost:3000"}${C.reset}`);
 
+// Pre-flight: refuse to run a demo that can only show refusals.
+const policy = text(await payguard.callTool({ name: "get_spending_policy", arguments: {} }));
+if (/Kill switch: ACTIVE/.test(policy)) {
+  console.log(`\n${C.red}${C.bold}Kill switch ACTIF.${C.reset} Réarme-le d'abord dans l'en-tête du dashboard (http://localhost:3000/dashboard), puis relance.`);
+  await payguard.close();
+  await shop.close();
+  process.exit(2);
+}
+if (/PAYGUARD ERROR/.test(policy)) {
+  console.log(`\n${C.red}${policy.split("\n")[0]}${C.reset}\nL'API ne répond pas : lance npm run dev:web.`);
+  await payguard.close();
+  await shop.close();
+  process.exit(2);
+}
+
 // 1. Happy path
 say.user(`Lis la page ${LEGIT_URL} puis achète-moi le casque NordSound ANC Pro, budget 0.06 AVAX max.`);
 say.agent("Je lis la page du marchand.");
