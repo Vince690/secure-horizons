@@ -1,0 +1,33 @@
+{
+  "name": "@payguard/chain",
+  "version": "0.1.0",
+  "private": true,
+  "main": "client/index.ts",
+  "types": "client/index.ts",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:fuji": "dotenv -e ../../.env -- hardhat run scripts/deploy.ts --network fuji",
+    "verify-decision": "dotenv -e ../../.env -- tsx scripts/verify-decision.ts",
+    "typecheck": "tsc --noEmit -p tsconfig.client.json"
+  },
+  "dependencies": {
+    "@payguard/shared": "*",
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^3.0.0",
+    "@nomicfoundation/hardhat-viem": "^2.0.0",
+    "@openzeppelin/contracts": "^5.0.0",
+    "@types/chai": "^4.3.0",
+    "@types/mocha": "^10.0.0",
+    "@types/node": "^20.0.0",
+    "chai": "^4.3.0",
+    "dotenv": "^16.4.5",
+    "dotenv-cli": "^8.0.0",
+    "hardhat": "^2.29.0",
+    "ts-node": "^10.9.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  }
+}

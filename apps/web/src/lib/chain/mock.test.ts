@@ -19,4 +19,13 @@ describe("createMockChainClient", () => {
     const rec = await chain.recordDecision("dec_2", 2, HASH);
     expect(rec.tx_hash).toMatch(/^0x/);
   });
+
+  it("reports on-chain history for known addresses only", async () => {
+    const chain = createMockChainClient({ knownAddresses: [TO] });
+    expect((await chain.getAddressInfo(TO)).tx_count).toBeGreaterThan(0);
+    const fresh = await chain.getAddressInfo("0x2222222222222222222222222222222222222222");
+    expect(fresh.tx_count).toBe(0);
+    expect(fresh.balance).toBe("0");
+    expect(chain.walletAddress()).toMatch(/^0x/);
+  });
 });

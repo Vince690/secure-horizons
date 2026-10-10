@@ -54,14 +54,18 @@ export async function processPaymentRequest(account: Account, request: EvaluateP
   if (existing) return { decision: toDecisionDto(existing), replayed: true };
 
   const chain = getChainClient();
-  const [policy, killSwitch, history, balance] = await Promise.all([
+  const [policy, killSwitch, history, balance, recipientInfo] = await Promise.all([
     loadPolicy(account.id),
     loadKillSwitch(account.id),
     loadHistory(account.id),
     chain.getBalance(),
+    chain.getAddressInfo(request.recipient.address).catch((err) => {
+      console.warn("[guardian] getAddressInfo failed, skipping on-chain reputation", err);
+      return undefined;
+    }),
   ]);
 
-  const ctx: GuardianContext = { request, policy, balance, killSwitchActive: killSwitch.active, history, now: new Date() };
+  const ctx: GuardianContext = { request, policy, balance, killSwitchActive: killSwitch.active, history, recipientInfo, now: new Date() };
   const evaluation = evaluate(ctx);
 
   const decisionId = newDecisionId();

@@ -1,4 +1,5 @@
 import type {
+  AddressInfo,
   ComplianceSummary,
   EvaluatePaymentRequest,
   Reason,
@@ -30,6 +31,8 @@ export interface GuardianContext {
   killSwitchActive: boolean;
   /** Prior decisions of this account, most recent first. */
   history: HistoricalDecision[];
+  /** On-chain facts about the recipient, when the chain answered. */
+  recipientInfo?: AddressInfo;
   /** Evaluation time; injected so tests are deterministic. */
   now: Date;
 }

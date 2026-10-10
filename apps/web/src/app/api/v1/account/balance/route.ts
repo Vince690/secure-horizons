@@ -10,12 +10,13 @@ export const dynamic = "force-dynamic";
 export const GET = withErrorHandling(async (request: Request) => {
   await authenticateApiKey(request);
   const chain = getChainClient();
-  const address = process.env.GUARDIAN_WALLET_ADDRESS || "0x0000000000000000000000000000000000000000";
+  const address = chain.walletAddress();
   const body: BalanceResponse = {
     address,
     balance: await chain.getBalance(),
     chain_id: 43113,
     explorer_url: `${env.snowtraceBaseUrl}/address/${address}`,
+    mode: env.chainMode,
   };
   return NextResponse.json(body);
 });

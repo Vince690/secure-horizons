@@ -1,7 +1,6 @@
 import { createHash } from "node:crypto";
-import type { ChainReference } from "@payguard/shared";
+import type { AddressInfo, ChainClient, ChainReference, OnChainVerdict } from "@payguard/shared";
 import { formatAvax, parseAvax } from "../guardian/money";
-import type { ChainClient, OnChainVerdict } from "./types";
 
 export interface MockChainOptions {
   /** Starting balance in AVAX. */
@@ -9,7 +8,11 @@ export interface MockChainOptions {
   explorerBaseUrl?: string;
   /** Simulated confirmation delay, ms. 0 in tests. */
   latencyMs?: number;
+  /** Addresses that look "alive" on-chain (tx history). Everything else is brand new. */
+  knownAddresses?: string[];
 }
+
+const MOCK_WALLET = "0x00000000000000000000000000000000000dead0";
 
 /**
  * In-memory stand-in for Fuji. Deterministic fake tx hashes, a balance that
@@ -22,6 +25,7 @@ export function createMockChainClient(options: MockChainOptions = {}): ChainClie
   let nonce = 0;
   const base = options.explorerBaseUrl ?? "https://testnet.snowtrace.io";
   const latency = options.latencyMs ?? 0;
+  const known = new Set((options.knownAddresses ?? []).map((a) => a.toLowerCase()));
   const calls: string[] = [];
 
   const fakeTx = (label: string): ChainReference => {
@@ -33,9 +37,15 @@ export function createMockChainClient(options: MockChainOptions = {}): ChainClie
 
   return {
     calls,
+    walletAddress: () => MOCK_WALLET,
     async getBalance() {
       calls.push("getBalance");
       return formatAvax(balanceWei);
+    },
+    async getAddressInfo(address): Promise<AddressInfo> {
+      calls.push(`getAddressInfo:${address}`);
+      const alive = known.has(address.toLowerCase());
+      return { address: address.toLowerCase(), tx_count: alive ? 12 : 0, balance: alive ? "1.25" : "0", is_contract: false };
     },
     async executePayment(decisionId, to, amountAvax, decisionHash) {
       calls.push(`executePayment:${decisionId}`);
@@ -44,6 +54,7 @@ export function createMockChainClient(options: MockChainOptions = {}): ChainClie
       const amount = parseAvax(amountAvax);
       if (amount > balanceWei) throw new Error("PayGuardLedger: insufficient balance");
       balanceWei -= amount;
+      known.add(to.toLowerCase());
       return fakeTx(`pay:${decisionId}:${to}:${decisionHash}`);
     },
     async recordDecision(decisionId, verdict: OnChainVerdict, decisionHash) {

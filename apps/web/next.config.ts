@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
   // The repo already has CLAUDE.md; do not let Next regenerate AGENTS.md.
   agentRules: false,
   // @payguard/shared ships raw TypeScript; let Next compile it.
-  transpilePackages: ["@payguard/shared"],
+  transpilePackages: ["@payguard/shared", "@payguard/chain"],
   turbopack: {
     rules: {
       "*.css": {

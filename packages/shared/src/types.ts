@@ -55,7 +55,9 @@ export type ReasonCode =
   | "HIDDEN_INSTRUCTIONS"
   | "PAGE_PRICE_MISMATCH"
   | "PAGE_ADDRESS_MISMATCH"
-  | "PAGE_PRODUCT_MISMATCH";
+  | "PAGE_PRODUCT_MISMATCH"
+  // On-chain reputation (added at step 5)
+  | "RECIPIENT_NO_ONCHAIN_HISTORY";
 
 export interface Reason {
   code: ReasonCode;
@@ -182,6 +184,8 @@ export interface BalanceResponse {
   balance: string; // AVAX decimal string
   chain_id: 43113;
   explorer_url: string;
+  /** "mock" until the Fuji client is wired, then "fuji". */
+  mode?: "mock" | "fuji";
 }
 
 // ---------------------------------------------------------------------------

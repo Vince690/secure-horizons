@@ -161,6 +161,7 @@ Score de départ 100. Chaque règle qui se déclenche ajoute un `Reason` avec un
 | `RECIPIENT_CHANGED_MID_CONVERSATION` | une autre adresse 0x apparaît dans la conversation pour le même achat | −35 | high | AML_CFT |
 | `DOMAIN_LOOKALIKE` | distance de Levenshtein ≤ 2 avec un `trusted_domain`, ou substitution 0/o, 1/l, rn/m | −30 | high | AML_CFT |
 | `RECIPIENT_UNKNOWN` | adresse ni trusted ni dans l'historique | −25 | medium | AML_CFT |
+| `RECIPIENT_NO_ONCHAIN_HISTORY` | l'adresse n'a jamais émis de transaction et a un solde nul sur Fuji (données chaîne via `getAddressInfo`) ; muette pour les adresses de confiance | −15 | medium | AML_CFT |
 | `VELOCITY_ANOMALY` | ≥ 3 demandes en 10 min | −20 | medium | AML_CFT, DORA |
 | `PRICE_ANOMALY` | montant > 3× la médiane des achats passés ou > montant max cité par l'utilisateur | −15 | medium | MiCA |
 | `URGENCY_LANGUAGE` | « urgent », « immédiatement », « dernière chance », « now », « expires » | −10 | low | AML_CFT |
@@ -201,8 +202,7 @@ function deactivateKillSwitch() external onlyOwner;                        // _u
 function getDecision(bytes32 decisionId) external view returns (uint8 verdict, bytes32 decisionHash, uint256 timestamp);
 ```
 
-`decisionId` = `keccak256(decision_id string)`. Le client TypeScript (viem) expose :
-`executePayment(decisionId, to, amountWei, decisionHash)`, `recordDecision(decisionId, verdict, decisionHash)`, `setKillSwitch(active, reason)`, `getBalance()`, `explorerUrl(txHash)`.
+`decisionId` = `keccak256(decision_id string)`. Le client TypeScript (viem, package `@payguard/chain`, dossier `packages/contracts/client`) implémente l'interface `ChainClient` de `@payguard/shared` : `walletAddress()`, `getBalance()`, `getAddressInfo(address)`, `executePayment(decisionId, to, amountAvax, decisionHash)`, `recordDecision(decisionId, verdict, decisionHash)`, `setKillSwitch(active, reason)`, `isPaused()`, `explorerUrl(txHash)`. Les écritures sont sérialisées (un seul nonce à la fois). Sélection par `CHAIN_MODE=mock|fuji`.
 
 ## 8. Outils MCP (apps/mcp-server)
 

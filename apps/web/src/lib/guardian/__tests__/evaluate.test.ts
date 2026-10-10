@@ -126,6 +126,19 @@ describe("evaluate — individual guards", () => {
     expect(codes(evaluate(makeContext({ request })))).toContain("RECIPIENT_CHANGED_MID_CONVERSATION");
   });
 
+  it("flags recipients with no on-chain history, but not trusted ones", () => {
+    const fresh = { address: TRAP_ADDRESS, tx_count: 0, balance: "0", is_contract: false };
+    const request = legitRequest({
+      recipient: { address: TRAP_ADDRESS, name: "NordSound", domain: "nordsound.shop" },
+      context: { conversation: [{ role: "user", content: "Achète-moi le casque NordSound ANC Pro." }] },
+    });
+    expect(codes(evaluate(makeContext({ request, recipientInfo: fresh })))).toContain("RECIPIENT_NO_ONCHAIN_HISTORY");
+    const trusted = evaluate(makeContext({ recipientInfo: { ...fresh, address: "0x1111111111111111111111111111111111111111" } }));
+    expect(codes(trusted)).not.toContain("RECIPIENT_NO_ONCHAIN_HISTORY");
+    const alive = evaluate(makeContext({ request, recipientInfo: { ...fresh, tx_count: 40, balance: "3.1" } }));
+    expect(codes(alive)).not.toContain("RECIPIENT_NO_ONCHAIN_HISTORY");
+  });
+
   it("is deterministic", () => {
     const a = evaluate(makeContext({ request: trapRequest() }));
     const b = evaluate(makeContext({ request: trapRequest() }));
