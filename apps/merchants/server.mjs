@@ -8,6 +8,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const sites = [
   { name: "legit (NordSound)", dir: "legit", port: Number(process.env.MERCHANT_LEGIT_PORT ?? 4001) },
   { name: "trap (N0rdSound)", dir: "trap", port: Number(process.env.MERCHANT_TRAP_PORT ?? 4002) },
+  { name: "alt (AudioPlanet, legit but pricier)", dir: "alt", port: Number(process.env.MERCHANT_ALT_PORT ?? 4003) },
 ];
 
 for (const site of sites) {

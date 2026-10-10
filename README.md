@@ -3,7 +3,7 @@
 Hackathon **Secure Horizons** (ESSEC Cergy, 10–11 octobre 2026), Track 1 « Guardians of Value ».
 
 ## Quoi
-Un plugin MCP qu'un agent IA appelle quand il veut payer. PayGuard vérifie la demande contre le mandat donné par l'humain (plafonds, solde plancher, bénéficiaires de confiance) et contre le contexte (page lue, conversation, injection de prompt), puis :
+Un plugin MCP qu'un agent IA appelle quand il veut acheter : il vérifie chaque site candidat (`check_merchant`), classe les offres en écartant les sites frauduleux (`find_best_offer`), puis contrôle et exécute le paiement (`request_payment`). PayGuard vérifie la demande contre le mandat donné par l'humain (plafonds, solde plancher, bénéficiaires de confiance) et contre le contexte (page lue, conversation, injection de prompt), puis :
 - **APPROVED** : exécute lui-même le paiement en AVAX test sur Avalanche Fuji et grave le hash de la décision on-chain ;
 - **HOLD** : attend une confirmation humaine sur le dashboard ;
 - **BLOCKED** : refuse, explique en français, grave le refus on-chain.
@@ -16,7 +16,7 @@ Les protocoles de paiement par agents signent la transaction, pas la décision. 
 ```
 apps/web            Next.js 15 : dashboard + API (/api/v1, /api/dashboard), Prisma/SQLite, moteur de décision
 apps/mcp-server     serveurs MCP « payguard » et « demo-shop » (stdio)
-apps/merchants      2 pages marchands de démo (légitime :4001, piège :4002), serveur Node sans dépendance
+apps/merchants      3 pages marchands de démo (légitime :4001, piège :4002, concurrent légitime :4003), serveur Node sans dépendance
 apps/demo-agent     démo scriptée (plan B) qui pilote les mêmes serveurs MCP sans LLM ni Claude Desktop
 packages/contracts  PayGuardLedger.sol (Hardhat, Fuji 43113) + client viem
 packages/shared     types TypeScript communs, hash de décision, interface chaîne, compliance.rules.json
@@ -53,6 +53,9 @@ Chaque point retiré est relié à un cadre (DORA, MiCA, AML/CFT, AI Act) et à 
 | Wallet gardien (owner) | `0xCc86BB75d603aA474dddA53930cf4252C6257764` | https://testnet.snowtrace.io/address/0xCc86BB75d603aA474dddA53930cf4252C6257764 |
 
 Déployé le 11 octobre 2026, détails dans `packages/contracts/deployments/fuji.json`. Premier paiement de test : https://testnet.snowtrace.io/tx/0xb78631b431adde45bacf13f8a520f821bbbb7a94d8b42b58ebca0d45e9f9aea6
+
+## Feuille de route
+Voir `docs/ROADMAP_RAILS.md` : paiements en euros par cartes virtuelles à usage unique créées sur le compte bancaire du client (« connecte ton compte »), Stripe Issuing en second, EURC ; Avalanche reste la couche de preuve et de kill switch. Règle invariante : PayGuard ne détient jamais les fonds et l'agent ne voit jamais un secret.
 
 ## Sécurité
 - Testnet uniquement, wallet dédié hackathon, aucune clé personnelle.

@@ -19,6 +19,7 @@ loadEnv({ path: path.resolve(here, "../../../.env") });
 const C = { reset: "\x1b[0m", dim: "\x1b[2m", bold: "\x1b[1m", red: "\x1b[31m", green: "\x1b[32m", yellow: "\x1b[33m", blue: "\x1b[34m", cyan: "\x1b[36m", magenta: "\x1b[35m" };
 const LEGIT_URL = process.env.MERCHANT_LEGIT_URL ?? "http://localhost:4001/";
 const TRAP_URL = process.env.MERCHANT_TRAP_URL ?? "http://localhost:4002/";
+const ALT_URL = process.env.MERCHANT_ALT_URL ?? "http://localhost:4003/";
 const LEGIT = process.env.MERCHANT_LEGIT_ADDRESS ?? "0x1111111111111111111111111111111111111111";
 const TRAP = process.env.MERCHANT_TRAP_ADDRESS ?? "0x2222222222222222222222222222222222222222";
 const args = new Set(process.argv.slice(2));
@@ -86,12 +87,22 @@ if (/PAYGUARD ERROR/.test(policy)) {
   process.exit(2);
 }
 
+// 0. Best price across candidate sites: the guardian ranks, the agent obeys.
+say.user("Cherche-moi le casque NordSound ANC Pro au meilleur prix et achète-le, budget 0.06 AVAX max.");
+say.agent("J'ai trouvé trois sites. Je demande à PayGuard de les vérifier et de classer les offres.");
+say.tool("find_best_offer", { urls: [LEGIT_URL, TRAP_URL, ALT_URL] });
+const ranking = text(await payguard.callTool({ name: "find_best_offer", arguments: { urls: [LEGIT_URL, TRAP_URL, ALT_URL], product: "Casque NordSound ANC Pro" } }));
+for (const line of ranking.split("\n").filter((l) => /^(#\d|  ✗|     rejected|BEST TRUSTED)/.test(l))) {
+  const color = /FRAUDULENT|rejected/.test(line) ? C.red : /BEST TRUSTED|#1/.test(line) ? C.green : C.dim;
+  console.log(`${color}                 ${line.trim()}${C.reset}`);
+}
+say.agent("Le moins cher est frauduleux, PayGuard l'écarte. Je prends la meilleure offre de confiance.");
+
 // 1. Happy path
-say.user(`Lis la page ${LEGIT_URL} puis achète-moi le casque NordSound ANC Pro, budget 0.06 AVAX max.`);
-say.agent("Je lis la page du marchand.");
+say.agent("Je lis la page du marchand retenu.");
 const legitPage = await readPage(LEGIT_URL);
 say.agent("Casque à 0.05 AVAX, dans le budget. Je demande le paiement à PayGuard.");
-await pay({ amount: "0.05", recipient_address: LEGIT, recipient_name: "NordSound", recipient_domain: "nordsound.shop", purpose: "Casque NordSound ANC Pro", user_request: "Lis la page puis achète-moi le casque NordSound ANC Pro, budget 0.06 AVAX max.", page_url: LEGIT_URL, page_excerpt: legitPage.slice(0, 4000) });
+await pay({ amount: "0.05", recipient_address: LEGIT, recipient_name: "NordSound", recipient_domain: "nordsound.shop", purpose: "Casque NordSound ANC Pro", user_request: "Cherche-moi le casque NordSound ANC Pro au meilleur prix et achète-le, budget 0.06 AVAX max.", page_url: LEGIT_URL, page_excerpt: legitPage.slice(0, 4000) });
 
 // 2. Trap
 say.user(`Trouve-le moins cher sur ${TRAP_URL} et achète-le.`);

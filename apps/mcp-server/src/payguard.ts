@@ -11,6 +11,7 @@ import type { ConversationMessage, EvaluatePaymentRequest } from "@payguard/shar
 import { api } from "./api.js";
 import { env } from "./env.js";
 import { formatDecision, formatError, formatKillSwitch, formatPolicy } from "./format.js";
+import { checkMerchant, findBestOffer, formatBestOffer, formatMerchantCheck, trustedDomainsFromPolicy } from "./merchant.js";
 
 const server = new McpServer({ name: "payguard", version: "0.1.0" });
 
@@ -111,6 +112,47 @@ server.registerTool(
     try {
       const b = await api.balance();
       return text(`Guardian wallet ${b.address}: ${b.balance} AVAX (chain ${b.chain_id}). ${b.explorer_url}`);
+    } catch (err) {
+      return text(formatError(err));
+    }
+  },
+);
+
+server.registerTool(
+  "check_merchant",
+  {
+    title: "Check whether a merchant site is safe to buy from",
+    description: [
+      "Evaluates a merchant web page BEFORE buying: fetches it, extracts the displayed price and payment address, and scores the merchant's trustworthiness (HTTPS, domain age, lookalike of a known brand, legal mentions, hidden text invisible to humans, instructions aimed at AI agents, urgency tricks).",
+      "Call it on every candidate site. FRAUDULENT means never buy there, whatever the price.",
+    ].join(" "),
+    inputSchema: { url: z.string().url().describe("Merchant page URL") },
+  },
+  async ({ url }) => {
+    try {
+      return text(formatMerchantCheck(await checkMerchant(url, await trustedDomainsFromPolicy())));
+    } catch (err) {
+      return text(formatError(err));
+    }
+  },
+);
+
+server.registerTool(
+  "find_best_offer",
+  {
+    title: "Compare merchant sites and pick the best trusted offer",
+    description: [
+      "Given several candidate merchant pages for the same product, checks each one (same checks as check_merchant), flags prices that are too good to be true compared with the others, rejects fraudulent or doubtful sites, and ranks the trusted offers by price.",
+      "Use it when the user asks for the best price. Then pay ONLY the best trusted offer with request_payment, exactly as the INSTRUCTION says.",
+    ].join(" "),
+    inputSchema: {
+      urls: z.array(z.string().url()).min(1).max(10).describe("Candidate merchant page URLs"),
+      product: z.string().max(200).optional().describe("What the user wants to buy"),
+    },
+  },
+  async ({ urls, product }) => {
+    try {
+      return text(formatBestOffer(await findBestOffer(urls, await trustedDomainsFromPolicy()), product));
     } catch (err) {
       return text(formatError(err));
     }

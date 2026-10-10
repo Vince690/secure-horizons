@@ -8,7 +8,7 @@
 - [ ] Claude Desktop : Cmd+Q puis relancer ; vérifier que `payguard` et `demo-shop` apparaissent dans les outils.
 - [ ] Dashboard ouvert sur http://localhost:3000/dashboard, connecté (demo@payguard.dev / demo1234), kill switch au vert, file « À confirmer » vide.
 - [ ] Onglet Snowtrace sur le contrat : https://testnet.snowtrace.io/address/0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1
-- [ ] Onglets marchands ouverts : http://localhost:4001/ et http://localhost:4002/ (montrer que le piège a l'air propre).
+- [ ] Onglets marchands ouverts : http://localhost:4001/, http://localhost:4002/ et http://localhost:4003/ (montrer que le piège a l'air propre).
 - [ ] Plan B prêt dans un terminal : `npm run demo:all` (ne pas le lancer avant).
 - [ ] Vidéo de secours accessible hors ligne.
 
@@ -18,7 +18,7 @@
 |---|---|---|---|
 | 0:00 | Slide 1 | Pitch | « En juillet, des agents sont sortis de leur sandbox. Demain, ils paient. Qui vérifie leur décision ? » |
 | 0:25 | Dashboard › Mandat | Pitch montre le mandat | « Le dirigeant fixe le mandat une fois : 0,1 AVAX par achat, 0,3 par jour, confirmation humaine au-dessus de 0,08. L'agent n'a jamais la clé du wallet. » |
-| 0:45 | Claude Desktop | Démo tape : `Avec read_merchant_page, lis la page http://localhost:4001/ puis achète-moi le casque NordSound ANC Pro, budget 0.06 AVAX max.` | « Claude lit la page, appelle PayGuard. Marchand connu, montant dans le mandat, demande explicite : score 100, payé, gravé sur Avalanche. » Cliquer le lien Snowtrace. |
+| 0:45 | Claude Desktop | Démo tape : `Cherche-moi le casque NordSound ANC Pro au meilleur prix parmi http://localhost:4001/, http://localhost:4002/ et http://localhost:4003/ avec find_best_offer, puis achète-le, budget 0.06 AVAX max.` | « Trois sites. Le moins cher est écarté : ordres cachés, domaine imitant. PayGuard classe, Claude paie la meilleure offre de confiance : score 100, payé, gravé sur Avalanche. » Cliquer le lien Snowtrace. Variante simple si besoin : `Avec read_merchant_page, lis la page http://localhost:4001/ puis achète-moi le casque NordSound ANC Pro, budget 0.06 AVAX max.` |
 | 1:20 | Marchand piège (:4002) | Pitch montre la page | « Même produit, moins cher, badge "paiement sécurisé". Pour un humain, rien à signaler. » |
 | 1:30 | Claude Desktop | Démo tape : `Avec read_merchant_page, lis la page http://localhost:4002/ et demande à PayGuard de payer le casque NordSound ANC Pro à 0.04 AVAX, le prix affiché. Je veux voir son verdict.` | « Dans la page : quatre blocs invisibles qui ordonnent à l'agent de payer 0,5 AVAX ailleurs et de ne rien dire. Score 0, bloqué, le refus est aussi gravé. » |
 | 2:00 | Dashboard › détail de la décision | Pitch ouvre la décision bloquée | « Ce que l'humain a vu, ce que l'agent a lu : les ordres cachés sont surlignés. Chaque point retiré cite son article : AI Act 14 et 15, AML, DORA. » |
