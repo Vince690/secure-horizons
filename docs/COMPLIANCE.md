@@ -25,6 +25,10 @@ Mention obligatoire dans le pitch : **PayGuard n'est pas un prestataire de servi
 | `AMOUNT_OVER_TX_LIMIT` | MiCA, AML_CFT | Dépassement du mandat ; seuil de vigilance. |
 | `DAILY_LIMIT_EXCEEDED` | AML_CFT | Fractionnement / cumul anormal sur 24 h. |
 | `PROMPT_INJECTION_SUSPECTED` | AI_ACT, DORA | Manipulation de la décision de l'agent : risque de sécurité du système d'IA (AI Act art. 15, à vérifier) et incident TIC. |
+| `HIDDEN_INSTRUCTIONS` | AI_ACT, DORA | Instruction invisible pour l'humain, lisible par l'agent : manipulation caractérisée. |
+| `PAGE_PRICE_MISMATCH` | MiCA, AI_ACT | Le montant demandé dépasse le prix affiché : la décision ne vient pas de la page visible. |
+| `PAGE_ADDRESS_MISMATCH` | AML_CFT, AI_ACT | Bénéficiaire différent de celui affiché au client. |
+| `PAGE_PRODUCT_MISMATCH` | AI_ACT | L'achat annoncé ne correspond pas à la page consultée. |
 | `PURPOSE_NOT_REQUESTED_BY_USER` | AI_ACT | L'agent sort du mandat humain : contrôle humain (art. 14). |
 | `RECIPIENT_CHANGED_MID_CONVERSATION` | AML_CFT | Schéma classique de fraude au changement de coordonnées. |
 | `DOMAIN_LOOKALIKE` | AML_CFT | Usurpation d'identité d'un marchand connu. |

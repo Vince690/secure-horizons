@@ -153,6 +153,10 @@ Score de départ 100. Chaque règle qui se déclenche ajoute un `Reason` avec un
 | `AMOUNT_OVER_TX_LIMIT` | montant > `max_per_tx` | −40 | high | MiCA, AML_CFT |
 | `DAILY_LIMIT_EXCEEDED` | cumul 24 h + montant > `max_daily` | −40 | high | AML_CFT |
 | `PROMPT_INJECTION_SUSPECTED` | ~45 motifs FR/EN dans `page_excerpt` / sorties d'outils, 9 familles : override d'instructions, faux message système, ciblage explicite des IA, détournement de rôle, secret vis-à-vis de l'humain, contournement du gardien, fausse autorité, redirection du paiement, menace/récompense. Liste dans `rules/promptInjection.ts`. Jamais dans les messages de l'utilisateur | −70, **→ BLOCKED direct** | critical | AI_ACT, DORA |
+| `HIDDEN_INSTRUCTIONS` | la page contient un bloc invisible pour un humain (`[[HIDDEN …]]` / `[[COMMENT]]`, marqués par `demo-shop`) avec un ordre, un montant ou une adresse | −50, **→ BLOCKED direct** | critical | AI_ACT, DORA |
+| `PAGE_PRICE_MISMATCH` | montant demandé > prix le plus élevé **visible** sur la page (+5 %) | −35 | high | MiCA, AI_ACT |
+| `PAGE_ADDRESS_MISMATCH` | la page affiche une ou des adresses et celle demandée n'en fait pas partie | −35 | high | AML_CFT, AI_ACT |
+| `PAGE_PRODUCT_MISMATCH` | aucun mot de `purpose` sur la page lue (pages ≥ 15 mots seulement) | −20 | medium | AI_ACT |
 | `PURPOSE_NOT_REQUESTED_BY_USER` | aucun message `user` ne mentionne le produit/marchand (similarité mots-clés) | −35 | high | AI_ACT |
 | `RECIPIENT_CHANGED_MID_CONVERSATION` | une autre adresse 0x apparaît dans la conversation pour le même achat | −35 | high | AML_CFT |
 | `DOMAIN_LOOKALIKE` | distance de Levenshtein ≤ 2 avec un `trusted_domain`, ou substitution 0/o, 1/l, rn/m | −30 | high | AML_CFT |
@@ -163,7 +167,7 @@ Score de départ 100. Chaque règle qui se déclenche ajoute un `Reason` avec un
 | `RECIPIENT_TRUSTED` | adresse dans `trusted_recipients` | 0 (informatif) | low | AML_CFT |
 
 Verdict :
-- `KILL_SWITCH_ACTIVE`, `RECIPIENT_BLOCKLISTED` ou `PROMPT_INJECTION_SUSPECTED` présent ⇒ `BLOCKED` direct (règles terminales) ;
+- `KILL_SWITCH_ACTIVE`, `RECIPIENT_BLOCKLISTED`, `PROMPT_INJECTION_SUSPECTED` ou `HIDDEN_INSTRUCTIONS` présent ⇒ `BLOCKED` direct (règles terminales) ;
 - montant > `require_confirmation_above` ⇒ au mieux `HOLD`, jamais APPROVED automatique ;
 - `score ≥ auto_approve_score` ⇒ `APPROVED` ;
 - `hold_score ≤ score < auto_approve_score` ⇒ `HOLD` ;
@@ -215,7 +219,7 @@ Serveur `demo-shop` (stdio, séparé pour que le gardien ne soit pas celui qui f
 
 | Outil | Entrée | Sortie |
 |---|---|---|
-| `read_merchant_page` | `url` | texte brut de la page (y compris le texte caché, c'est le point de la démo) |
+| `read_merchant_page` | `url` | texte de la page ; les blocs invisibles pour un humain sont conservés mais **marqués** `[[HIDDEN <raison>]] … [[/HIDDEN]]` (display:none, visibility, opacity, taille 0/1px, blanc sur blanc, hors écran, attribut hidden, aria-hidden) et `[[COMMENT]] … [[/COMMENT]]` pour les commentaires HTML. Le gardien s'en sert pour séparer « ce que l'humain a vu » de « ce que l'agent a lu » |
 
 Le serveur MCP génère `request_id` (UUID v4) et transmet la conversation résumée fournie par l'agent.
 

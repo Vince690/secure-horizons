@@ -2,7 +2,7 @@ import type { Reason, SpendingPolicy, Verdict } from "@payguard/shared";
 import { parseAvax } from "./money";
 
 /** Any of these alone means BLOCKED, whatever the rest of the score. */
-const TERMINAL_CODES = new Set(["KILL_SWITCH_ACTIVE", "RECIPIENT_BLOCKLISTED", "PROMPT_INJECTION_SUSPECTED"]);
+const TERMINAL_CODES = new Set(["KILL_SWITCH_ACTIVE", "RECIPIENT_BLOCKLISTED", "PROMPT_INJECTION_SUSPECTED", "HIDDEN_INSTRUCTIONS"]);
 
 export function computeScore(reasons: Reason[]): number {
   const raw = reasons.reduce((acc, r) => acc + r.delta, 100);

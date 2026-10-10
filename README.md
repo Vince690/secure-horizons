@@ -16,7 +16,7 @@ Les protocoles de paiement par agents signent la transaction, pas la décision. 
 ```
 apps/web            Next.js 15 : dashboard + API (/api/v1, /api/dashboard), Prisma/SQLite, moteur de décision
 apps/mcp-server     serveurs MCP « payguard » et « demo-shop » (stdio)
-apps/merchants      2 pages marchands de démo (légitime :4001, piège :4002)
+apps/merchants      2 pages marchands de démo (légitime :4001, piège :4002), serveur Node sans dépendance
 apps/demo-agent     script de secours qui rejoue la démo sans Claude Desktop
 packages/contracts  PayGuardLedger.sol (Hardhat, Fuji 43113) + client viem
 packages/shared     types TypeScript communs

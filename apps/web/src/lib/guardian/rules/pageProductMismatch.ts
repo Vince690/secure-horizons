@@ -1,0 +1,24 @@
+import type { Rule } from "../types";
+import { tokens, visiblePageText } from "../text";
+
+const MIN_PAGE_TOKENS = 15;
+
+/**
+ * What the agent says it is buying does not appear anywhere on the page it
+ * read. Only fires on pages with enough text to judge.
+ */
+export const pageProductMismatch: Rule = (ctx) => {
+  const pageTokens = new Set(tokens(visiblePageText(ctx)));
+  if (pageTokens.size < MIN_PAGE_TOKENS) return null;
+  // Purpose only: the merchant name is on its own page by definition.
+  const wanted = tokens(ctx.request.purpose);
+  if (wanted.length === 0) return null;
+  if (wanted.some((t) => pageTokens.has(t))) return null;
+  return {
+    code: "PAGE_PRODUCT_MISMATCH",
+    severity: "medium",
+    delta: -20,
+    message: "Le produit annoncé par l'agent n'apparaît pas sur la page lue.",
+    frameworks: ["AI_ACT"],
+  };
+};

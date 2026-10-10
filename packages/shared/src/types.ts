@@ -50,7 +50,12 @@ export type ReasonCode =
   | "VELOCITY_ANOMALY"
   | "PRICE_ANOMALY"
   | "PURPOSE_NOT_REQUESTED_BY_USER"
-  | "RECIPIENT_CHANGED_MID_CONVERSATION";
+  | "RECIPIENT_CHANGED_MID_CONVERSATION"
+  // Page / request consistency (added at step 4)
+  | "HIDDEN_INSTRUCTIONS"
+  | "PAGE_PRICE_MISMATCH"
+  | "PAGE_ADDRESS_MISMATCH"
+  | "PAGE_PRODUCT_MISMATCH";
 
 export interface Reason {
   code: ReasonCode;
