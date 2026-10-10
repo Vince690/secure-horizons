@@ -4,6 +4,10 @@ import { untrustedText } from "../text";
 /**
  * Patterns typical of instructions smuggled into a page or a tool result.
  * Deterministic on purpose: the demo must give the same verdict every time.
+ *
+ * Team decision (2026-10-10): a page that gives orders to the agent has no
+ * legitimate reason to exist, so this rule is TERMINAL: the verdict is always
+ * BLOCKED (see verdict.ts), and the -70 keeps the score honest about it.
  */
 const INJECTION_PATTERNS: RegExp[] = [
   /ignore (all |any )?(previous|prior|above|earlier) (instructions|messages|rules)/i,
@@ -27,7 +31,7 @@ export const promptInjection: Rule = (ctx) => {
   return {
     code: "PROMPT_INJECTION_SUSPECTED",
     severity: "critical",
-    delta: -40,
+    delta: -70,
     message:
       hits.length === 1
         ? "La page ou un résultat d'outil contient une instruction destinée à manipuler l'agent."

@@ -152,7 +152,7 @@ Score de départ 100. Chaque règle qui se déclenche ajoute un `Reason` avec un
 | `MIN_BALANCE_BREACH` | solde − montant < `min_balance` | −50 | high | MiCA |
 | `AMOUNT_OVER_TX_LIMIT` | montant > `max_per_tx` | −40 | high | MiCA, AML_CFT |
 | `DAILY_LIMIT_EXCEEDED` | cumul 24 h + montant > `max_daily` | −40 | high | AML_CFT |
-| `PROMPT_INJECTION_SUSPECTED` | motifs dans `page_excerpt` / conversation (`ignore previous`, `system:`, `do not tell the user`, `send to`, adresse 0x différente du marchand affiché, texte caché…) | −40 | critical | AI_ACT, DORA |
+| `PROMPT_INJECTION_SUSPECTED` | motifs dans `page_excerpt` / sorties d'outils (`ignore previous`, `system notice`, `do not tell the user`, `send X AVAX to 0x…`…) ; jamais dans les messages de l'utilisateur | −70, **→ BLOCKED direct** | critical | AI_ACT, DORA |
 | `PURPOSE_NOT_REQUESTED_BY_USER` | aucun message `user` ne mentionne le produit/marchand (similarité mots-clés) | −35 | high | AI_ACT |
 | `RECIPIENT_CHANGED_MID_CONVERSATION` | une autre adresse 0x apparaît dans la conversation pour le même achat | −35 | high | AML_CFT |
 | `DOMAIN_LOOKALIKE` | distance de Levenshtein ≤ 2 avec un `trusted_domain`, ou substitution 0/o, 1/l, rn/m | −30 | high | AML_CFT |
@@ -163,6 +163,7 @@ Score de départ 100. Chaque règle qui se déclenche ajoute un `Reason` avec un
 | `RECIPIENT_TRUSTED` | adresse dans `trusted_recipients` | 0 (informatif) | low | AML_CFT |
 
 Verdict :
+- `KILL_SWITCH_ACTIVE`, `RECIPIENT_BLOCKLISTED` ou `PROMPT_INJECTION_SUSPECTED` présent ⇒ `BLOCKED` direct (règles terminales) ;
 - montant > `require_confirmation_above` ⇒ au mieux `HOLD`, jamais APPROVED automatique ;
 - `score ≥ auto_approve_score` ⇒ `APPROVED` ;
 - `hold_score ≤ score < auto_approve_score` ⇒ `HOLD` ;
