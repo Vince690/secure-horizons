@@ -187,13 +187,16 @@ export function ExplorerLink({ url, label = "View on Snowtrace" }: { url: string
 
 export function Button({ children, variant = "primary", className = "", ...props }: { children: ReactNode; variant?: "primary" | "ghost" | "danger" | "ok" } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const styles = {
-    primary: "bg-accent text-white hover:bg-accent/90",
-    ghost: "border border-line bg-transparent hover:bg-surface-2",
-    danger: "bg-crit text-white hover:bg-crit/90",
-    ok: "bg-ok text-white hover:bg-ok/90",
+    primary: "bg-accent text-white shadow-sm shadow-accent/20 hover:bg-accent/90 hover:shadow-accent/30",
+    ghost: "border border-line bg-transparent hover:border-muted hover:bg-surface-2",
+    danger: "bg-crit text-white shadow-sm shadow-crit/20 hover:bg-crit/90 hover:shadow-crit/30",
+    ok: "bg-ok text-white shadow-sm shadow-ok/20 hover:bg-ok/90 hover:shadow-ok/30",
   }[variant];
   return (
-    <button className={`rounded-lg px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${styles} ${className}`} {...props}>
+    <button
+      className={`rounded-lg px-4 py-2 text-sm font-semibold outline-none transition duration-150 ease-out active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:active:scale-100 ${styles} ${className}`}
+      {...props}
+    >
       {children}
     </button>
   );
