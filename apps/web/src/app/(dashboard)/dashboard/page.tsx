@@ -133,16 +133,12 @@ export default function OverviewPage() {
     <>
       <PageHeader title="Overview" subtitle="Agent payment requests, PayGuard decisions, and your compliance status." />
 
-      {/* Payments awaiting confirmation — actionable inline, no navigation needed */}
-      <Card title={`Payments awaiting your confirmation${pending > 0 ? ` · ${pending}` : ""}`} className="mb-6">
-        {pending > 0 ? (
+      {/* Payments awaiting confirmation — actionable inline, no navigation needed. Hidden entirely when empty so the rest of the page moves up. */}
+      {pending > 0 && (
+        <Card title={`Payments awaiting your confirmation · ${pending}`} className="mb-6">
           <PendingApprovals decisions={pendingDecisions} refresh={pendingPoll.refresh} />
-        ) : (
-          <div className="flex items-center gap-2 rounded-xl border border-ok/30 bg-ok/10 px-5 py-3 text-sm text-ok">
-            ✓ No payments awaiting confirmation
-          </div>
-        )}
-      </Card>
+        </Card>
+      )}
 
       {/* Balances + Decisions + Kill switch — one shape for every tile: icon + label, one stat, one caption line. */}
       <div className="mb-6 grid gap-4 md:grid-cols-4">

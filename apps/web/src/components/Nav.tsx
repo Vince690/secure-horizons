@@ -91,7 +91,7 @@ export function Nav({ companyName, email }: { companyName: string; email: string
           </Link>
         ))}
       </nav>
-      <button onClick={logout} className="mt-4 rounded-lg px-3 py-2 text-left text-sm text-muted hover:bg-surface-2">
+      <button onClick={logout} className="mt-4 rounded-lg px-3 py-2 text-left text-sm text-muted transition hover:bg-surface-2">
         Sign out
       </button>
     </aside>

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getSessionAccount } from "@/lib/auth/session";
 import { KillSwitchButton } from "@/components/KillSwitchButton";
 import { Nav } from "@/components/Nav";
+import { PageTransition } from "@/components/PageTransition";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <div className="text-sm text-muted">Avalanche Fuji · test network · no real funds</div>
           <KillSwitchButton />
         </header>
-        <main className="flex-1 p-8">{children}</main>
+        <main className="flex-1 p-8">
+          <PageTransition>{children}</PageTransition>
+        </main>
       </div>
     </div>
   );
