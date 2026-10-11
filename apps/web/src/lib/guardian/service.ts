@@ -10,6 +10,7 @@ import { maybeAutoKillSwitch } from "@/lib/killswitch";
 import { explainDecision } from "@/lib/llm/explain";
 import { semanticScreen } from "@/lib/llm/semantic";
 import { toDecisionDto, toKillSwitchDto, toPolicyDto } from "@/lib/mappers";
+import { logger } from "@/lib/logger";
 import { evaluate } from "./evaluate";
 import { computeDecisionHash, toBytes32 } from "./hash";
 import type { GuardianContext, HistoricalDecision } from "./types";
@@ -106,7 +107,7 @@ export async function processPaymentRequest(account: Account, request: EvaluateP
   });
   const explained = await explainDecision({ verdict: evaluation.verdict, score: evaluation.score, reasons: evaluation.reasons, request });
   const explanation = explained.text;
-  console.log(`[guardian] ${decisionId} ${evaluation.verdict} score=${evaluation.score} explanation=${explained.source}${screen ? ` screen=${screen.source}` : ""}`);
+  logger.debug("guardian", `${decisionId} ${evaluation.verdict} score=${evaluation.score} explanation=${explained.source}${screen ? ` screen=${screen.source}` : ""}`);
 
   // Rail step: APPROVED executes on the rail (AVAX transfer or single-use card), everything is anchored as proof.
   let status: DecisionStatus;
