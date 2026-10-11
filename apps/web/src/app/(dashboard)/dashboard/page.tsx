@@ -6,46 +6,11 @@ import { usePolling } from "@/components/hooks";
 import { FRAMEWORK_LABEL, formatAvax, formatDate, formatMoney, REASON_LABEL, shortAddress } from "@/components/labels";
 import type { ReasonCode } from "@payguard/shared";
 import { CHIP_COLOR_VAR, Card, classifyDecision, DecisionLink, EmptyState, ExplorerLink, FrameworkTile, PageHeader, RailBadge, ScoreBadge, VerdictPill } from "@/components/ui";
+import { FilterPills } from "@/components/FilterPills";
 import { PendingApprovals } from "@/components/PendingApprovals";
 import type { ComplianceReport } from "@/lib/dashboard/service";
 import type { DashboardMetrics, DailyBucket, DailySpend } from "@/lib/analytics/metrics";
 import { scoreColor } from "@/components/ui";
-
-type TileIcon = (props: { className?: string }) => React.ReactNode;
-
-/** Simple monotone (currentColor) category glyphs for the overview tiles — no icon library. */
-const CardRailIcon: TileIcon = ({ className }) => (
-  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-    <rect x="1.5" y="4" width="13" height="9" rx="1.5" />
-    <path d="M1.5 7h13" />
-  </svg>
-);
-const ChainRailIcon: TileIcon = ({ className }) => (
-  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M6.5 9.5l3-3" />
-    <path d="M6 4.5H4.5A2.5 2.5 0 002 7a2.5 2.5 0 002.5 2.5H6" />
-    <path d="M10 11.5h1.5A2.5 2.5 0 0014 9a2.5 2.5 0 00-2.5-2.5H10" />
-  </svg>
-);
-const ActivityIcon: TileIcon = ({ className }) => (
-  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1.5 8.5h2.3l1.3-4 2 7 1.4-5 .9 2h3.1" />
-  </svg>
-);
-const ShieldIcon: TileIcon = ({ className }) => (
-  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
-    <path d="M8 1.5l5.5 2v4c0 4-2.7 6.1-5.5 7-2.8-.9-5.5-3-5.5-7v-4z" />
-  </svg>
-);
-
-function TileTitle({ icon: Icon, children }: { icon: TileIcon; children: React.ReactNode }) {
-  return (
-    <span className="inline-flex items-center gap-1.5">
-      <Icon className="h-3.5 w-3.5 shrink-0 text-muted" />
-      {children}
-    </span>
-  );
-}
 
 const DOT_COLOR = { ok: "bg-ok", warn: "bg-warn", crit: "bg-crit" } as const;
 function CountDot({ color, count, label }: { color: keyof typeof DOT_COLOR; count: number; label: string }) {
@@ -237,10 +202,19 @@ function DecisionFlowSvg({
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: H }}>
       <defs>
+        {/* Hard-edged bands at the exact fractions where each group's own ribbon departs,
+            instead of fixed 0/50/100% stops — those only matched the colors below by
+            coincidence when groups happened to be equal-sized. */}
         <linearGradient id="sankey-root" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" style={{ stopColor: "var(--ok)" }} />
-          <stop offset="50%" style={{ stopColor: "var(--warn)" }} />
-          <stop offset="100%" style={{ stopColor: "var(--crit)" }} />
+          {groups.flatMap((g) => {
+            const colorVar = CHIP_COLOR_VAR[g.color];
+            const startPct = (((g.groupSpan.srcY - marginY) / plotH) * 100).toFixed(2);
+            const endPct = (((g.groupSpan.srcY + g.groupSpan.srcH - marginY) / plotH) * 100).toFixed(2);
+            return [
+              <stop key={`${g.verdict}-start`} offset={`${startPct}%`} style={{ stopColor: `var(${colorVar})` }} />,
+              <stop key={`${g.verdict}-end`} offset={`${endPct}%`} style={{ stopColor: `var(${colorVar})` }} />,
+            ];
+          })}
         </linearGradient>
         {groups.map((g) => (
           <linearGradient key={`a-${g.verdict}`} id={`sankey-a-${g.verdict}`} x1="0" x2="1" y1="0" y2="0">
@@ -328,7 +302,7 @@ function DecisionFlowSvg({
   );
 }
 
-const PERIOD_PRESETS = [7, 30, 90, 365];
+const PERIOD_OPTIONS = [7, 30, 90, 365].map((p) => ({ value: String(p), label: `${p} d` }));
 
 export default function OverviewPage() {
   const [days, setDays] = useState(30);
@@ -357,22 +331,22 @@ export default function OverviewPage() {
         </Card>
       )}
 
-      {/* Balances + Decisions + Kill switch — one shape for every tile: icon + label, one stat, one caption line. */}
+      {/* Balances + Decisions + Kill switch — one shape for every tile: label, one stat, one caption line. */}
       <div className="mb-6 grid gap-4 md:grid-cols-4">
-        <Card title={<TileTitle icon={CardRailIcon}>Virtual card rail</TileTitle>}>
+        <Card title="Virtual card rail">
           <div className="tabular text-3xl font-bold">{balance.data?.card_rail ? formatMoney(balance.data.card_rail.balance, "EUR") : "…"}</div>
           <div className="mt-2 truncate text-xs text-muted">
             {balance.data?.card_rail?.cards_active ?? 0} active card{balance.data?.card_rail?.cards_active === 1 ? "" : "s"}
             {balance.data?.card_rail?.frozen ? <span className="ml-2 font-medium text-crit">frozen</span> : null}
           </div>
         </Card>
-        <Card title={<TileTitle icon={ChainRailIcon}>Avalanche rail</TileTitle>}>
+        <Card title="Avalanche rail">
           <div className="tabular text-3xl font-bold">{balance.data ? formatAvax(balance.data.balance) : "…"}</div>
           <div className="mt-2 truncate text-xs text-muted">
             <ExplorerLink url={balance.data?.explorer_url} label={balance.data ? shortAddress(balance.data.address) : "…"} />
           </div>
         </Card>
-        <Card title={<TileTitle icon={ActivityIcon}>Decisions · 24 h</TileTitle>}>
+        <Card title="Decisions · 24 h">
           <div className="tabular text-3xl font-bold">{c?.decisions.total ?? "…"}</div>
           <div className="mt-2 flex gap-3 text-xs text-muted">
             <CountDot color="ok" count={c?.decisions.approved ?? 0} label="paid" />
@@ -380,7 +354,7 @@ export default function OverviewPage() {
             <CountDot color="crit" count={c?.decisions.blocked ?? 0} label="blocked" />
           </div>
         </Card>
-        <Card title={<TileTitle icon={ShieldIcon}>Incidents · 24 h</TileTitle>}>
+        <Card title="Incidents · 24 h">
           <div className={`tabular text-3xl font-bold ${c && c.incidents.length > 0 ? "text-crit" : ""}`}>{c?.incidents.length ?? "…"}</div>
           <div className="mt-2 truncate text-xs text-muted">
             {c && c.incidents.length > 0
@@ -393,19 +367,7 @@ export default function OverviewPage() {
       {/* Period selector */}
       <div className="mb-4 flex flex-wrap items-center gap-2">
         <span className="text-sm font-medium text-muted">Period:</span>
-        <div className="flex flex-wrap gap-1.5">
-          {PERIOD_PRESETS.map((p) => (
-            <button
-              key={p}
-              onClick={() => setDays(p)}
-              className={`rounded-full px-3 py-1 text-sm font-medium transition ${
-                days === p ? "bg-accent text-white" : "border border-line bg-transparent text-muted hover:bg-surface-2"
-              }`}
-            >
-              {p} d
-            </button>
-          ))}
-        </div>
+        <FilterPills options={PERIOD_OPTIONS} value={String(days)} onChange={(v) => setDays(Number(v))} />
         <label className="flex items-center gap-2 text-sm text-muted">
           <span>Custom</span>
           <input

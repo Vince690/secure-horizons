@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
@@ -19,7 +18,7 @@ const SETTINGS_ITEMS = [
 
 const BOTTOM_ITEMS = [{ href: "/dashboard/audit", label: "Audit Log" }];
 
-export function Nav({ companyName }: { companyName: string }) {
+export function Nav({ collapsed }: { collapsed: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const { data } = usePolling<{ decisions: Decision[] }>("/api/dashboard/decisions?status=PENDING_CONFIRMATION&limit=50", 3000);
@@ -27,7 +26,6 @@ export function Nav({ companyName }: { companyName: string }) {
 
   const settingsActive = SETTINGS_ITEMS.some((item) => pathname.startsWith(item.href));
   const [settingsOpen, setSettingsOpen] = useState(settingsActive);
-  const [collapsed, setCollapsed] = useState(false);
 
   async function logout() {
     await postJson("/api/dashboard/auth/logout");
@@ -42,15 +40,7 @@ export function Nav({ companyName }: { companyName: string }) {
   };
 
   return (
-    <aside className={`flex shrink-0 flex-col border-r border-line bg-surface p-4 transition-all duration-300 ${collapsed ? "w-20" : "w-60"}`}>
-      <button
-        onClick={() => setCollapsed((c) => !c)}
-        className="mb-6 flex w-full items-center justify-center rounded-lg py-1 transition hover:bg-surface-2"
-        title={collapsed ? "Show sidebar" : "Hide sidebar"}
-        aria-label={collapsed ? "Show sidebar" : "Hide sidebar"}
-      >
-        <Image src="/logo.png" alt={`PayGuard — ${companyName}`} width={40} height={52} className="h-14 w-auto opacity-80" priority />
-      </button>
+    <aside className={`flex shrink-0 flex-col bg-surface transition-all duration-300 ${collapsed ? "w-0 overflow-hidden border-0 p-0" : "w-60 border-r border-line p-4"}`}>
       {!collapsed && (
         <>
           <nav className="flex flex-1 flex-col gap-1">
