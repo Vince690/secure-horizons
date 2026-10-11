@@ -1,9 +1,10 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import type { ComplianceState, DecisionStatus, Reason, Verdict } from "@payguard/shared";
+import { Chip } from "./base/badges/chip";
 import { REASON_LABEL, reasonReferences, STATUS_LABEL, VERDICT_LABEL } from "./labels";
 
-export function Card({ title, children, className = "", action }: { title?: string; children: ReactNode; className?: string; action?: ReactNode }) {
+export function Card({ title, children, className = "", action }: { title?: ReactNode; children: ReactNode; className?: string; action?: ReactNode }) {
   return (
     <section className={`rounded-xl border border-line bg-surface p-5 ${className}`}>
       {(title || action) && (
@@ -29,33 +30,70 @@ export function PageHeader({ title, subtitle, action }: { title: string; subtitl
   );
 }
 
-const VERDICT_STYLE: Record<Verdict, string> = {
-  APPROVED: "bg-ok/15 text-ok border-ok/40",
-  HOLD: "bg-warn/15 text-warn border-warn/40",
-  BLOCKED: "bg-crit/15 text-crit border-crit/40",
-};
+type ChipIcon = (props: { className?: string }) => ReactNode;
 
-/** The pill shows the FINAL state: a HOLD approved by a human reads "Paid (human)", not "On hold". */
-export function VerdictPill({ verdict, status }: { verdict: Verdict; status?: DecisionStatus }) {
-  let label = VERDICT_LABEL[verdict];
-  let style = VERDICT_STYLE[verdict];
+/** Simple monotone (currentColor) glyphs — no icon library, kept tiny on purpose. */
+const CheckIcon: ChipIcon = ({ className }) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3.5 8.5l3 3 6-7" />
+  </svg>
+);
+const ClockIcon: ChipIcon = ({ className }) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="8" cy="8" r="6" />
+    <path d="M8 5v3.2l2.2 1.3" />
+  </svg>
+);
+const AlertIcon: ChipIcon = ({ className }) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M8 2.5l6 10.5H2z" />
+    <path d="M8 6.5v3" />
+    <circle cx="8" cy="11.4" r="0.5" fill="currentColor" stroke="none" />
+  </svg>
+);
+const BlockedIcon: ChipIcon = ({ className }) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="8" cy="8" r="6" />
+    <path d="M4.5 4.5l7 7" />
+  </svg>
+);
+
+export type DecisionOutcomeKey = "approved" | "paid_human" | "rejected_human" | "pending" | "failed" | "blocked";
+
+/** CSS var backing each chip color, so charts can reuse the exact same color as the pill. */
+export const CHIP_COLOR_VAR = { lime: "--ok", yellow: "--warn", rose: "--crit" } as const;
+
+/**
+ * Single source of truth for "what does this decision actually look like to a human", shared by
+ * VerdictPill and any chart that breaks decisions down by outcome (e.g. the overview Sankey) —
+ * it shows the FINAL state: a HOLD approved by a human is "Paid (human)", not "On hold".
+ */
+export function classifyDecision(
+  verdict: Verdict,
+  status?: DecisionStatus,
+): { key: DecisionOutcomeKey; label: string; color: "lime" | "yellow" | "rose"; icon: ChipIcon } {
   if (status === "APPROVED") {
-    label = verdict === "HOLD" ? "Paid (human)" : "Approved";
-    style = VERDICT_STYLE.APPROVED;
-  } else if (status === "REJECTED") {
-    label = "Rejected (human)";
-    style = VERDICT_STYLE.BLOCKED;
-  } else if (status === "PENDING_CONFIRMATION") {
-    label = STATUS_LABEL.PENDING_CONFIRMATION;
-    style = VERDICT_STYLE.HOLD;
-  } else if (status === "FAILED") {
-    label = STATUS_LABEL.FAILED;
-    style = VERDICT_STYLE.HOLD;
-  } else if (status === "BLOCKED") {
-    label = VERDICT_LABEL.BLOCKED;
-    style = VERDICT_STYLE.BLOCKED;
+    return verdict === "HOLD"
+      ? { key: "paid_human", label: "Paid (human)", color: "lime", icon: CheckIcon }
+      : { key: "approved", label: "Approved", color: "lime", icon: CheckIcon };
   }
-  return <span className={`inline-block rounded-full border px-3 py-1 text-sm font-semibold ${style}`}>{label}</span>;
+  if (status === "REJECTED") return { key: "rejected_human", label: "Rejected (human)", color: "rose", icon: BlockedIcon };
+  if (status === "PENDING_CONFIRMATION") return { key: "pending", label: STATUS_LABEL.PENDING_CONFIRMATION, color: "yellow", icon: ClockIcon };
+  if (status === "FAILED") return { key: "failed", label: STATUS_LABEL.FAILED, color: "yellow", icon: AlertIcon };
+  if (status === "BLOCKED" || verdict === "BLOCKED") return { key: "blocked", label: VERDICT_LABEL.BLOCKED, color: "rose", icon: BlockedIcon };
+  return verdict === "APPROVED"
+    ? { key: "approved", label: VERDICT_LABEL.APPROVED, color: "lime", icon: CheckIcon }
+    : { key: "pending", label: VERDICT_LABEL.HOLD, color: "yellow", icon: ClockIcon };
+}
+
+export function VerdictPill({ verdict, status }: { verdict: Verdict; status?: DecisionStatus }) {
+  const { label, color, icon: Icon } = classifyDecision(verdict, status);
+  return (
+    <Chip color={color} variant="bold" className="gap-1">
+      <Icon className="h-3.5 w-3.5 shrink-0" />
+      {label}
+    </Chip>
+  );
 }
 
 export function scoreColor(score: number): string {
@@ -142,13 +180,16 @@ export function ExplorerLink({ url, label = "View on Snowtrace" }: { url: string
 
 export function Button({ children, variant = "primary", className = "", ...props }: { children: ReactNode; variant?: "primary" | "ghost" | "danger" | "ok" } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const styles = {
-    primary: "bg-accent text-white hover:bg-accent/90",
-    ghost: "border border-line bg-transparent hover:bg-surface-2",
-    danger: "bg-crit text-white hover:bg-crit/90",
-    ok: "bg-ok text-white hover:bg-ok/90",
+    primary: "bg-accent text-white shadow-sm shadow-accent/20 hover:bg-accent/90 hover:shadow-accent/30",
+    ghost: "border border-line bg-transparent hover:border-muted hover:bg-surface-2",
+    danger: "bg-crit text-white shadow-sm shadow-crit/20 hover:bg-crit/90 hover:shadow-crit/30",
+    ok: "bg-ok text-white shadow-sm shadow-ok/20 hover:bg-ok/90 hover:shadow-ok/30",
   }[variant];
   return (
-    <button className={`rounded-lg px-4 py-2 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-50 ${styles} ${className}`} {...props}>
+    <button
+      className={`rounded-lg px-4 py-2 text-sm font-semibold outline-none transition duration-150 ease-out active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-accent/50 focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none disabled:active:scale-100 ${styles} ${className}`}
+      {...props}
+    >
       {children}
     </button>
   );

@@ -1,22 +1,66 @@
 "use client";
 
+import { useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import type { Decision } from "@payguard/shared";
 import { usePolling } from "@/components/hooks";
 import { formatDate, formatMoney, shortAddress } from "@/components/labels";
-import { Card, DecisionLink, EmptyState, ExplorerLink, PageHeader, RailBadge, ScoreBadge, VerdictPill, inputClass } from "@/components/ui";
+import { Card, DecisionLink, EmptyState, ExplorerLink, PageHeader, RailBadge, ScoreBadge, VerdictPill } from "@/components/ui";
+import { FilterPills } from "@/components/FilterPills";
+
+const VERDICT_OPTIONS = [
+  { value: "ALL", label: "All verdicts" },
+  { value: "APPROVED", label: "Approved" },
+  { value: "BLOCKED", label: "Blocked" },
+  { value: "HELD", label: "Held" },
+] as const;
+
+const DATE_OPTIONS = [
+  { value: "ALL", label: "All time" },
+  { value: "7", label: "7 d" },
+  { value: "30", label: "30 d" },
+  { value: "90", label: "90 d" },
+] as const;
+
+type SortKey = "score" | "amount" | "when";
+type SortState = { key: SortKey; dir: "asc" | "desc" };
+
+function SortIcon({ dir }: { dir: "asc" | "desc" | null }) {
+  return (
+    <svg viewBox="0 0 10 10" className={`h-2.5 w-2.5 shrink-0 transition ${dir ? "text-fg" : "text-muted/50"}`} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+      {dir === "asc" ? <path d="M2 6.5L5 3.5L8 6.5" /> : <path d="M2 3.5L5 6.5L8 3.5" />}
+    </svg>
+  );
+}
+
+function SortHeader({ label, sortKey, sort, onSort, className = "" }: { label: string; sortKey: SortKey; sort: SortState; onSort: (k: SortKey) => void; className?: string }) {
+  const active = sort.key === sortKey;
+  return (
+    <th className={className}>
+      <button onClick={() => onSort(sortKey)} className="inline-flex items-center gap-1 hover:text-fg">
+        {label}
+        <SortIcon dir={active ? sort.dir : null} />
+      </button>
+    </th>
+  );
+}
 
 export default function DecisionsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const verdictFilter = searchParams.get("verdict") ?? "ALL";
   const dateFilter = searchParams.get("days") ?? "ALL";
+  const [sort, setSort] = useState<SortState>({ key: "when", dir: "desc" });
 
   function setFilter(key: string, value: string) {
     const p = new URLSearchParams(searchParams.toString());
     if (value === "ALL" || value === "") p.delete(key);
     else p.set(key, value);
     router.replace(`/dashboard/decisions?${p.toString()}`);
+  }
+
+  function onSort(key: SortKey) {
+    setSort((s) => (s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: "desc" }));
   }
 
   const statusMap: Record<string, string> = {
@@ -34,33 +78,20 @@ export default function DecisionsPage() {
 
   // eslint-disable-next-line react-hooks/purity -- a clock read for a display filter is fine here
   const cutoff = daysAgo ? Date.now() - daysAgo * 86_400_000 : 0;
-  const rows = (data?.decisions ?? []).filter((d) => !daysAgo || new Date(d.created_at).getTime() >= cutoff);
+  const filtered = (data?.decisions ?? []).filter((d) => !daysAgo || new Date(d.created_at).getTime() >= cutoff);
+
+  const sortValue = (d: Decision): number =>
+    sort.key === "score" ? d.score : sort.key === "amount" ? Number(d.amount) : new Date(d.created_at).getTime();
+  const rows = [...filtered].sort((a, b) => (sortValue(a) - sortValue(b)) * (sort.dir === "asc" ? 1 : -1));
 
   return (
     <>
       <PageHeader title="History" subtitle="Every payment request from an agent: its score, verdict, and on-chain proof." />
 
-      <div className="mb-4 flex flex-wrap gap-3">
-        <select
-          value={verdictFilter}
-          onChange={(e) => setFilter("verdict", e.target.value)}
-          className={inputClass + " mt-0 w-auto"}
-        >
-          <option value="ALL">All verdicts</option>
-          <option value="APPROVED">Approved</option>
-          <option value="BLOCKED">Blocked</option>
-          <option value="HELD">Held</option>
-        </select>
-        <select
-          value={dateFilter}
-          onChange={(e) => setFilter("days", e.target.value)}
-          className={inputClass + " mt-0 w-auto"}
-        >
-          <option value="ALL">All time</option>
-          <option value="7">Last 7 days</option>
-          <option value="30">Last 30 days</option>
-          <option value="90">Last 90 days</option>
-        </select>
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <FilterPills options={VERDICT_OPTIONS} value={verdictFilter} onChange={(v) => setFilter("verdict", v)} />
+        <span className="h-5 w-px bg-line" />
+        <FilterPills options={DATE_OPTIONS} value={dateFilter} onChange={(v) => setFilter("days", v)} />
       </div>
 
       <Card>
@@ -70,12 +101,12 @@ export default function DecisionsPage() {
             <table className="w-full text-sm">
               <thead className="text-left text-xs uppercase tracking-wide text-muted">
                 <tr>
-                  <th className="py-2 pr-4">Score</th>
+                  <SortHeader label="Score" sortKey="score" sort={sort} onSort={onSort} className="py-2 pr-4" />
                   <th className="py-2 pr-4">Verdict</th>
                   <th className="py-2 pr-4">Purpose</th>
-                  <th className="py-2 pr-4">Amount</th>
+                  <SortHeader label="Amount" sortKey="amount" sort={sort} onSort={onSort} className="py-2 pr-4" />
                   <th className="py-2 pr-4">Merchant</th>
-                  <th className="py-2 pr-4">When</th>
+                  <SortHeader label="When" sortKey="when" sort={sort} onSort={onSort} className="py-2 pr-4" />
                   <th className="py-2">On-chain</th>
                 </tr>
               </thead>
