@@ -114,6 +114,12 @@
     "short_fr": "Urgence artificielle, signal faible de manipulation.",
     "references": ["AMLR, indicateurs de fraude"]
   },
+  "RAIL_NOT_ALLOWED": {
+    "frameworks": ["MiCA", "AML_CFT"],
+    "label_fr": "Rail de paiement non autorisé",
+    "short_fr": "Ce moyen de paiement n'est pas activé pour ce compte.",
+    "references": ["Mandat contractuel"]
+  },
   "RECIPIENT_TRUSTED": {
     "frameworks": ["AML_CFT"],
     "label_fr": "Marchand de confiance",

@@ -31,9 +31,16 @@ export function hiddenPageBlocks(ctx: GuardianContext): Array<{ why: string; tex
   return [...page.matchAll(HIDDEN_BLOCK_RE)].map((m) => ({ why: m[1], text: m[2].trim() }));
 }
 
-/** Prices written as "0.04 AVAX" / "0,04 AVAX" in a text, as wei. */
-export function pricesIn(text: string): bigint[] {
-  return [...text.matchAll(/(\d+(?:[.,]\d+)?)\s?AVAX\b/gi)].map((m) => parseAvaxLoose(m[1]));
+/** Prices in a text for one currency ("0.04 AVAX", "49,90 €", "EUR 49.90"), as 18-decimal integers. */
+export function pricesIn(text: string, currency: "AVAX" | "EUR" = "AVAX"): bigint[] {
+  const out: bigint[] = [];
+  if (currency === "AVAX") {
+    for (const m of text.matchAll(/(\d+(?:[.,]\d+)?)\s?AVAX\b/gi)) out.push(parseAvaxLoose(m[1]));
+  } else {
+    for (const m of text.matchAll(/(\d+(?:[.,]\d+)?)\s?(?:€|\bEUR\b)/g)) out.push(parseAvaxLoose(m[1]));
+    for (const m of text.matchAll(/(?:€|\bEUR\b)\s?(\d+(?:[.,]\d+)?)/g)) out.push(parseAvaxLoose(m[1]));
+  }
+  return out;
 }
 
 function parseAvaxLoose(value: string): bigint {

@@ -11,5 +11,6 @@ export const GET = withErrorHandling(async (request: Request, { params }: { para
   const { id } = await params;
   const row = await prisma.decision.findFirst({ where: { id, accountId: account.id } });
   if (!row) throw new HttpError("NOT_FOUND", `Decision ${id} not found`);
-  return NextResponse.json(toDecisionDto(row));
+  const card = row.rail === "virtual_card" ? await prisma.virtualCard.findUnique({ where: { decisionId: row.id } }) : null;
+  return NextResponse.json(toDecisionDto(row, card));
 });

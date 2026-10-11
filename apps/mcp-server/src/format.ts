@@ -19,7 +19,12 @@ export function formatDecision(d: Decision): string {
     .map(([k, v]) => `${k}=${v}`)
     .join(", ");
   lines.push(`Compliance: ${compliance}`);
+  lines.push(`Rail: ${d.rail === "virtual_card" ? "single-use virtual card on the owner's bank account" : "Avalanche Fuji wallet"} (${d.currency})`);
   if (d.payment_tx) lines.push(`Payment transaction (Avalanche Fuji): ${d.payment_tx.explorer_url}`);
+  if (d.card) {
+    lines.push(`Virtual card issued: ${d.card.brand} ${d.card.masked}, exp ${d.card.expiry}, cap ${d.card.limit_amount} ${d.card.currency}, single use, locked to ${d.card.merchant_lock ?? "any merchant"}, status ${d.card.status}, expires ${d.card.expires_at}.`);
+    lines.push("The full card number is held by the issuer and the secure checkout component: you never see it and must not ask for it.");
+  }
   if (d.ledger_tx && (!d.payment_tx || d.ledger_tx.tx_hash !== d.payment_tx.tx_hash)) {
     lines.push(`Decision anchored on-chain: ${d.ledger_tx.explorer_url}`);
   }
@@ -32,7 +37,9 @@ export function formatDecision(d: Decision): string {
 export function instructionFor(d: Decision): string {
   switch (d.status) {
     case "APPROVED":
-      return "INSTRUCTION: The payment has been executed by PayGuard. Confirm the purchase to the user, quote the explanation, and give them the payment transaction link.";
+      return d.card
+        ? "INSTRUCTION: PayGuard issued a single-use virtual card capped at the exact amount for this merchant; the secure checkout component completes the card payment, you never handle the number. Confirm the purchase to the user, quote the explanation, mention the card's last 4 digits and cap, and give the on-chain anchoring link."
+        : "INSTRUCTION: The payment has been executed by PayGuard. Confirm the purchase to the user, quote the explanation, and give them the payment transaction link.";
     case "PENDING_CONFIRMATION":
       return `INSTRUCTION: A human must confirm this payment on the PayGuard dashboard. Tell the user that the payment is on hold pending human confirmation and why (quote the explanation). Then call check_payment_status with decision_id "${d.decision_id}" every 5 seconds for up to 2 minutes until the status is APPROVED or REJECTED. Do not call request_payment again for this purchase. Never suggest paying outside PayGuard.`;
     case "REJECTED":
@@ -67,10 +74,8 @@ export function formatError(err: unknown): string {
 export function formatPolicy(p: SpendingPolicy): string {
   return [
     "PAYGUARD SPENDING POLICY (set by the account owner, read-only for agents):",
-    `  Max per payment: ${p.max_per_tx} AVAX`,
-    `  Max per 24h: ${p.max_daily} AVAX`,
-    `  Minimum balance to keep: ${p.min_balance} AVAX`,
-    `  Any payment above ${p.require_confirmation_above} AVAX requires human confirmation`,
+    `  Avalanche rail (AVAX): max per payment ${p.max_per_tx}, max per 24h ${p.max_daily}, minimum balance ${p.min_balance}, human confirmation above ${p.require_confirmation_above}`,
+    `  Virtual-card rail (EUR, single-use cards on the owner's bank): max per payment ${p.card.max_per_tx}, max per 24h ${p.card.max_daily}, minimum bank balance ${p.card.min_balance}, human confirmation above ${p.card.require_confirmation_above}`,
     `  First payment to a new recipient requires human confirmation: ${p.confirm_new_recipients ? "yes" : "no"}`,
     `  Auto-approve when trust score >= ${p.auto_approve_score}; hold between ${p.hold_score} and ${p.auto_approve_score - 1}; block below ${p.hold_score}`,
     `  Trusted merchants: ${p.trusted_recipients.length ? p.trusted_recipients.join(", ") : "none"}`,

@@ -2,8 +2,8 @@
 
 import type { Decision } from "@payguard/shared";
 import { usePolling } from "@/components/hooks";
-import { formatAvax, formatDate, REASON_LABEL, shortAddress } from "@/components/labels";
-import { Card, DecisionLink, EmptyState, ExplorerLink, PageHeader, ScoreBadge, VerdictPill } from "@/components/ui";
+import { formatDate, formatMoney, REASON_LABEL, shortAddress } from "@/components/labels";
+import { Card, DecisionLink, EmptyState, ExplorerLink, PageHeader, RailBadge, ScoreBadge, VerdictPill } from "@/components/ui";
 
 export default function DecisionsPage() {
   const { data } = usePolling<{ decisions: Decision[] }>("/api/dashboard/decisions?limit=100", 3000);
@@ -34,7 +34,10 @@ export default function DecisionsPage() {
                     <td className="py-3 pr-4"><ScoreBadge score={d.score} /></td>
                     <td className="py-3 pr-4"><VerdictPill verdict={d.verdict} status={d.status} /></td>
                     <td className="py-3 pr-4 font-medium"><DecisionLink id={d.decision_id}>{d.purpose}</DecisionLink></td>
-                    <td className="tabular py-3 pr-4">{formatAvax(d.amount)}</td>
+                    <td className="tabular py-3 pr-4">
+                      <div>{formatMoney(d.amount, d.currency)}</div>
+                      <div className="mt-1"><RailBadge rail={d.rail} /></div>
+                    </td>
                     <td className="py-3 pr-4">
                       <div>{d.recipient.name ?? "—"}</div>
                       <div className="font-mono text-xs text-muted">{shortAddress(d.recipient.address)}{d.recipient.domain ? ` · ${d.recipient.domain}` : ""}</div>
@@ -44,7 +47,10 @@ export default function DecisionsPage() {
                       {d.reasons.filter((r) => r.delta < 0).length > 3 ? "…" : ""}
                     </td>
                     <td className="tabular py-3 pr-4 text-xs text-muted">{formatDate(d.created_at)}</td>
-                    <td className="py-3"><ExplorerLink url={d.payment_tx?.explorer_url ?? d.ledger_tx?.explorer_url} label={d.payment_tx ? "paiement" : "ancrage"} /></td>
+                    <td className="py-3">
+                      <ExplorerLink url={d.payment_tx?.explorer_url ?? d.ledger_tx?.explorer_url} label={d.payment_tx ? "paiement" : "ancrage"} />
+                      {d.card && <div className="mt-1 font-mono text-xs text-muted">carte ····{d.card.last4}</div>}
+                    </td>
                   </tr>
                 ))}
               </tbody>

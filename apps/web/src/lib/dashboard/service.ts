@@ -4,6 +4,7 @@ import { DEFAULT_POLICY, toBytes32, type ChainReference, type Decision, type Fra
 import { appendAudit } from "@/lib/audit";
 import { generateApiKey } from "@/lib/auth/apiKey";
 import { getChainClient } from "@/lib/chain";
+import { getRail } from "@/lib/rails";
 import { prisma } from "@/lib/db";
 import { HttpError } from "@/lib/http";
 import { toDecisionDto, toPolicyRow } from "@/lib/mappers";
@@ -87,7 +88,9 @@ export async function listDecisions(accountId: string, status?: string, limit = 
     orderBy: { createdAt: "desc" },
     take: limit,
   });
-  return rows.map(toDecisionDto);
+  const cards = await prisma.virtualCard.findMany({ where: { decisionId: { in: rows.map((r) => r.id) } } });
+  const byDecision = new Map(cards.map((c) => [c.decisionId, c]));
+  return rows.map((r) => toDecisionDto(r, byDecision.get(r.id) ?? null));
 }
 
 export async function getDecision(accountId: string, id: string) {
@@ -96,31 +99,56 @@ export async function getDecision(accountId: string, id: string) {
   return row;
 }
 
+export async function getDecisionWithCard(accountId: string, id: string) {
+  const row = await getDecision(accountId, id);
+  const card = await prisma.virtualCard.findUnique({ where: { decisionId: row.id } });
+  return { row, card };
+}
+
 export async function approveDecision(accountId: string, id: string): Promise<Decision> {
   const row = await getDecision(accountId, id);
   if (row.status !== "PENDING_CONFIRMATION") throw new HttpError("INVALID_REQUEST", `Decision is ${row.status}, not pending`);
   const killSwitch = await prisma.killSwitch.findUnique({ where: { accountId } });
   if (killSwitch?.active) throw new HttpError("KILL_SWITCH_ACTIVE", "Kill switch is active: re-arm it before approving payments");
 
-  const chain = getChainClient();
+  const rail = getRail((row.rail as "avalanche" | "virtual_card") ?? "avalanche");
   let paymentTx: ChainReference | null = null;
+  let ledgerTx: ChainReference | null = null;
   let status: "APPROVED" | "FAILED" = "APPROVED";
   try {
     // The HOLD was already anchored under the decision id; the human approval
-    // is a second on-chain entry under "<id>:approved" carrying the same hash.
-    paymentTx = await chain.executePayment(`${row.id}:approved`, row.recipientAddress as `0x${string}`, row.amount, toBytes32(row.decisionHash));
+    // is executed under "<id>:approved" on the rail, carrying the same hash.
+    const receipt = await rail.execute({
+      accountId,
+      decisionId: row.rail === "virtual_card" ? row.id : `${row.id}:approved`,
+      decisionHash: toBytes32(row.decisionHash),
+      amount: row.amount,
+      currency: row.currency as "AVAX" | "EUR",
+      recipientAddress: row.recipientAddress,
+      merchantName: row.recipientName,
+      merchantDomain: row.recipientDomain,
+    });
+    paymentTx = receipt.paymentTx;
+    ledgerTx = receipt.ledgerTx;
   } catch (err) {
-    console.error("[dashboard] approve: chain error", err);
+    console.error("[dashboard] approve: rail error", err);
     status = "FAILED";
   }
   const updated = await prisma.decision.update({
     where: { id },
-    data: { status, paymentTxJson: paymentTx ? JSON.stringify(paymentTx) : null, resolvedAt: new Date(), resolvedBy: "human" },
+    data: {
+      status,
+      paymentTxJson: paymentTx ? JSON.stringify(paymentTx) : null,
+      ledgerTxJson: ledgerTx ? JSON.stringify(ledgerTx) : row.ledgerTxJson,
+      resolvedAt: new Date(),
+      resolvedBy: "human",
+    },
   });
+  const card = await prisma.virtualCard.findUnique({ where: { decisionId: row.id } });
   await appendAudit(accountId, "DECISION_RESOLVED", { decision_id: id, resolution: "approved", by: "human" });
-  if (paymentTx) await appendAudit(accountId, "PAYMENT_EXECUTED", { decision_id: id, tx_hash: paymentTx.tx_hash, amount: row.amount, by: "human" });
+  if (status === "APPROVED") await appendAudit(accountId, "PAYMENT_EXECUTED", { decision_id: id, rail: row.rail, tx_hash: paymentTx?.tx_hash ?? ledgerTx?.tx_hash ?? null, card_last4: card?.last4 ?? null, amount: row.amount, currency: row.currency, by: "human" });
   else await appendAudit(accountId, "PAYMENT_FAILED", { decision_id: id, amount: row.amount, by: "human" });
-  return toDecisionDto(updated);
+  return toDecisionDto(updated, card);
 }
 
 export async function rejectDecision(accountId: string, id: string): Promise<Decision> {
@@ -158,7 +186,7 @@ export interface ComplianceReport {
 export async function complianceReport(accountId: string): Promise<ComplianceReport> {
   const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const rows = await prisma.decision.findMany({ where: { accountId, createdAt: { gte: since } }, orderBy: { createdAt: "desc" } });
-  const decisions = rows.map(toDecisionDto);
+  const decisions = rows.map((r) => toDecisionDto(r));
   const frameworks = {} as ComplianceReport["frameworks"];
   for (const f of ["DORA", "MiCA", "AML_CFT", "AI_ACT"] as Framework[]) {
     const counts = new Map<string, number>();

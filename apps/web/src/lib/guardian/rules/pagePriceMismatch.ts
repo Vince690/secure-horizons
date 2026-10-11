@@ -11,7 +11,7 @@ const TOLERANCE_DEN = 100n;
  * In the demo: page says 0.04 AVAX, hidden notice says 0.5, agent asks 0.5.
  */
 export const pagePriceMismatch: Rule = (ctx) => {
-  const prices = pricesIn(visiblePageText(ctx));
+  const prices = pricesIn(visiblePageText(ctx), ctx.request.currency);
   if (prices.length === 0) return null;
   const maxVisible = prices.reduce((a, b) => (a > b ? a : b));
   const amount = parseAvax(ctx.request.amount);
@@ -20,7 +20,7 @@ export const pagePriceMismatch: Rule = (ctx) => {
     code: "PAGE_PRICE_MISMATCH",
     severity: "high",
     delta: -35,
-    message: `La page affiche au plus ${formatAvax(maxVisible)} AVAX, l'agent demande ${ctx.request.amount} AVAX.`,
+    message: `La page affiche au plus ${formatAvax(maxVisible)} ${ctx.request.currency}, l'agent demande ${ctx.request.amount} ${ctx.request.currency}.`,
     frameworks: ["MiCA", "AI_ACT"],
   };
 };

@@ -11,7 +11,8 @@ import {Pausable} from "@openzeppelin/contracts/utils/Pausable.sol";
 ///         every payment while still allowing refusals to be recorded as proof.
 ///         Avalanche Fuji testnet only. Test tokens, no real value.
 contract PayGuardLedger is Ownable, Pausable {
-    /// 0 = APPROVED (set by pay), 1 = HOLD, 2 = BLOCKED, 3 = REJECTED
+    /// 0 = APPROVED on-chain (set by pay), 1 = HOLD, 2 = BLOCKED, 3 = REJECTED,
+    /// 4 = APPROVED and executed on another rail (e.g. single-use virtual card): proof only, no value moves here.
     struct Record {
         uint8 verdict;
         bytes32 decisionHash;
@@ -46,9 +47,10 @@ contract PayGuardLedger is Ownable, Pausable {
         emit PaymentExecuted(decisionId, to, msg.value, decisionHash);
     }
 
-    /// @notice Anchor a non-payment decision. Works while paused: a refusal is also a proof.
+    /// @notice Anchor a decision that moved no value here (hold, refusal, rejection, or a payment
+    ///         executed on another rail). Works while paused: a refusal is also a proof.
     function record(bytes32 decisionId, uint8 verdict, bytes32 decisionHash) external onlyOwner {
-        if (verdict == 0 || verdict > 3) revert InvalidVerdict(verdict);
+        if (verdict == 0 || verdict > 4) revert InvalidVerdict(verdict);
         if (_decisions[decisionId].timestamp != 0) revert DecisionAlreadyRecorded(decisionId);
         _decisions[decisionId] = Record(verdict, decisionHash, uint64(block.timestamp), address(0), 0);
         decisionCount += 1;

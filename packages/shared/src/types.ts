@@ -14,6 +14,13 @@
 /** Final decision of the guardian for one payment request. */
 export type Verdict = "APPROVED" | "HOLD" | "BLOCKED";
 
+/** Money moves on a rail. Each rail has its own currency and its own mandate. */
+export type Rail = "avalanche" | "virtual_card";
+export type Currency = "AVAX" | "EUR";
+
+/** The currency each rail settles in. */
+export const RAIL_CURRENCY: Record<Rail, Currency> = { avalanche: "AVAX", virtual_card: "EUR" };
+
 /** Lifecycle of a decision. HOLD starts PENDING_CONFIRMATION and ends APPROVED or REJECTED. */
 export type DecisionStatus =
   | "APPROVED" // executed on-chain (tx hash present)
@@ -59,7 +66,9 @@ export type ReasonCode =
   // On-chain reputation (added at step 5)
   | "RECIPIENT_NO_ONCHAIN_HISTORY"
   // Model second opinion on the page (added at step 7)
-  | "SEMANTIC_MANIPULATION_SUSPECTED";
+  | "SEMANTIC_MANIPULATION_SUSPECTED"
+  // Rails (added at phase A2)
+  | "RAIL_NOT_ALLOWED";
 
 export interface Reason {
   code: ReasonCode;
@@ -96,9 +105,12 @@ export interface EvaluatePaymentRequest {
   agent_id: string;
   /** Idempotency key chosen by the caller (UUID). Same key => same decision. */
   request_id: string;
-  /** Decimal string in AVAX, e.g. "0.05". Strings avoid float issues. */
+  /** Decimal string, e.g. "0.05" (AVAX) or "49.90" (EUR). Strings avoid float issues. */
   amount: string;
-  currency: "AVAX";
+  /** AVAX pays on the Avalanche rail, EUR on the virtual-card rail. */
+  currency: Currency;
+  /** Defaults from the currency: AVAX -> avalanche, EUR -> virtual_card. */
+  rail?: Rail;
   recipient: Recipient;
   /** What the agent believes it is buying, in its own words. */
   purpose: string;
@@ -117,6 +129,33 @@ export interface ChainReference {
   block_number?: number;
 }
 
+export type VirtualCardStatus = "active" | "used" | "cancelled" | "frozen" | "expired";
+
+/**
+ * A single-use virtual card issued for one approved decision on the client's
+ * own bank account ("connect your bank"). The full number never leaves the
+ * issuer / the secure fill component: agents and the API only see last4.
+ */
+export interface VirtualCardSummary {
+  card_id: string;
+  provider: string; // "sandbox-bank" now, "revolut-business" later
+  brand: string; // "VISA"
+  last4: string;
+  masked: string; // "**** **** **** 1234"
+  expiry: string; // "MM/YY"
+  /** Cap for the single authorization, decimal string in `currency`. */
+  limit_amount: string;
+  currency: Currency;
+  /** Merchant the card is locked to (domain or name). */
+  merchant_lock: string | null;
+  single_use: true;
+  status: VirtualCardStatus;
+  issued_at: string;
+  expires_at: string;
+  /** Last authorization attempt by the merchant, if any (sandbox). */
+  last_authorization: { amount: string; merchant: string; approved: boolean; reason: string; at: string } | null;
+}
+
 /** Response of POST /api/v1/payments/evaluate and GET /api/v1/payments/:id */
 export interface Decision {
   decision_id: string;
@@ -131,11 +170,14 @@ export interface Decision {
   /** French explanation written for a non-technical reader (LLM, cached). */
   explanation: string;
   amount: string;
-  currency: "AVAX";
+  currency: Currency;
+  rail: Rail;
   recipient: Recipient;
   purpose: string;
-  /** Present when funds actually moved on Fuji. */
+  /** Present when funds actually moved on Fuji (avalanche rail). */
   payment_tx: ChainReference | null;
+  /** Present when a single-use virtual card was issued (virtual_card rail). */
+  card: VirtualCardSummary | null;
   /** Present when the decision was anchored on-chain (approved OR blocked). */
   ledger_tx: ChainReference | null;
   /** SHA-256 of the canonical decision payload, also stored on-chain. */
@@ -150,6 +192,14 @@ export interface Decision {
 // ---------------------------------------------------------------------------
 // Policy & account
 // ---------------------------------------------------------------------------
+
+/** Limits of one rail, in that rail's currency. */
+export interface RailLimits {
+  max_per_tx: string;
+  max_daily: string;
+  min_balance: string;
+  require_confirmation_above: string;
+}
 
 /** Spending policy configured by the human on the dashboard. */
 export interface SpendingPolicy {
@@ -167,6 +217,8 @@ export interface SpendingPolicy {
   require_confirmation_above: string;
   /** First payment to a recipient never paid before always requires human confirmation. */
   confirm_new_recipients: boolean;
+  /** Mandate of the virtual-card rail, in EUR. Same meaning as the fields above. */
+  card: RailLimits;
   /** Addresses (lowercase) the human has explicitly trusted. */
   trusted_recipients: string[];
   /** Addresses (lowercase) that are always blocked. */
@@ -190,6 +242,8 @@ export interface BalanceResponse {
   explorer_url: string;
   /** "mock" until the Fuji client is wired, then "fuji". */
   mode?: "mock" | "fuji";
+  /** Virtual-card rail: the connected bank account (sandbox). */
+  card_rail?: { provider: string; account_label: string; balance: string; currency: "EUR"; cards_active: number; frozen: boolean };
 }
 
 // ---------------------------------------------------------------------------
@@ -246,6 +300,7 @@ export const DEFAULT_POLICY: SpendingPolicy = {
   hold_score: 40,
   require_confirmation_above: "0.08",
   confirm_new_recipients: true,
+  card: { max_per_tx: "100", max_daily: "300", min_balance: "20", require_confirmation_above: "80" },
   trusted_recipients: [],
   blocked_recipients: [],
   trusted_domains: [],

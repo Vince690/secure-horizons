@@ -11,5 +11,5 @@ export const GET = withErrorHandling(async (request: Request) => {
   const url = new URL(request.url);
   const limit = Math.min(100, Math.max(1, Number(url.searchParams.get("limit") ?? 20) || 20));
   const rows = await prisma.decision.findMany({ where: { accountId: account.id }, orderBy: { createdAt: "desc" }, take: limit });
-  return NextResponse.json({ decisions: rows.map(toDecisionDto) });
+  return NextResponse.json({ decisions: rows.map((r) => toDecisionDto(r)) });
 });

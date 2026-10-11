@@ -1,9 +1,10 @@
 import { randomUUID } from "node:crypto";
 import type { Account } from "@prisma/client";
-import { DEFAULT_POLICY, type ChainReference, type Decision, type DecisionStatus, type EvaluatePaymentRequest } from "@payguard/shared";
+import { DEFAULT_POLICY, type ChainReference, type Decision, type DecisionStatus, type EvaluatePaymentRequest, type VirtualCardSummary } from "@payguard/shared";
 import { prisma } from "@/lib/db";
 import { appendAudit } from "@/lib/audit";
 import { getChainClient } from "@/lib/chain";
+import { getRail, policyForRail, railForCurrency } from "@/lib/rails";
 import { HttpError } from "@/lib/http";
 import { maybeAutoKillSwitch } from "@/lib/killswitch";
 import { explainDecision } from "@/lib/llm/explain";
@@ -30,6 +31,7 @@ async function loadHistory(accountId: string): Promise<HistoricalDecision[]> {
   const rows = await prisma.decision.findMany({ where: { accountId }, orderBy: { createdAt: "desc" }, take: 200 });
   return rows.map((r) => ({
     amount: r.amount,
+    rail: r.rail,
     recipient_address: r.recipientAddress,
     recipient_domain: r.recipientDomain ?? undefined,
     purpose: r.purpose,
@@ -56,11 +58,16 @@ export async function processPaymentRequest(account: Account, request: EvaluateP
   if (existing) return { decision: toDecisionDto(existing), replayed: true };
 
   const chain = getChainClient();
-  const [policy, killSwitch, history, balance, recipientInfo, screen] = await Promise.all([
+  const railKind = request.rail ?? railForCurrency(request.currency);
+  const rail = getRail(railKind);
+  if (rail.currency !== request.currency) {
+    throw new HttpError("INVALID_REQUEST", `Rail ${railKind} settles in ${rail.currency}, not ${request.currency}`);
+  }
+  const [fullPolicy, killSwitch, history, balance, recipientInfo, screen] = await Promise.all([
     loadPolicy(account.id),
     loadKillSwitch(account.id),
     loadHistory(account.id),
-    chain.getBalance(),
+    rail.getBalance(account.id),
     chain.getAddressInfo(request.recipient.address).catch((err) => {
       console.warn("[guardian] getAddressInfo failed, skipping on-chain reputation", err);
       return undefined;
@@ -68,8 +75,10 @@ export async function processPaymentRequest(account: Account, request: EvaluateP
     semanticScreen(request.context?.page_excerpt),
   ]);
 
+  // The engine applies the mandate of the rail in use (AVAX limits or EUR card limits).
+  const policy = policyForRail(fullPolicy, railKind);
   const ctx: GuardianContext = {
-    request,
+    request: { ...request, rail: railKind },
     policy,
     balance,
     killSwitchActive: killSwitch.active,
@@ -87,7 +96,7 @@ export async function processPaymentRequest(account: Account, request: EvaluateP
     request_id: request.request_id,
     agent_id: request.agent_id,
     amount: request.amount,
-    currency: "AVAX",
+    currency: request.currency,
     recipient: { address: request.recipient.address },
     purpose: request.purpose,
     verdict: evaluation.verdict,
@@ -99,16 +108,28 @@ export async function processPaymentRequest(account: Account, request: EvaluateP
   const explanation = explained.text;
   console.log(`[guardian] ${decisionId} ${evaluation.verdict} score=${evaluation.score} explanation=${explained.source}${screen ? ` screen=${screen.source}` : ""}`);
 
-  // Chain step: APPROVED pays, everything else is recorded as proof.
+  // Rail step: APPROVED executes on the rail (AVAX transfer or single-use card), everything is anchored as proof.
   let status: DecisionStatus;
   let paymentTx: ChainReference | null = null;
   let ledgerTx: ChainReference | null = null;
+  let card: VirtualCardSummary | null = null;
   let resolved: { at: Date; by: "guardian" } | null = null;
   const hash32 = toBytes32(decisionHash);
   try {
     if (evaluation.verdict === "APPROVED") {
-      paymentTx = await chain.executePayment(decisionId, request.recipient.address as `0x${string}`, request.amount, hash32);
-      ledgerTx = paymentTx; // pay() anchors the hash in the same transaction
+      const receipt = await rail.execute({
+        accountId: account.id,
+        decisionId,
+        decisionHash: hash32,
+        amount: request.amount,
+        currency: request.currency,
+        recipientAddress: request.recipient.address,
+        merchantName: request.recipient.name ?? null,
+        merchantDomain: request.recipient.domain ?? null,
+      });
+      paymentTx = receipt.paymentTx;
+      ledgerTx = receipt.ledgerTx;
+      card = receipt.card;
       status = "APPROVED";
       resolved = { at: new Date(), by: "guardian" };
     } else if (evaluation.verdict === "HOLD") {
@@ -132,7 +153,8 @@ export async function processPaymentRequest(account: Account, request: EvaluateP
       agentId: request.agent_id,
       requestId: request.request_id,
       amount: request.amount,
-      currency: "AVAX",
+      currency: request.currency,
+      rail: railKind,
       recipientAddress: request.recipient.address.toLowerCase(),
       recipientName: request.recipient.name ?? null,
       recipientDomain: request.recipient.domain?.toLowerCase() ?? null,
@@ -171,13 +193,21 @@ export async function processPaymentRequest(account: Account, request: EvaluateP
     reasons: evaluation.reasons.map((r) => r.code),
     decision_hash: decisionHash,
   });
-  if (status === "APPROVED" && paymentTx) {
-    await appendAudit(account.id, "PAYMENT_EXECUTED", { decision_id: decisionId, tx_hash: paymentTx.tx_hash, amount: request.amount });
+  if (status === "APPROVED" && (paymentTx || card)) {
+    await appendAudit(account.id, "PAYMENT_EXECUTED", {
+      decision_id: decisionId,
+      rail: railKind,
+      tx_hash: paymentTx?.tx_hash ?? ledgerTx?.tx_hash ?? null,
+      card_last4: card?.last4 ?? null,
+      amount: request.amount,
+      currency: request.currency,
+    });
   } else if (status === "FAILED") {
     await appendAudit(account.id, "PAYMENT_FAILED", { decision_id: decisionId, amount: request.amount });
   }
 
   const decision = toDecisionDto(row);
+  decision.card = card;
 
   // The guardian pulls the plug itself when the pattern is critical.
   await maybeAutoKillSwitch({

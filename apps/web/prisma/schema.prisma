@@ -48,6 +48,11 @@ model Policy {
   holdScore                Int
   requireConfirmationAbove String
   confirmNewRecipients     Boolean @default(true)
+  /// Virtual-card rail mandate, in EUR
+  cardMaxPerTx                 String @default("100")
+  cardMaxDaily                 String @default("300")
+  cardMinBalance               String @default("20")
+  cardRequireConfirmationAbove String @default("80")
   /// JSON string[] of lowercase addresses
   trustedRecipients        String  @default("[]")
   blockedRecipients        String  @default("[]")
@@ -76,6 +81,7 @@ model Decision {
   requestId       String
   amount          String
   currency        String    @default("AVAX")
+  rail            String    @default("avalanche")
   recipientAddress String
   recipientName   String?
   recipientDomain String?
@@ -132,4 +138,39 @@ model ExplanationCache {
   decisionHash String   @id
   text         String
   createdAt    DateTime @default(now())
+}
+
+/// Single-use virtual card issued by the connected bank (sandbox issuer for the hackathon).
+/// The full PAN is kept by the issuer only; we store what the dashboard may show.
+model VirtualCard {
+  id             String   @id
+  accountId      String
+  /// The decision this card was issued for (no FK: the card is issued by the rail
+  /// before the decision row is written, and human approvals use "<id>:approved").
+  decisionId     String   @unique
+  provider       String   @default("sandbox-bank")
+  brand          String   @default("VISA")
+  last4          String
+  expiry         String
+  limitAmount    String
+  currency       String   @default("EUR")
+  merchantLock   String?
+  status         String   @default("active")
+  issuedAt       DateTime @default(now())
+  expiresAt      DateTime
+  /// JSON of the last authorization attempt (sandbox)
+  lastAuthJson   String?
+
+  @@index([accountId, status])
+}
+
+/// Sandbox bank account behind the virtual-card rail (one per PayGuard account).
+model BankAccount {
+  accountId   String   @id
+  provider    String   @default("sandbox-bank")
+  label       String   @default("Compte courant (bac à sable)")
+  currency    String   @default("EUR")
+  balance     String   @default("500.00")
+  frozen      Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
 }

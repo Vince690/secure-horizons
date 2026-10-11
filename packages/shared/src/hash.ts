@@ -1,12 +1,12 @@
 import { createHash } from "node:crypto";
-import type { Reason, Verdict } from "./types";
+import type { Currency, Reason, Verdict } from "./types";
 
 export interface DecisionHashInput {
   decision_id: string;
   request_id: string;
   agent_id: string;
   amount: string;
-  currency: "AVAX";
+  currency: Currency;
   recipient: { address: string };
   purpose: string;
   verdict: Verdict;

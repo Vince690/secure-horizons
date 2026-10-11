@@ -9,6 +9,11 @@ Un plugin MCP qu'un agent IA appelle quand il veut acheter : il vérifie chaque 
 - **BLOCKED** : refuse, explique en français, grave le refus on-chain.
 Un **kill switch** (manuel ou automatique) met le contrat en pause : plus aucun paiement ne sort, même si l'API est compromise.
 
+## Deux rails, une preuve
+- **Rail Avalanche (AVAX)** : le wallet gardien paie via le contrat, qui grave le hash de la décision dans la même transaction.
+- **Rail carte virtuelle (EUR)** : « connectez votre banque ». À chaque paiement approuvé, PayGuard émet une carte à usage unique plafonnée au montant exact, verrouillée sur le marchand, expirant en une heure ; l'argent ne quitte jamais le compte du client, PayGuard n'y touche jamais, l'agent ne voit jamais le numéro. La décision est ancrée sur Avalanche (code 4). Émetteur bac à sable pour le hackathon, même interface que le futur adaptateur bancaire.
+- Le kill switch coupe les deux : pause du contrat et gel de toutes les cartes.
+
 ## Pourquoi
 Les protocoles de paiement par agents signent la transaction, pas la décision. Un agent manipulé par une page piégée fait un paiement « valide » mais non voulu. PayGuard contrôle la décision, produit la preuve, et outille DORA, MiCA, AML/CFT et l'AI Act.
 
@@ -50,11 +55,12 @@ Chaque point retiré est relié à un cadre (DORA, MiCA, AML/CFT, AI Act) et à 
 ## Contrat déployé (Fuji C-Chain, chainId 43113)
 | Contrat | Adresse | Explorer |
 |---|---|---|
-| PayGuardLedger | `0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1` | https://testnet.snowtrace.io/address/0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1 |
+| PayGuardLedger v2 (ajout du code 4 « approuvé sur un autre rail ») | `0xf735d4a99f7ad8c8ffb914cfac088634487025ba` | https://testnet.snowtrace.io/address/0xf735d4a99f7ad8c8ffb914cfac088634487025ba |
+| PayGuardLedger v1 (11 oct. 00:50, remplacé) | `0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1` | https://testnet.snowtrace.io/address/0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1 |
 | Wallet gardien (owner) | `0xCc86BB75d603aA474dddA53930cf4252C6257764` | https://testnet.snowtrace.io/address/0xCc86BB75d603aA474dddA53930cf4252C6257764 |
 | Wallet marchand de démo (NordSound) | `0x97c5Cf046b267b4BD6496391E65e1C762bB90839` | https://testnet.snowtrace.io/address/0x97c5Cf046b267b4BD6496391E65e1C762bB90839 |
 
-Déployé le 11 octobre 2026, détails dans `packages/contracts/deployments/fuji.json`. Premier paiement de test : https://testnet.snowtrace.io/tx/0xb78631b431adde45bacf13f8a520f821bbbb7a94d8b42b58ebca0d45e9f9aea6
+Détails dans `packages/contracts/deployments/fuji.json`. v2 déployée le 11 octobre 2026 vers 03:20 ; premier paiement de test : https://testnet.snowtrace.io/tx/0x6de6c9cf04a6cef732e8edaeefce0dd88a80451119a88aa6a1620fc86e08520b
 
 ## Feuille de route
 Voir `docs/ROADMAP_RAILS.md` : paiements en euros par cartes virtuelles à usage unique créées sur le compte bancaire du client (« connecte ton compte »), Stripe Issuing en second, EURC ; Avalanche reste la couche de preuve et de kill switch. Règle invariante : PayGuard ne détient jamais les fonds et l'agent ne voit jamais un secret.

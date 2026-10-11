@@ -54,7 +54,7 @@ Requête (`EvaluatePaymentRequest`) :
   "agent_id": "claude-desktop",
   "request_id": "7b0d6d8e-3f6e-4c7e-9d2b-1a2b3c4d5e6f",
   "amount": "0.05",
-  "currency": "AVAX",
+  "currency": "AVAX",            // ou "EUR" pour une carte virtuelle à usage unique (rail virtual_card)
   "recipient": {
     "address": "0xAbC...1234",
     "name": "NordSound",
@@ -183,6 +183,23 @@ Verdict :
 Kill switch automatique : 3 décisions `BLOCKED` en 10 min, ou une raison `PROMPT_INJECTION_SUSPECTED` de niveau critical avec montant > `max_per_tx` ⇒ activation du kill switch (DB + on-chain) + entrée d'audit `KILL_SWITCH_ON` avec `reason: "auto"`.
 
 Explication LLM (`src/lib/llm/explain.ts`) : prompt système court, entrée = la décision JSON, sortie = 2 phrases en français pour un dirigeant non technique, modèle `claude-opus-5-5` à effort bas. **Cache par (verdict, score, codes, montant, bénéficiaire, objet)**, pas par `decision_hash` : deux répétitions identiques de la démo doivent toucher le cache, or le hash contient l'id et l'horodatage. Fallback template si clé absente, erreur, refus ou > 4 s (`LLM_TIMEOUT_MS`). Une erreur d'authentification désactive le LLM pour le processus.
+
+## 5 bis. Rails de paiement (phase A2)
+
+PayGuard **décide**, un rail **exécute**, Avalanche **prouve**. Chaque rail a sa monnaie et son mandat ; la décision est toujours ancrée sur `PayGuardLedger`.
+
+| Rail | Monnaie | Exécution | Ancrage on-chain | Kill switch |
+|---|---|---|---|---|
+| `avalanche` (défaut) | AVAX | `pay()` : transfert depuis le wallet gardien | même transaction (verdict 0) | `activateKillSwitch()` |
+| `virtual_card` | EUR | émission d'une **carte virtuelle à usage unique** sur le compte bancaire du client : plafond = montant exact approuvé, verrouillée sur le marchand, expiration 60 min, seul `last4` est stocké | `record(id, 4, hash)` : « approuvé, exécuté sur un autre rail », aucune valeur ne bouge sur la chaîne | gel du compte bancaire et de toutes les cartes actives + pause du contrat |
+
+Sélection : `currency` de la requête (`AVAX` ⇒ `avalanche`, `EUR` ⇒ `virtual_card`), ou champ `rail` explicite. Le moteur applique les limites du rail (`SpendingPolicy.card` pour la carte, en EUR). Plafond quotidien calculé par rail.
+
+Émetteur : `apps/web/src/lib/rails/sandboxIssuer.ts`, bac à sable qui reproduit la forme d'une API cartes de banque pro (créer une carte virtuelle avec limite par transaction, autoriser, geler, annuler). Le vrai adaptateur (Revolut Business, Qonto, Swan, Stripe Issuing) se branche derrière `PaymentRail` sans toucher au reste.
+
+Routes dashboard : `GET /api/dashboard/cards`, `POST /api/dashboard/cards/:id/authorize { amount, merchant }` (bac à sable : simule le débit marchand ; refuse si carte utilisée, gelée, expirée, montant > plafond ou marchand différent). `GET /api/dashboard/balance` renvoie aussi `card_rail` (solde bancaire, cartes actives, gel).
+
+Réponse `Decision` : `rail`, `currency`, et `card` (`VirtualCardSummary`) quand une carte a été émise. `payment_tx` reste null sur le rail carte, `ledger_tx` porte l'ancrage.
 
 ## 6. Hash de décision
 

@@ -17,7 +17,7 @@ PayGuard **décide et instruit**, un acteur agréé **exécute**, Avalanche **pr
 | Rail | Statut | Qui est agréé | Où est l'argent | Notes |
 |---|---|---|---|---|
 | **Avalanche Fuji, AVAX** | ✅ en place (hackathon) | n/a (testnet) | wallet gardien dédié | Contrat `PayGuardLedger` : paiement + ancrage + kill switch on-chain. Reste la **couche de preuve** de tous les autres rails. |
-| **Carte virtuelle « connecte ton compte »** (Revolut Business, Qonto, Swan…) | 🎯 **priorité phase 2** | la banque du client | compte bancaire du client | Le client autorise PayGuard via l'API de sa banque. À chaque approbation : carte virtuelle à usage unique, plafond = montant approuvé, catégorie marchand verrouillée, expiration courte. Kill switch = gel de toutes les cartes. Zéro inscription pour le client. **À vérifier dès lundi : création de cartes virtuelles par l'API Revolut Business et son bac à sable.** |
+| **Carte virtuelle « connecte ton compte »** (Revolut Business, Qonto, Swan…) | ✅ **rail en place avec émetteur bac à sable** (11 oct., phase A2) : `PaymentRail` + `sandboxIssuer`, cartes à usage unique plafonnées, gel par kill switch, ancrage `record(4)`. Reste : brancher le vrai adaptateur bancaire | la banque du client | compte bancaire du client | Le client autorise PayGuard via l'API de sa banque. À chaque approbation : carte virtuelle à usage unique, plafond = montant approuvé, catégorie marchand verrouillée, expiration courte. Kill switch = gel de toutes les cartes. Zéro inscription pour le client. **À vérifier dès lundi : création de cartes virtuelles par l'API Revolut Business et son bac à sable.** |
 | **Carte virtuelle « on fournit »** (Stripe Issuing via sous-comptes Connect) | phase 2 bis | Stripe | sous-compte Stripe du client | Pour les clients sans banque compatible. Autorisation en temps réel : Stripe appelle PayGuard à chaque débit, le moteur de règles tranche une seconde fois. |
 | **EURC** (euro tokenisé de Circle, émis sous MiCA) sur Avalanche | phase 3 | Circle (EMI) | wallet du client ou du gardien | Même mécanique qu'AVAX en ERC-20. Détenir les jetons du client ferait de PayGuard un prestataire MiCA : préférer un wallet du client avec autorisation limitée (allowance). Testnet : EURC de test si Circle le fournit, sinon jeton de test étiqueté. |
 | Virement initié (Fintecture, Powens, Bridge) | phase 3 | l'agrégateur (PISP) | compte du client | Jamais autonome : le client confirme dans l'appli de sa banque. Rail naturel pour les HOLD. |
@@ -32,7 +32,7 @@ Interaction avec les sites réels (Amazon…) : possible via un navigateur pilot
 
 ## Phases
 
-- **A (avant le pitch)** : `check_merchant` + `find_best_offer` + 3e marchand de démo ; abstraction `PaymentRail` si le temps le permet ; slides « Rails » et « Trois couches ».
+- **A (avant le pitch)** ✅ : `check_merchant` + `find_best_offer` + 3e marchand de démo ; abstraction `PaymentRail` + rail carte virtuelle (émetteur bac à sable) ; contrat v2 avec le code 4 ; slides « Rails » et « Trois couches » à faire.
 - **B (semaine suivante)** : rail carte « connecte ton compte » sur bac à sable Revolut Business ; sinon Stripe Issuing test ; composant de remplissage sécurisé ; réconciliation débit ↔ décision ↔ ancrage.
 - **C** : EURC ; Avalanche confirmé comme couche de preuve commune.
 - **D (juridique, Vincent)** : qualification prestataire technique, mandats, MiCA si EURC, responsabilité et valeur probante de l'ancrage.

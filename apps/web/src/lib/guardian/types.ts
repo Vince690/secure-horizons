@@ -10,6 +10,8 @@ import type {
 /** A past decision of the same account, as the engine needs it (no DB types here). */
 export interface HistoricalDecision {
   amount: string;
+  /** Rail the decision ran on; the daily limit is per rail. */
+  rail?: string;
   recipient_address: string;
   recipient_domain?: string;
   purpose: string;

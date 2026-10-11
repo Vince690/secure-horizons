@@ -3,6 +3,7 @@ import { appendAudit } from "@/lib/audit";
 import { getChainClient } from "@/lib/chain";
 import { prisma } from "@/lib/db";
 import { toKillSwitchDto } from "@/lib/mappers";
+import { setCardsFrozen } from "@/lib/rails/sandboxIssuer";
 
 /**
  * Kill switch = DB flag (primary gate for the API) + on-chain pause (defense
@@ -13,6 +14,8 @@ export async function setKillSwitch(accountId: string, active: boolean, reason: 
   const chain = getChainClient();
   let onchainTx: ChainReference | null = null;
   let onchainError: string | null = null;
+  // Card rail: freeze the bank link and every active single-use card (or thaw them).
+  await setCardsFrozen(accountId, active).catch((err) => console.error("[killswitch] card freeze failed", err));
   try {
     onchainTx = await chain.setKillSwitch(active, reason);
   } catch (err) {

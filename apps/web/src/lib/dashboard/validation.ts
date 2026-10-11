@@ -19,6 +19,7 @@ export const policySchema = z.object({
   hold_score: z.number().int().min(0).max(100),
   require_confirmation_above: decimal,
   confirm_new_recipients: z.boolean().default(true),
+  card: z.object({ max_per_tx: decimal, max_daily: decimal, min_balance: decimal, require_confirmation_above: decimal }).default({ max_per_tx: "100", max_daily: "300", min_balance: "20", require_confirmation_above: "80" }),
   trusted_recipients: z.array(address).max(100),
   blocked_recipients: z.array(address).max(100),
   trusted_domains: z.array(z.string().min(1).max(253)).max(100),

@@ -3,8 +3,8 @@
 import { useState } from "react";
 import type { Decision } from "@payguard/shared";
 import { postJson, usePolling } from "@/components/hooks";
-import { formatAvax, formatDate, shortAddress } from "@/components/labels";
-import { Button, Card, DecisionLink, EmptyState, PageHeader, ReasonList, ScoreBadge } from "@/components/ui";
+import { formatDate, formatMoney, shortAddress } from "@/components/labels";
+import { Button, Card, DecisionLink, EmptyState, PageHeader, RailBadge, ReasonList, ScoreBadge } from "@/components/ui";
 
 export default function ApprovalsPage() {
   const { data, refresh } = usePolling<{ decisions: Decision[] }>("/api/dashboard/decisions?status=PENDING_CONFIRMATION&limit=50", 2000);
@@ -40,7 +40,7 @@ export default function ApprovalsPage() {
                   <div className="text-xl font-semibold">{d.purpose}</div>
                 </DecisionLink>
                 <div className="mt-1 text-muted">
-                  <span className="tabular text-lg font-semibold text-fg">{formatAvax(d.amount)}</span> → {d.recipient.name ?? "marchand"} ({shortAddress(d.recipient.address)})
+                  <span className="tabular text-lg font-semibold text-fg">{formatMoney(d.amount, d.currency)}</span> <RailBadge rail={d.rail} /> → {d.recipient.name ?? "marchand"} ({shortAddress(d.recipient.address)})
                   {d.recipient.domain ? ` · ${d.recipient.domain}` : ""} · agent {d.agent_id} · {formatDate(d.created_at)}
                 </div>
                 <p className="mt-3 text-sm">{d.explanation}</p>
@@ -50,7 +50,7 @@ export default function ApprovalsPage() {
               </div>
               <div className="flex flex-col gap-2">
                 <Button variant="ok" onClick={() => act(d.decision_id, "approve")} disabled={busy === d.decision_id}>
-                  {busy === d.decision_id ? "Paiement…" : "Approuver et payer"}
+                  {busy === d.decision_id ? "Paiement…" : d.rail === "virtual_card" ? "Approuver et émettre la carte" : "Approuver et payer"}
                 </Button>
                 <Button variant="danger" onClick={() => act(d.decision_id, "reject")} disabled={busy === d.decision_id}>
                   Rejeter

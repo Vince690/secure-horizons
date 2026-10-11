@@ -122,6 +122,15 @@ export function ReasonList({ reasons, compact = false }: { reasons: Reason[]; co
   );
 }
 
+export function RailBadge({ rail }: { rail: string }) {
+  const card = rail === "virtual_card";
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium ${card ? "border-accent/40 text-accent" : "border-line text-muted"}`} title={card ? "Carte virtuelle à usage unique sur le compte bancaire" : "Transfert AVAX depuis le wallet gardien"}>
+      {card ? "💳 Carte" : "⛓ AVAX"}
+    </span>
+  );
+}
+
 export function ExplorerLink({ url, label = "Voir sur Snowtrace" }: { url: string | null | undefined; label?: string }) {
   if (!url) return <span className="text-sm text-muted">—</span>;
   return (

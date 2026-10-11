@@ -8,7 +8,7 @@ export const minBalance: Rule = (ctx) => {
     code: "MIN_BALANCE_BREACH",
     severity: "high",
     delta: -50,
-    message: `Ce paiement ferait passer le solde sous le plancher de ${ctx.policy.min_balance} AVAX.`,
+    message: `Ce paiement ferait passer le solde sous le plancher de ${ctx.policy.min_balance} ${ctx.request.currency}.`,
     frameworks: ["MiCA"],
   };
 };

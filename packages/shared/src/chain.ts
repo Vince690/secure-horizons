@@ -1,7 +1,7 @@
 import type { ChainReference } from "./types";
 
-/** Verdict codes stored on-chain by PayGuardLedger.record(). pay() implies 0 (APPROVED). */
-export type OnChainVerdict = 1 | 2 | 3; // 1 = HOLD, 2 = BLOCKED, 3 = REJECTED
+/** Verdict codes stored on-chain by PayGuardLedger.record(). pay() implies 0 (APPROVED on-chain). */
+export type OnChainVerdict = 1 | 2 | 3 | 4; // 1 = HOLD, 2 = BLOCKED, 3 = REJECTED, 4 = APPROVED on another rail (card)
 
 export interface AddressInfo {
   address: string;

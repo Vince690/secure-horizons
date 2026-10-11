@@ -7,9 +7,9 @@ import type { EvaluatePaymentRequest, Reason, Verdict } from "@payguard/shared";
 export function templateExplanation(verdict: Verdict, score: number, reasons: Reason[], request: EvaluatePaymentRequest): string {
   const merchant = request.recipient.name ?? request.recipient.domain ?? request.recipient.address.slice(0, 10) + "…";
   const head = {
-    APPROVED: `Paiement de ${request.amount} AVAX à ${merchant} autorisé (score ${score}/100).`,
-    HOLD: `Paiement de ${request.amount} AVAX à ${merchant} mis en attente d'une validation humaine (score ${score}/100).`,
-    BLOCKED: `Paiement de ${request.amount} AVAX à ${merchant} refusé (score ${score}/100).`,
+    APPROVED: `Paiement de ${request.amount} ${request.currency} à ${merchant} autorisé (score ${score}/100).`,
+    HOLD: `Paiement de ${request.amount} ${request.currency} à ${merchant} mis en attente d'une validation humaine (score ${score}/100).`,
+    BLOCKED: `Paiement de ${request.amount} ${request.currency} à ${merchant} refusé (score ${score}/100).`,
   }[verdict];
   const negatives = reasons.filter((r) => r.delta < 0);
   if (negatives.length === 0) {

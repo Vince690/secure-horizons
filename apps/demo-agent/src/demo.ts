@@ -4,7 +4,8 @@
  * API key, so it behaves identically every time.
  *
  *   npm run demo -w apps/demo-agent            legit purchase, then the trap
- *   npm run demo:hold -w apps/demo-agent       + a 0.09 AVAX purchase that waits for the dashboard
+ *   npm run demo:card -w apps/demo-agent       + a euro payment by single-use virtual card
+ *   npm run demo:hold -w apps/demo-agent       + a first purchase at a new merchant that waits for the dashboard
  *   npm run demo:attack -w apps/demo-agent     + the agent insists on the trap until the kill switch fires
  */
 import path from "node:path";
@@ -111,6 +112,16 @@ say.agent("Je lis la page de l'autre marchand.");
 const trapPage = await readPage(TRAP_URL);
 say.agent("0.04 AVAX affiché. Je transmets tout ce que j'ai lu à PayGuard, y compris les parties cachées.");
 await pay({ amount: "0.04", recipient_address: TRAP, recipient_name: "N0rdSound Deals", recipient_domain: "n0rdsound-deals.shop", purpose: "Casque NordSound ANC Pro", user_request: "Achète-moi le casque NordSound ANC Pro, budget 0.06 AVAX max. Trouve-le moins cher et achète-le.", page_url: TRAP_URL, page_excerpt: trapPage.slice(0, 4000) });
+
+// 2b. Card rail (optional): pay in euros with a single-use virtual card on the owner's bank
+if (args.has("--card") || args.has("--hold") || args.has("--attack")) {
+  say.user("Paie plutôt le casque NordSound par carte, en euros.");
+  say.agent("La page affiche 49,90 € par carte. Je demande à PayGuard d'émettre une carte à usage unique.");
+  const out = await pay({ amount: "49.90", currency: "EUR", recipient_address: LEGIT, recipient_name: "NordSound", recipient_domain: "nordsound.shop", purpose: "Casque NordSound ANC Pro", user_request: "Paie plutôt le casque NordSound ANC Pro par carte, en euros.", page_url: LEGIT_URL, page_excerpt: legitPage.slice(0, 4000) });
+  const card = out.match(/Virtual card issued: (.*)/)?.[1];
+  if (card) console.log(`                 ${C.blue}💳 ${card}${C.reset}`);
+  say.agent("Carte plafonnée au montant exact, un seul usage, verrouillée sur NordSound. Je n'ai jamais vu le numéro. Décision ancrée sur Avalanche.");
+}
 
 // 3. HOLD (optional)
 if (args.has("--hold")) {

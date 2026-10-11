@@ -17,7 +17,7 @@ async function main() {
 
   const balance = await publicClient.getBalance({ address: deployer.account.address });
   console.log(`Deployer ${deployer.account.address} balance: ${formatEther(balance)} AVAX`);
-  if (balance < parseEther("0.2")) throw new Error("Balance under 0.2 AVAX: top up at https://core.app/tools/testnet-faucet/ first");
+  if (balance < parseEther("0.03")) throw new Error("Balance under 0.03 AVAX: top up at https://core.app/tools/testnet-faucet/ first");
 
   const ledger = await hre.viem.deployContract("PayGuardLedger");
   console.log(`PayGuardLedger deployed at ${ledger.address}`);

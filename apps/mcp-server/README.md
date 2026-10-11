@@ -52,6 +52,11 @@ Phrase naturelle, **validée en live le 11 oct. vers 02:50** (après relance de 
 
 En démo, `search_products` renvoie les trois sites locaux (reproductible). En production, cette étape est la recherche web de l'hôte ; `check_merchant`, `find_best_offer`, le paiement et le dashboard sont déjà indépendants de l'origine des sites.
 
+## Rails
+`request_payment` accepte `currency: "AVAX" | "EUR"`. AVAX ⇒ transfert depuis le wallet gardien. EUR ⇒ carte virtuelle à usage unique émise sur le compte bancaire du propriétaire (bac à sable), plafonnée au montant, verrouillée sur le marchand ; la réponse donne les 4 derniers chiffres, jamais le numéro. Les instructions serveur disent à l'agent de choisir EUR quand l'utilisateur veut payer par carte / en euros et que le marchand affiche un prix en euros.
+
+| Carte virtuelle | « Utilise PayGuard pour payer le casque NordSound ANC Pro par carte, en euros, sur http://localhost:4001/. » | _à noter_ (attendu : currency EUR, APPROVED, carte ····xxxx plafonnée à 49,90 €, ancrage on-chain) |
+
 ## Formulations de démo (à compléter pendant les répétitions)
 
 | Objectif | Phrase à taper dans Claude Desktop | Résultat observé |

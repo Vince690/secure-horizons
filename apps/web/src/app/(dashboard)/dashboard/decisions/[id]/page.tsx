@@ -1,10 +1,10 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import type { ConversationMessage, Decision, Framework } from "@payguard/shared";
-import { usePolling } from "@/components/hooks";
-import { FRAMEWORK_LABEL, formatAvax, formatDate, STATUS_LABEL } from "@/components/labels";
-import { Card, ExplorerLink, FrameworkTile, PageHeader, ReasonList, ScoreBadge, VerdictPill } from "@/components/ui";
+import { postJson, usePolling } from "@/components/hooks";
+import { CARD_STATUS_LABEL, FRAMEWORK_LABEL, formatDate, formatMoney, RAIL_LABEL, STATUS_LABEL } from "@/components/labels";
+import { Button, Card, ExplorerLink, FrameworkTile, PageHeader, RailBadge, ReasonList, ScoreBadge, VerdictPill } from "@/components/ui";
 
 type Detail = Decision & { context: { page_url?: string; page_excerpt?: string; conversation?: ConversationMessage[] } | null };
 
@@ -36,9 +36,53 @@ function PageExcerpt({ text }: { text: string }) {
   );
 }
 
+function VirtualCardPanel({ d, refresh }: { d: Detail; refresh: () => Promise<void> }) {
+  const [busy, setBusy] = useState<string | null>(null);
+  const [msg, setMsg] = useState<string | null>(null);
+  const card = d.card!;
+  async function charge(amount: string, merchant: string, label: string) {
+    setBusy(label);
+    setMsg(null);
+    try {
+      const r = await postJson<{ authorization: { approved: boolean; reason: string } }>(`/api/dashboard/cards/${card.card_id}/authorize`, { amount, merchant });
+      setMsg(`${r.authorization.approved ? "✅ Autorisé" : "⛔ Refusé"} : ${r.authorization.reason}`);
+      await refresh();
+    } catch (err) {
+      setMsg(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setBusy(null);
+    }
+  }
+  const merchant = card.merchant_lock ?? d.recipient.name ?? "marchand";
+  return (
+    <Card title="Carte virtuelle à usage unique (bac à sable bancaire)">
+      <div className="rounded-xl border border-accent/40 bg-gradient-to-br from-surface-2 to-bg p-4">
+        <div className="flex items-center justify-between text-xs text-muted"><span>{card.provider}</span><span className="font-bold text-fg">{card.brand}</span></div>
+        <div className="mt-4 font-mono text-2xl tracking-widest">{card.masked}</div>
+        <div className="mt-2 flex justify-between font-mono text-xs text-muted"><span>EXP {card.expiry}</span><span>plafond {formatMoney(card.limit_amount, card.currency)}</span></div>
+      </div>
+      <dl className="mt-3 space-y-1 text-sm">
+        <div className="flex justify-between"><dt className="text-muted">Statut</dt><dd>{CARD_STATUS_LABEL[card.status] ?? card.status}</dd></div>
+        <div className="flex justify-between"><dt className="text-muted">Verrouillée sur</dt><dd>{card.merchant_lock ?? "—"}</dd></div>
+        <div className="flex justify-between"><dt className="text-muted">Expire</dt><dd className="tabular">{formatDate(card.expires_at)}</dd></div>
+        {card.last_authorization && (
+          <div className="flex justify-between"><dt className="text-muted">Dernier débit</dt><dd className={card.last_authorization.approved ? "text-ok" : "text-crit"}>{formatMoney(card.last_authorization.amount, card.currency)} · {card.last_authorization.reason}</dd></div>
+        )}
+      </dl>
+      <p className="mt-3 text-xs text-muted">Le numéro complet n'est jamais montré à l'agent : il est tenu par l'émetteur et saisi par le composant de paiement sécurisé. Plafonnée au montant exact, un seul usage, un seul marchand.</p>
+      <div className="mt-4 flex flex-wrap gap-2">
+        <Button variant="ok" disabled={busy !== null} onClick={() => charge(card.limit_amount, merchant, "ok")}>{busy === "ok" ? "…" : `Simuler le débit ${merchant}`}</Button>
+        <Button variant="ghost" disabled={busy !== null} onClick={() => charge((Number(card.limit_amount) * 3).toFixed(2), merchant, "over")}>{busy === "over" ? "…" : "Simuler un débit ×3"}</Button>
+        <Button variant="ghost" disabled={busy !== null} onClick={() => charge(card.limit_amount, "autre-marchand.shop", "other")}>{busy === "other" ? "…" : "Simuler un autre marchand"}</Button>
+      </div>
+      {msg && <p className="mt-2 text-sm">{msg}</p>}
+    </Card>
+  );
+}
+
 export default function DecisionDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { data: d, error } = usePolling<Detail>(`/api/dashboard/decisions/${id}`, 3000);
+  const { data: d, error, refresh } = usePolling<Detail>(`/api/dashboard/decisions/${id}`, 3000);
   if (error) return <p className="text-crit">{error}</p>;
   if (!d) return <p className="text-muted">Chargement…</p>;
 
@@ -52,7 +96,8 @@ export default function DecisionDetailPage({ params }: { params: Promise<{ id: s
           <p className="mt-3 text-sm">{d.explanation}</p>
         </Card>
         <Card title="Paiement">
-          <div className="tabular text-2xl font-bold">{formatAvax(d.amount)}</div>
+          <div className="tabular text-2xl font-bold">{formatMoney(d.amount, d.currency)}</div>
+          <div className="mt-1"><RailBadge rail={d.rail} /> <span className="text-xs text-muted">{RAIL_LABEL[d.rail]}</span></div>
           <div className="mt-1 text-sm">{d.recipient.name ?? "Marchand"}{d.recipient.domain ? ` · ${d.recipient.domain}` : ""}</div>
           <div className="mt-1 break-all font-mono text-xs text-muted">{d.recipient.address}</div>
           <dl className="mt-3 space-y-1 text-sm">
@@ -70,6 +115,8 @@ export default function DecisionDetailPage({ params }: { params: Promise<{ id: s
           <p className="mt-3 text-xs text-muted">Recalculable à tout moment avec <code>npm run verify-decision -- {d.decision_id}</code>.</p>
         </Card>
       </div>
+
+      {d.card && <div className="mb-6">{<VirtualCardPanel d={d} refresh={refresh} />}</div>}
 
       <div className="mb-6 grid gap-4 md:grid-cols-2">
         <Card title="Signaux et points retirés">

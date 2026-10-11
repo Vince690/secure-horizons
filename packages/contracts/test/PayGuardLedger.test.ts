@@ -36,14 +36,15 @@ describe("PayGuardLedger", () => {
     await expect(ledger.write.record([id("dec_1"), 2, HASH])).to.be.rejectedWith("DecisionAlreadyRecorded");
   });
 
-  it("records HOLD / BLOCKED / REJECTED and rejects invalid verdicts", async () => {
+  it("records HOLD / BLOCKED / REJECTED / OFF-CHAIN-APPROVED and rejects invalid verdicts", async () => {
     const { ledger } = await deploy();
     await ledger.write.record([id("h"), 1, HASH]);
     await ledger.write.record([id("b"), 2, HASH]);
     await ledger.write.record([id("r"), 3, HASH]);
-    expect(await ledger.read.decisionCount()).to.equal(3n);
+    await ledger.write.record([id("card"), 4, HASH]); // paid on another rail, anchored here
+    expect(await ledger.read.decisionCount()).to.equal(4n);
     await expect(ledger.write.record([id("x"), 0, HASH])).to.be.rejectedWith("InvalidVerdict");
-    await expect(ledger.write.record([id("y"), 4, HASH])).to.be.rejectedWith("InvalidVerdict");
+    await expect(ledger.write.record([id("y"), 5, HASH])).to.be.rejectedWith("InvalidVerdict");
   });
 
   it("kill switch blocks pay() but still allows record(), then re-arms", async () => {

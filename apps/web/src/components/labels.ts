@@ -46,6 +46,25 @@ export function shortAddress(address: string): string {
 }
 
 export function formatAvax(value: string): string {
-  const n = Number(value);
-  return Number.isFinite(n) ? `${n.toLocaleString("fr-FR", { maximumFractionDigits: 4 })} AVAX` : `${value} AVAX`;
+  return formatMoney(value, "AVAX");
 }
+
+export function formatMoney(value: string, currency: string = "AVAX"): string {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return `${value} ${currency}`;
+  if (currency === "EUR") return `${n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
+  return `${n.toLocaleString("fr-FR", { maximumFractionDigits: 4 })} ${currency}`;
+}
+
+export const RAIL_LABEL: Record<string, string> = {
+  avalanche: "Avalanche · wallet gardien",
+  virtual_card: "Carte virtuelle à usage unique · compte bancaire",
+};
+
+export const CARD_STATUS_LABEL: Record<string, string> = {
+  active: "Active, en attente du débit marchand",
+  used: "Utilisée (usage unique)",
+  cancelled: "Annulée",
+  frozen: "Gelée par le kill switch",
+  expired: "Expirée",
+};

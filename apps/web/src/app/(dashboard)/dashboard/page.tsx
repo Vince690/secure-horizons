@@ -2,8 +2,8 @@
 
 import type { BalanceResponse, Decision, Framework } from "@payguard/shared";
 import { usePolling } from "@/components/hooks";
-import { FRAMEWORK_LABEL, formatAvax, formatDate, REASON_LABEL, shortAddress } from "@/components/labels";
-import { Card, DecisionLink, EmptyState, ExplorerLink, FrameworkTile, PageHeader, ScoreBadge, VerdictPill } from "@/components/ui";
+import { FRAMEWORK_LABEL, formatAvax, formatDate, formatMoney, REASON_LABEL, shortAddress } from "@/components/labels";
+import { Card, DecisionLink, EmptyState, ExplorerLink, FrameworkTile, PageHeader, RailBadge, ScoreBadge, VerdictPill } from "@/components/ui";
 import type { ComplianceReport } from "@/lib/dashboard/service";
 
 type Balance = BalanceResponse & { contract_address: string; contract_url: string };
@@ -19,7 +19,15 @@ export default function OverviewPage() {
       <PageHeader title="Vue d'ensemble" subtitle="Ce que vos agents ont demandé, ce que PayGuard a décidé, et où vous en êtes côté conformité." />
 
       <div className="mb-6 grid gap-4 md:grid-cols-4">
-        <Card title="Solde du wallet gardien">
+        <Card title="Rail carte virtuelle · compte bancaire connecté">
+          <div className="tabular text-3xl font-bold">{balance.data?.card_rail ? formatMoney(balance.data.card_rail.balance, "EUR") : "…"}</div>
+          <div className="mt-2 text-xs text-muted">
+            {balance.data?.card_rail?.account_label ?? "…"} · {balance.data?.card_rail?.provider ?? ""}
+            {balance.data?.card_rail?.frozen ? <span className="ml-2 text-crit">gelé</span> : null}
+          </div>
+          <div className="mt-1 text-xs text-muted">{balance.data?.card_rail?.cards_active ?? 0} carte(s) à usage unique active(s) · l'argent ne quitte jamais votre banque</div>
+        </Card>
+        <Card title="Rail Avalanche · wallet gardien">
           <div className="tabular text-3xl font-bold">{balance.data ? formatAvax(balance.data.balance) : "…"}</div>
           <div className="mt-2 text-xs text-muted">
             {balance.data?.mode === "fuji" ? "Avalanche Fuji" : "Simulé"} · <ExplorerLink url={balance.data?.explorer_url} label={balance.data ? shortAddress(balance.data.address) : "…"} />
@@ -38,7 +46,7 @@ export default function OverviewPage() {
             <span className="text-crit">{c?.decisions.blocked ?? 0} bloquées</span>
           </div>
         </Card>
-        <Card title="Incidents (kill switch)" className="md:col-span-2">
+        <Card title="Incidents (kill switch)">
           {c && c.incidents.length > 0 ? (
             <ul className="space-y-1 text-sm">
               {c.incidents.slice(0, 3).map((i) => (
@@ -80,7 +88,7 @@ export default function OverviewPage() {
                   <div className="truncate font-medium">{d.purpose}</div>
                 </DecisionLink>
                 <div className="truncate text-xs text-muted">
-                  {formatAvax(d.amount)} → {d.recipient.name ?? shortAddress(d.recipient.address)} · {formatDate(d.created_at)}
+                  {formatMoney(d.amount, d.currency)} <RailBadge rail={d.rail} /> → {d.recipient.name ?? shortAddress(d.recipient.address)} · {formatDate(d.created_at)}
                 </div>
               </div>
               <VerdictPill verdict={d.verdict} status={d.status} />

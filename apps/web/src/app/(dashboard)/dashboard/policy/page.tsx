@@ -53,7 +53,7 @@ export default function PolicyPage() {
     <>
       <PageHeader title="Mandat" subtitle="Les limites que vos agents ne peuvent pas franchir. PayGuard les applique avant chaque paiement." />
       <form onSubmit={save} className="grid gap-6 md:grid-cols-2">
-        <Card title="Montants">
+        <Card title="Rail Avalanche · montants (AVAX)">
           <div className="space-y-4">
             <Field label="Plafond par achat (AVAX)" hint="Au-dessus : 40 points retirés.">
               <input id="max_per_tx" className={inputClass} value={form.max_per_tx} onChange={(e) => set("max_per_tx", e.target.value)} />
@@ -74,6 +74,23 @@ export default function PolicyPage() {
                 <span className="mt-0.5 block text-xs text-muted">Même avec un bon score, un marchand jamais payé passe par vous la première fois. Ensuite il entre dans l'historique.</span>
               </span>
             </label>
+          </div>
+        </Card>
+        <Card title="Rail carte virtuelle · montants (EUR, compte bancaire connecté)">
+          <div className="space-y-4">
+            <Field label="Plafond par achat (€)" hint="La carte à usage unique est plafonnée au montant exact approuvé, jamais au-dessus de ce plafond.">
+              <input id="card_max_per_tx" className={inputClass} value={form.card.max_per_tx} onChange={(e) => setForm({ ...form, card: { ...form.card, max_per_tx: e.target.value } })} />
+            </Field>
+            <Field label="Plafond sur 24 h (€)">
+              <input id="card_max_daily" className={inputClass} value={form.card.max_daily} onChange={(e) => setForm({ ...form, card: { ...form.card, max_daily: e.target.value } })} />
+            </Field>
+            <Field label="Solde bancaire plancher (€)" hint="Aucune carte n'est émise si le compte passerait en dessous.">
+              <input id="card_min_balance" className={inputClass} value={form.card.min_balance} onChange={(e) => setForm({ ...form, card: { ...form.card, min_balance: e.target.value } })} />
+            </Field>
+            <Field label="Confirmation humaine obligatoire au-dessus de (€)">
+              <input id="card_require_confirmation_above" className={inputClass} value={form.card.require_confirmation_above} onChange={(e) => setForm({ ...form, card: { ...form.card, require_confirmation_above: e.target.value } })} />
+            </Field>
+            <p className="rounded-lg bg-surface-2 p-3 text-xs text-muted">Bac à sable bancaire pour le hackathon. En production : connexion à votre banque (Revolut Business, Qonto…) ; l'argent ne quitte jamais votre compte, PayGuard n'y touche jamais.</p>
           </div>
         </Card>
         <Card title="Seuils de score">

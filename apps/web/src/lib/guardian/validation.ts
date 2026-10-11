@@ -8,7 +8,8 @@ export const evaluatePaymentSchema = z.object({
   agent_id: z.string().min(1).max(100),
   request_id: z.string().min(8).max(128),
   amount,
-  currency: z.literal("AVAX"),
+  currency: z.enum(["AVAX", "EUR"]),
+  rail: z.enum(["avalanche", "virtual_card"]).optional(),
   recipient: z.object({
     address,
     name: z.string().max(200).optional(),
