@@ -1,6 +1,7 @@
 import type { ChainClient } from "@payguard/shared";
 import { createFujiChainClient } from "@payguard/chain";
 import { env } from "@/lib/env";
+import { logger } from "@/lib/logger";
 import { createMockChainClient } from "./mock";
 
 // Kept on globalThis so the mock's balance and pause flag survive Next.js hot reloads.
@@ -25,7 +26,7 @@ export function getChainClient(): ChainClient {
       contractAddress: env.contractAddress as `0x${string}`,
       explorerBaseUrl: env.snowtraceBaseUrl,
     });
-    console.log(`[chain] mode=fuji contract=${env.contractAddress} wallet=${client.walletAddress()}`);
+    logger.info("chain", `mode=fuji contract=${env.contractAddress.slice(0, 10)}... wallet=${client.walletAddress().slice(0, 10)}...`);
   } else {
     client = createMockChainClient({
       balance: env.mockBalance,
@@ -33,7 +34,7 @@ export function getChainClient(): ChainClient {
       latencyMs: 150,
       knownAddresses: [env.merchantLegitAddress],
     });
-    console.log("[chain] mode=mock (set CHAIN_MODE=fuji + PAYGUARD_CONTRACT_ADDRESS for real Fuji transactions)");
+    logger.info("chain", "mode=mock (set CHAIN_MODE=fuji + PAYGUARD_CONTRACT_ADDRESS for real Fuji transactions)");
   }
   globalForChain.chainClient = client;
   globalForChain.chainClientMode = env.chainMode;

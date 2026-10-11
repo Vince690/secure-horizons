@@ -1,5 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { env } from "@/lib/env";
+import { logger } from "@/lib/logger";
 
 // One client per process. If the API key is missing or rejected, the LLM
 // features switch themselves off for the process: every decision must still
@@ -11,18 +12,18 @@ export function getLlmClient(): Anthropic | null {
   if (!env.anthropicApiKey) {
     globalForLlm.llmDisabledReason = "ANTHROPIC_API_KEY missing in .env";
     globalForLlm.llmClient = null;
-    console.log("[llm] disabled: ANTHROPIC_API_KEY missing, template explanations only");
+    logger.info("llm", "disabled: ANTHROPIC_API_KEY missing, template explanations only");
     return null;
   }
   globalForLlm.llmClient = new Anthropic({ apiKey: env.anthropicApiKey, timeout: env.llmTimeoutMs, maxRetries: 0 });
-  console.log(`[llm] enabled: model=${env.llmModel} timeout=${env.llmTimeoutMs}ms`);
+  logger.info("llm", `enabled: model=${env.llmModel} timeout=${env.llmTimeoutMs}ms`);
   return globalForLlm.llmClient;
 }
 
 export function disableLlm(reason: string) {
   globalForLlm.llmDisabledReason = reason;
   globalForLlm.llmClient = null;
-  console.warn(`[llm] disabled for this process: ${reason}`);
+  logger.warn("llm", `disabled for this process: ${reason}`);
 }
 
 export function llmStatus(): { enabled: boolean; reason: string | null; model: string } {
@@ -41,10 +42,10 @@ export function handleLlmError(label: string, err: unknown) {
   if (err instanceof Anthropic.AuthenticationError) {
     disableLlm(`authentication failed (${label})`);
   } else if (err instanceof Anthropic.RateLimitError) {
-    console.warn(`[llm] ${label}: rate limited, falling back`);
+    logger.warn("llm", `${label}: rate limited, falling back`);
   } else if (err instanceof Anthropic.APIError) {
-    console.warn(`[llm] ${label}: API error ${err.status}: ${err.message}`);
+    logger.warn("llm", `${label}: API error ${err.status}: ${err.message}`);
   } else {
-    console.warn(`[llm] ${label}: ${err instanceof Error ? err.message : String(err)}`);
+    logger.warn("llm", `${label}: ${err instanceof Error ? err.message : String(err)}`);
   }
 }

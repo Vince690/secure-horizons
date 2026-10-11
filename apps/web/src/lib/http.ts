@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { ApiError } from "@payguard/shared";
+import { logger } from "./logger";
 
 type ErrorCode = ApiError["error"]["code"];
 
@@ -31,7 +32,7 @@ export function withErrorHandling<T extends unknown[]>(handler: (...args: T) => 
       return await handler(...args);
     } catch (err) {
       if (err instanceof HttpError) return errorResponse(err.code, err.message, err.details);
-      console.error("[api] unhandled error", err);
+      logger.error("api", "unhandled error", err);
       return errorResponse("INTERNAL", "Unexpected server error");
     }
   };
