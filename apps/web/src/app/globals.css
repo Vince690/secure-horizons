@@ -29,6 +29,25 @@
   --color-crit: var(--crit);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+
+  /* BoardUI Chip tokens, repointed at the existing palette above instead of
+     running a second color system (see docs/DESIGN.md §3). Only the status
+     colors actually used by VerdictPill are defined. */
+  --color-status-lime-background: color-mix(in srgb, var(--ok) 15%, transparent);
+  --color-status-lime-text: var(--ok);
+  --color-status-yellow-background: color-mix(in srgb, var(--warn) 15%, transparent);
+  --color-status-yellow-text: var(--warn);
+  --color-status-rose-background: color-mix(in srgb, var(--crit) 15%, transparent);
+  --color-status-rose-text: var(--crit);
+  --color-background-tertiary-default: var(--surface-2);
+  --color-text-secondary: var(--muted);
+}
+
+/* BoardUI Chip typography (bold/subtle variants only — caption isn't used). */
+@utility text-body-medium {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 500;
 }
 
 html {
