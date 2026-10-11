@@ -22,20 +22,20 @@ Traditional payment protocols sign **transactions**, not **decisions**. A compro
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     PayGuard System                              │
+│                     PayGuard System                             │
 ├─────────────────────────────────────────────────────────────────┤
-│                                                                   │
-│  ┌──────────────────────┐         ┌──────────────────────┐     │
-│  │   MCP Plugin         │         │   Dashboard (Web)    │     │
-│  │   (Public)           │         │   (Private - You)    │     │
-│  ├──────────────────────┤         ├──────────────────────┤     │
-│  │ • AI agents call     │         │ • Spending policies  │     │
-│  │ • Merchant checks    │◄────────┤ • Decision approval  │     │
-│  │ • Payment requests   │  API    │ • Kill switch        │     │
-│  │ • Real-time status   │         │ • Audit logs         │     │
-│  └──────────────────────┘         │ • Analytics          │     │
-│                                    └──────────────────────┘     │
-│                                                                   │
+│                                                                 │
+│  ┌──────────────────────┐         ┌──────────────────────┐      │
+│  │   MCP Plugin         │         │   Dashboard (Web)    │      │
+│  │   (Public)           │         │   (Private - You)    │      │
+│  ├──────────────────────┤         ├──────────────────────┤      │
+│  │ • AI agents call     │         │ • Spending policies  │      │
+│  │ • Merchant checks    │◄────────┤ • Decision approval  │      │
+│  │ • Payment requests   │  API    │ • Kill switch        │      │
+│  │ • Real-time status   │         │ • Audit logs         │      │
+│  └──────────────────────┘         │ • Analytics          │      │
+│                                   └──────────────────────┘      │
+│                                                                 │
 │                        ┌──────────────────────┐                 │
 │                        │  Guardian Engine     │                 │
 │                        ├──────────────────────┤                 │
@@ -44,7 +44,7 @@ Traditional payment protocols sign **transactions**, not **decisions**. A compro
 │                        │ • Scoring (0-100)    │                 │
 │                        │ • Compliance mapping │                 │
 │                        └──────────┬───────────┘                 │
-│                                   │                              │
+│                                   │                             │
 │                        ┌──────────▼───────────┐                 │
 │                        │ Blockchain Anchoring │                 │
 │                        ├──────────────────────┤                 │
