@@ -164,6 +164,7 @@ export default function OverviewPage() {
           <span>Custom</span>
           <input
             type="number"
+            inputMode="numeric"
             min={1}
             max={365}
             value={days}
@@ -171,7 +172,7 @@ export default function OverviewPage() {
               const v = Math.min(365, Math.max(1, Number(e.target.value) || 1));
               setDays(v);
             }}
-            className="w-20 rounded-lg border border-line bg-bg px-2 py-1 text-fg outline-none focus:border-accent"
+            className="w-14 rounded-full border border-line bg-transparent px-3 py-1 text-center text-fg outline-none focus:border-accent [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
           />
           <span>days</span>
         </label>

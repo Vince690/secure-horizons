@@ -30,33 +30,77 @@ export function PageHeader({ title, subtitle, action }: { title: string; subtitl
   );
 }
 
+type ChipIcon = (props: { className?: string }) => ReactNode;
+
+/** Simple monotone (currentColor) glyphs — no icon library, kept tiny on purpose. */
+const CheckIcon: ChipIcon = ({ className }) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3.5 8.5l3 3 6-7" />
+  </svg>
+);
+const ClockIcon: ChipIcon = ({ className }) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="8" cy="8" r="6" />
+    <path d="M8 5v3.2l2.2 1.3" />
+  </svg>
+);
+const AlertIcon: ChipIcon = ({ className }) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M8 2.5l6 10.5H2z" />
+    <path d="M8 6.5v3" />
+    <circle cx="8" cy="11.4" r="0.5" fill="currentColor" stroke="none" />
+  </svg>
+);
+const BlockedIcon: ChipIcon = ({ className }) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.75} strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="8" cy="8" r="6" />
+    <path d="M4.5 4.5l7 7" />
+  </svg>
+);
+
 const VERDICT_CHIP_COLOR: Record<Verdict, "lime" | "yellow" | "rose"> = {
   APPROVED: "lime",
   HOLD: "yellow",
   BLOCKED: "rose",
+};
+const VERDICT_CHIP_ICON: Record<Verdict, ChipIcon> = {
+  APPROVED: CheckIcon,
+  HOLD: ClockIcon,
+  BLOCKED: BlockedIcon,
 };
 
 /** The pill shows the FINAL state: a HOLD approved by a human reads "Paid (human)", not "On hold". */
 export function VerdictPill({ verdict, status }: { verdict: Verdict; status?: DecisionStatus }) {
   let label = VERDICT_LABEL[verdict];
   let color = VERDICT_CHIP_COLOR[verdict];
+  let Icon = VERDICT_CHIP_ICON[verdict];
   if (status === "APPROVED") {
     label = verdict === "HOLD" ? "Paid (human)" : "Approved";
     color = VERDICT_CHIP_COLOR.APPROVED;
+    Icon = CheckIcon;
   } else if (status === "REJECTED") {
     label = "Rejected (human)";
     color = VERDICT_CHIP_COLOR.BLOCKED;
+    Icon = BlockedIcon;
   } else if (status === "PENDING_CONFIRMATION") {
     label = STATUS_LABEL.PENDING_CONFIRMATION;
     color = VERDICT_CHIP_COLOR.HOLD;
+    Icon = ClockIcon;
   } else if (status === "FAILED") {
     label = STATUS_LABEL.FAILED;
     color = VERDICT_CHIP_COLOR.HOLD;
+    Icon = AlertIcon;
   } else if (status === "BLOCKED") {
     label = VERDICT_LABEL.BLOCKED;
     color = VERDICT_CHIP_COLOR.BLOCKED;
+    Icon = BlockedIcon;
   }
-  return <Chip color={color} variant="bold">{label}</Chip>;
+  return (
+    <Chip color={color} variant="bold" className="gap-1">
+      <Icon className="h-3.5 w-3.5 shrink-0" />
+      {label}
+    </Chip>
+  );
 }
 
 export function scoreColor(score: number): string {
