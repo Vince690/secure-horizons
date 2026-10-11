@@ -300,23 +300,8 @@ export default function OverviewPage() {
         </Card>
       </div>
 
-      {/* Compliance */}
-      <Card title="Compliance — last 24 h" className="mb-6">
-        <div className="grid gap-4 md:grid-cols-4">
-          {(["DORA", "MiCA", "AML_CFT", "AI_ACT"] as Framework[]).map((f) => {
-            const fw = c?.frameworks[f];
-            const detail = fw
-              ? fw.state === "ok"
-                ? "No signal"
-                : `${fw.fail} alert${fw.fail > 1 ? "s" : ""}, ${fw.warn} warning${fw.warn > 1 ? "s" : ""}${fw.top_reasons[0] ? ` · ${REASON_LABEL[fw.top_reasons[0] as ReasonCode] ?? fw.top_reasons[0]}` : ""}`
-              : "…";
-            return <FrameworkTile key={f} name={FRAMEWORK_LABEL[f].short} long={FRAMEWORK_LABEL[f].long} state={fw?.state ?? "ok"} detail={detail} />;
-          })}
-        </div>
-      </Card>
-
       {/* Recent decisions */}
-      <Card title="Recent decisions">
+      <Card title="Recent decisions" className="mb-6">
         {decisions.data && decisions.data.decisions.length === 0 && <EmptyState>No decisions yet. Ask your agent to make a purchase.</EmptyState>}
         <ul className="divide-y divide-line">
           {decisions.data?.decisions.map((d) => (
@@ -337,6 +322,21 @@ export default function OverviewPage() {
             </li>
           ))}
         </ul>
+      </Card>
+
+      {/* Compliance — last, since it's a status summary, not the primary content */}
+      <Card title="Compliance — last 24 h">
+        <div className="grid gap-4 md:grid-cols-4">
+          {(["DORA", "MiCA", "AML_CFT", "AI_ACT"] as Framework[]).map((f) => {
+            const fw = c?.frameworks[f];
+            const detail = fw
+              ? fw.state === "ok"
+                ? "No signal"
+                : `${fw.fail} alert${fw.fail > 1 ? "s" : ""}, ${fw.warn} warning${fw.warn > 1 ? "s" : ""}${fw.top_reasons[0] ? ` · ${REASON_LABEL[fw.top_reasons[0] as ReasonCode] ?? fw.top_reasons[0]}` : ""}`
+              : "…";
+            return <FrameworkTile key={f} name={FRAMEWORK_LABEL[f].short} long={FRAMEWORK_LABEL[f].long} state={fw?.state ?? "ok"} detail={detail} />;
+          })}
+        </div>
       </Card>
     </>
   );
