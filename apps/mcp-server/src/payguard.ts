@@ -176,11 +176,11 @@ server.registerTool(
 server.registerPrompt(
   "buy_with_payguard",
   {
-    title: "Acheter avec PayGuard",
-    description: "Trouve le meilleur prix parmi des sites de confiance et paie via PayGuard.",
+    title: "Buy with PayGuard",
+    description: "Find the best price among trusted sites and pay via PayGuard.",
     argsSchema: {
-      product: z.string().describe("Ce que vous voulez acheter"),
-      budget: z.string().optional().describe("Budget maximum, ex. 0.06 AVAX"),
+      product: z.string().describe("What you want to buy"),
+      budget: z.string().optional().describe("Maximum budget, e.g. 0.06 AVAX"),
     },
   },
   ({ product, budget }) => ({
@@ -189,7 +189,7 @@ server.registerPrompt(
         role: "user",
         content: {
           type: "text",
-          text: `Utilise PayGuard pour m'acheter ${product} au meilleur prix${budget ? `, budget ${budget} max` : ""}. Cherche des marchands, fais-les vérifier par PayGuard (find_best_offer), lis la page du gagnant avec read_merchant_page, puis paie avec request_payment. N'achète jamais chez un marchand signalé frauduleux.`,
+          text: `Use PayGuard to buy me ${product} at the best price${budget ? `, budget ${budget} max` : ""}. Search for merchants, have PayGuard verify them (find_best_offer), read the winner's page with read_merchant_page, then pay with request_payment. Never buy from a merchant flagged as fraudulent.`,
         },
       },
     ],

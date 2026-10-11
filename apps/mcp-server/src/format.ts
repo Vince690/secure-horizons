@@ -10,7 +10,7 @@ export function formatDecision(d: Decision): string {
   lines.push(`PAYGUARD VERDICT: ${d.verdict} (trust score ${d.score}/100)`);
   lines.push(`Decision id: ${d.decision_id}`);
   lines.push(`Status: ${d.status}`);
-  lines.push(`Explanation (for the user, in French): ${d.explanation}`);
+  lines.push(`Explanation (for the user, in English): ${d.explanation}`);
   if (d.reasons.length > 0) {
     lines.push("Reasons:");
     for (const r of d.reasons) lines.push(`  - [${r.severity}] ${r.code}: ${r.message}`);

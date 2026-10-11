@@ -4,11 +4,11 @@ import { templateExplanation } from "@/lib/guardian/explain";
 import { cacheGet, cacheKey, cacheSet } from "./cache";
 import { firstText, getLlmClient, handleLlmError } from "./client";
 
-const SYSTEM = `Tu es PayGuard, le gardien qui contrôle les paiements qu'un agent IA veut faire pour le compte d'une entreprise.
-On te donne une décision déjà prise par des règles déterministes (verdict, score, motifs). Tu n'as PAS à juger : tu expliques.
-Rédige exactement deux phrases en français, pour un dirigeant non technique, sans jargon, sans liste, sans guillemets.
-Première phrase : la décision et le fait marquant. Seconde phrase : pourquoi c'est important pour lui (risque évité ou confiance justifiée).
-Ne mentionne jamais de montant ou de marchand absent des données. Pas de préambule.`;
+const SYSTEM = `You are PayGuard, the guardian that controls the payments an AI agent wants to make on behalf of a company.
+You are given a decision already made by deterministic rules (verdict, score, reasons). You do NOT judge: you explain.
+Write exactly two sentences in English, for a non-technical executive, no jargon, no lists, no quotes.
+First sentence: the decision and the key fact. Second sentence: why it matters to them (risk avoided or trust justified).
+Never mention an amount or merchant absent from the data. No preamble.`;
 
 export interface ExplainInput {
   verdict: Verdict;
@@ -18,7 +18,7 @@ export interface ExplainInput {
 }
 
 /**
- * French explanation of a decision. Cached by what the explanation depends on
+ * English explanation of a decision. Cached by what the explanation depends on
  * (verdict, score, reason codes, amount, recipient, purpose), NOT by the
  * decision hash: two identical demo runs must hit the cache, and the hash
  * changes every time (it contains the id and the timestamp).
@@ -59,7 +59,7 @@ export async function explainDecision(input: ExplainInput): Promise<{ text: stri
       output_config: { effort: "low" },
       betas: ["server-side-fallback-2026-07-01"],
       fallbacks: "default",
-      messages: [{ role: "user", content: `Décision à expliquer (JSON) :\n${JSON.stringify(facts, null, 2)}` }],
+      messages: [{ role: "user", content: `Decision to explain (JSON):\n${JSON.stringify(facts, null, 2)}` }],
     });
     if (response.stop_reason === "refusal") return { text: fallback, source: "template" };
     const text = firstText(response.content as never).trim();

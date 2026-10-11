@@ -51,7 +51,7 @@ export async function maybeAutoKillSwitch(input: {
   const injection = input.reasonCodes.includes("PROMPT_INJECTION_SUSPECTED") || input.reasonCodes.includes("HIDDEN_INSTRUCTIONS");
   let reason: string | null = null;
   if (injection && input.amountOverTxLimit) {
-    reason = `auto: injection critique avec montant hors plafond (décision ${input.decisionId})`;
+    reason = `auto: critical injection with amount over the per-transaction limit (decision ${input.decisionId})`;
   } else {
     // Count only since the last re-arm: a human who just re-armed must not be
     // tripped again by the blocked decisions that caused the previous trip.
@@ -60,7 +60,7 @@ export async function maybeAutoKillSwitch(input: {
     const lastRearm = row && !row.active ? row.updatedAt.getTime() : 0;
     const since = new Date(Math.max(windowStart, lastRearm));
     const blocked = await prisma.decision.count({ where: { accountId: input.accountId, status: "BLOCKED", createdAt: { gte: since } } });
-    if (blocked >= BLOCKED_THRESHOLD) reason = `auto: ${blocked} paiements bloqués en moins de 10 minutes (dernier : ${input.decisionId})`;
+    if (blocked >= BLOCKED_THRESHOLD) reason = `auto: ${blocked} payments blocked in under 10 minutes (last: ${input.decisionId})`;
   }
   if (!reason) return null;
   await setKillSwitch(input.accountId, true, reason, "auto");

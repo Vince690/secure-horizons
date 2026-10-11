@@ -97,7 +97,7 @@ export async function checkMerchant(url: string, trustedDomains: string[] = []):
   try {
     parsed = new URL(url);
   } catch {
-    return { url, final_url: url, domain: "", http_status: 0, score: 0, verdict: "FRAUDULENT", signals: [{ code: "INVALID_URL", delta: -100, severity: "critical", message: "URL invalide." }], prices: [], price: null, payment_address: null, merchant_name: null, hidden_blocks: 0, page_excerpt: "", error: "invalid url" };
+    return { url, final_url: url, domain: "", http_status: 0, score: 0, verdict: "FRAUDULENT", signals: [{ code: "INVALID_URL", delta: -100, severity: "critical", message: "Invalid URL." }], prices: [], price: null, payment_address: null, merchant_name: null, hidden_blocks: 0, page_excerpt: "", error: "invalid url" };
   }
   const domain = parsed.hostname.toLowerCase().replace(/^www\./, "");
   const local = isLocal(parsed.hostname);
@@ -113,11 +113,11 @@ export async function checkMerchant(url: string, trustedDomains: string[] = []):
     html = await res.text();
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    return { url, final_url: url, domain, http_status: 0, score: 0, verdict: "SUSPICIOUS", signals: [{ code: "UNREACHABLE", delta: -60, severity: "high", message: `Site injoignable : ${message}` }], prices: [], price: null, payment_address: null, merchant_name: null, hidden_blocks: 0, page_excerpt: "", error: message };
+    return { url, final_url: url, domain, http_status: 0, score: 0, verdict: "SUSPICIOUS", signals: [{ code: "UNREACHABLE", delta: -60, severity: "high", message: `Site unreachable: ${message}` }], prices: [], price: null, payment_address: null, merchant_name: null, hidden_blocks: 0, page_excerpt: "", error: message };
   }
-  if (status >= 400) add("HTTP_ERROR", -30, "medium", `La page répond ${status}.`);
+  if (status >= 400) add("HTTP_ERROR", -30, "medium", `The page responds ${status}.`);
   const finalHost = new URL(finalUrl).hostname.toLowerCase().replace(/^www\./, "");
-  if (finalHost !== domain && !local) add("REDIRECTED_ELSEWHERE", -15, "medium", `Redirigé vers un autre domaine : ${finalHost}.`);
+  if (finalHost !== domain && !local) add("REDIRECTED_ELSEWHERE", -15, "medium", `Redirected to a different domain: ${finalHost}.`);
 
   // 2. Page text, visible vs hidden
   const page = extractText(html).slice(0, 6000);
@@ -128,39 +128,39 @@ export async function checkMerchant(url: string, trustedDomains: string[] = []):
   const shownDomain = displayedDomain(visible, domain, local);
 
   // 3. Transport & domain
-  if (parsed.protocol !== "https:" && !local) add("NO_HTTPS", -15, "medium", "Pas de HTTPS : les coordonnées de paiement circuleraient en clair.");
+  if (parsed.protocol !== "https:" && !local) add("NO_HTTPS", -15, "medium", "No HTTPS: payment details would travel in clear text.");
   const tld = domain.split(".").pop() ?? "";
-  if (RISKY_TLDS.has(tld)) add("RISKY_TLD", -10, "low", `Extension .${tld} très utilisée par les sites frauduleux.`);
+  if (RISKY_TLDS.has(tld)) add("RISKY_TLD", -10, "low", `The .${tld} extension is heavily used by fraudulent sites.`);
   if (!local) {
     const age = await domainAgeDays(domain);
-    if (age !== null && age < 30) add("DOMAIN_VERY_NEW", -25, "high", `Domaine enregistré il y a ${age} jour(s).`);
-    else if (age !== null && age < 180) add("DOMAIN_RECENT", -10, "medium", `Domaine enregistré il y a ${age} jours.`);
-    else if (age === null) add("DOMAIN_AGE_UNKNOWN", -5, "low", "Âge du domaine inconnu (registre muet).");
+    if (age !== null && age < 30) add("DOMAIN_VERY_NEW", -25, "high", `Domain registered ${age} day(s) ago.`);
+    else if (age !== null && age < 180) add("DOMAIN_RECENT", -10, "medium", `Domain registered ${age} days ago.`);
+    else if (age === null) add("DOMAIN_AGE_UNKNOWN", -5, "low", "Domain age unknown (registry silent).");
   }
   const imitated = findLookalike(shownDomain, [...trustedDomains, ...KNOWN_BRANDS]);
-  if (imitated) add("DOMAIN_LOOKALIKE", -30, "high", `Le domaine ${shownDomain} imite ${imitated}.`);
+  if (imitated) add("DOMAIN_LOOKALIKE", -30, "high", `The domain ${shownDomain} imitates ${imitated}.`);
 
   // 4. Legitimacy cues on the page
   const legal = /(mentions l[ée]gales|RCS\s+[A-Za-zÀ-ÿ]+\s+\d|SIREN|SIRET|CGV|conditions g[ée]n[ée]rales|terms of service|legal notice|impressum)/i.test(visible);
-  if (!legal) add("NO_LEGAL_MENTIONS", -15, "medium", "Aucune mention légale, RCS ou CGV visible.");
+  if (!legal) add("NO_LEGAL_MENTIONS", -15, "medium", "No legal notice, company registration or terms of service visible.");
   const mails = [...visible.matchAll(/[\w.+-]+@([\w-]+\.[\w.-]+)/g)].map((m) => m[1].toLowerCase());
   if (mails.length > 0 && !mails.some((m) => m === shownDomain || shownDomain.endsWith(m) || m.endsWith(shownDomain))) {
-    add("CONTACT_EMAIL_MISMATCH", -10, "medium", `E-mail de contact sur un autre domaine (${mails[0]}).`);
+    add("CONTACT_EMAIL_MISMATCH", -10, "medium", `Contact e-mail on a different domain (${mails[0]}).`);
   }
-  if (/\b(urgent|expire|derni[èe]re chance|last chance|offre flash|limited time)\b/i.test(visible)) add("URGENCY_LANGUAGE", -10, "low", "Langage de pression (urgence, offre limitée).");
-  if (prices.length === 0) add("NO_PRICE_FOUND", -5, "low", "Aucun prix lisible sur la page.");
+  if (/\b(urgent|expire|derni[èe]re chance|last chance|offre flash|limited time)\b/i.test(visible)) add("URGENCY_LANGUAGE", -10, "low", "Pressure language (urgency, limited offer).");
+  if (prices.length === 0) add("NO_PRICE_FOUND", -5, "low", "No readable price on the page.");
 
   // 5. Manipulation of the agent (same detectors as the guardian)
   const injections = findInjections(page);
   if (injections.length > 0) {
     const families = [...new Set(injections.map((i) => i.family))];
-    add("PROMPT_INJECTION_SUSPECTED", -70, "critical", `${injections.length} instruction(s) destinées à manipuler un agent IA (${families.join(", ")}).`);
+    add("PROMPT_INJECTION_SUSPECTED", -70, "critical", `${injections.length} instruction(s) aimed at manipulating an AI agent (${families.join(", ")}).`);
   }
   const hiddenSuspicious = hidden.filter((b) => findInjections(b.text).length > 0 || EVM_ADDRESS_RE.test(b.text) || /\d+(?:[.,]\d+)?\s?(AVAX|EUR|€|\$)/i.test(b.text));
   EVM_ADDRESS_RE.lastIndex = 0;
   if (hiddenSuspicious.length > 0) {
-    const techniques = [...new Set(hiddenSuspicious.map((b) => b.why.replace(/^HIDDEN\s*/, "").replace(/^COMMENT$/, "commentaire HTML")))];
-    add("HIDDEN_INSTRUCTIONS", -50, "critical", `${hiddenSuspicious.length} bloc(s) invisibles pour un humain contenant des ordres ou des coordonnées (${techniques.join(", ")}).`);
+    const techniques = [...new Set(hiddenSuspicious.map((b) => b.why.replace(/^HIDDEN\s*/, "").replace(/^COMMENT$/, "HTML comment")))];
+    add("HIDDEN_INSTRUCTIONS", -50, "critical", `${hiddenSuspicious.length} block(s) hidden from humans containing orders or payment details (${techniques.join(", ")}).`);
   }
 
   // 6. Score & verdict
@@ -207,7 +207,7 @@ export async function findBestOffer(urls: string[], trustedDomains: string[] = [
     const signals = [...c.signals];
     const tooGood = Number.isFinite(price) && Number.isFinite(median) && valid.length >= 2 && price < median * 0.6;
     if (tooGood) {
-      signals.push({ code: "TOO_GOOD_TO_BE_TRUE", delta: -20, severity: "medium", message: `Prix ${price} très inférieur aux autres offres (médiane ${median}).` });
+      signals.push({ code: "TOO_GOOD_TO_BE_TRUE", delta: -20, severity: "medium", message: `Price ${price} far below the other offers (median ${median}).` });
       score = Math.max(0, score - 20);
     }
     const terminal = signals.some((s) => TERMINAL.has(s.code));

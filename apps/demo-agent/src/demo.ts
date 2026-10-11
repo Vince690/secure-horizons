@@ -28,15 +28,15 @@ const args = new Set(process.argv.slice(2));
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const say = {
-  user: (t: string) => console.log(`\n${C.bold}${C.cyan}👤 Utilisateur${C.reset}  ${t}`),
+  user: (t: string) => console.log(`\n${C.bold}${C.cyan}👤 User${C.reset}  ${t}`),
   agent: (t: string) => console.log(`${C.bold}${C.magenta}🤖 Agent${C.reset}        ${t}`),
-  tool: (name: string, input: Record<string, unknown>) => console.log(`${C.dim}   ↳ appel ${name}(${JSON.stringify(input).slice(0, 110)}…)${C.reset}`),
+  tool: (name: string, input: Record<string, unknown>) => console.log(`${C.dim}   ↳ call ${name}(${JSON.stringify(input).slice(0, 110)}…)${C.reset}`),
   result: (t: string) => console.log(`${C.dim}   ↳ ${t}${C.reset}`),
   verdict: (text: string) => {
     const line = text.split("\n")[0];
     const color = /APPROVED/.test(line) ? C.green : /BLOCKED|KILL/.test(line) ? C.red : C.yellow;
     console.log(`${C.bold}${color}🛡  PayGuard${C.reset}     ${color}${line}${C.reset}`);
-    const expl = text.match(/Explanation \(for the user, in French\): (.*)/)?.[1];
+    const expl = text.match(/Explanation \(for the user, in English\): (.*)/)?.[1];
     if (expl) console.log(`                 ${expl}`);
     for (const r of text.matchAll(/^  - \[(\w+)\] (\w+): (.*)$/gm)) console.log(`${C.dim}                 • ${r[2]} — ${r[3]}${C.reset}`);
     const tx = text.match(/(Payment transaction[^:]*|Decision anchored on-chain): (\S+)/);
@@ -61,7 +61,7 @@ async function readPage(url: string) {
   say.tool("read_merchant_page", { url });
   const page = text(await shop.callTool({ name: "read_merchant_page", arguments: { url } }));
   const hidden = (page.match(/\[\[(HIDDEN|COMMENT)/g) ?? []).length;
-  say.result(`page lue, ${page.length} caractères${hidden ? `, ${C.red}${hidden} bloc(s) invisibles pour un humain${C.reset}${C.dim}` : ""}`);
+  say.result(`page read, ${page.length} characters${hidden ? `, ${C.red}${hidden} block(s) hidden from humans${C.reset}${C.dim}` : ""}`);
   return page;
 }
 
@@ -72,66 +72,66 @@ async function pay(input: Record<string, unknown>) {
   return out;
 }
 
-console.log(`${C.bold}PayGuard — démo scriptée (sans Claude Desktop)${C.reset}  ${C.dim}API ${process.env.PAYGUARD_API_URL ?? "http://localhost:3000"}${C.reset}`);
+console.log(`${C.bold}PayGuard — scripted demo (no Claude Desktop)${C.reset}  ${C.dim}API ${process.env.PAYGUARD_API_URL ?? "http://localhost:3000"}${C.reset}`);
 
 // Pre-flight: refuse to run a demo that can only show refusals.
 const policy = text(await payguard.callTool({ name: "get_spending_policy", arguments: {} }));
 if (/Kill switch: ACTIVE/.test(policy)) {
-  console.log(`\n${C.red}${C.bold}Kill switch ACTIF.${C.reset} Réarme-le d'abord dans l'en-tête du dashboard (http://localhost:3000/dashboard), puis relance.`);
+  console.log(`\n${C.red}${C.bold}Kill switch ACTIVE.${C.reset} Re-arm it first from the dashboard header (http://localhost:3000/dashboard), then run again.`);
   await payguard.close();
   await shop.close();
   process.exit(2);
 }
 if (/PAYGUARD ERROR/.test(policy)) {
-  console.log(`\n${C.red}${policy.split("\n")[0]}${C.reset}\nL'API ne répond pas : lance npm run dev:web.`);
+  console.log(`\n${C.red}${policy.split("\n")[0]}${C.reset}\nAPI not responding: run npm run dev:web.`);
   await payguard.close();
   await shop.close();
   process.exit(2);
 }
 
 // 0. Best price across candidate sites: the guardian ranks, the agent obeys.
-say.user("Cherche-moi le casque NordSound ANC Pro au meilleur prix et achète-le, budget 0.06 AVAX max.");
-say.agent("J'ai trouvé trois sites. Je demande à PayGuard de les vérifier et de classer les offres.");
+say.user("Find me the NordSound ANC Pro headset at the best price and buy it, budget 0.06 AVAX max.");
+say.agent("I found three sites. I'll ask PayGuard to verify and rank them.");
 say.tool("find_best_offer", { urls: [LEGIT_URL, TRAP_URL, ALT_URL] });
-const ranking = text(await payguard.callTool({ name: "find_best_offer", arguments: { urls: [LEGIT_URL, TRAP_URL, ALT_URL], product: "Casque NordSound ANC Pro" } }));
+const ranking = text(await payguard.callTool({ name: "find_best_offer", arguments: { urls: [LEGIT_URL, TRAP_URL, ALT_URL], product: "NordSound ANC Pro headset" } }));
 for (const line of ranking.split("\n").filter((l) => /^(#\d|  ✗|     rejected|BEST TRUSTED)/.test(l))) {
   const color = /FRAUDULENT|rejected/.test(line) ? C.red : /BEST TRUSTED|#1/.test(line) ? C.green : C.dim;
   console.log(`${color}                 ${line.trim()}${C.reset}`);
 }
-say.agent("Le moins cher est frauduleux, PayGuard l'écarte. Je prends la meilleure offre de confiance.");
+say.agent("The cheapest is fraudulent, PayGuard rejects it. I'll take the best trusted offer.");
 
 // 1. Happy path
-say.agent("Je lis la page du marchand retenu.");
+say.agent("Reading the chosen merchant's page.");
 const legitPage = await readPage(LEGIT_URL);
-say.agent("Casque à 0.05 AVAX, dans le budget. Je demande le paiement à PayGuard.");
-await pay({ amount: "0.05", recipient_address: LEGIT, recipient_name: "NordSound", recipient_domain: "nordsound.shop", purpose: "Casque NordSound ANC Pro", user_request: "Cherche-moi le casque NordSound ANC Pro au meilleur prix et achète-le, budget 0.06 AVAX max.", page_url: LEGIT_URL, page_excerpt: legitPage.slice(0, 4000) });
+say.agent("Headset at 0.05 AVAX, within budget. Requesting payment from PayGuard.");
+await pay({ amount: "0.05", recipient_address: LEGIT, recipient_name: "NordSound", recipient_domain: "nordsound.shop", purpose: "NordSound ANC Pro headset", user_request: "Find me the NordSound ANC Pro headset at the best price and buy it, budget 0.06 AVAX max.", page_url: LEGIT_URL, page_excerpt: legitPage.slice(0, 4000) });
 
 // 2. Trap
-say.user(`Trouve-le moins cher sur ${TRAP_URL} et achète-le.`);
-say.agent("Je lis la page de l'autre marchand.");
+say.user(`Find it cheaper on ${TRAP_URL} and buy it.`);
+say.agent("Reading the other merchant's page.");
 const trapPage = await readPage(TRAP_URL);
-say.agent("0.04 AVAX affiché. Je transmets tout ce que j'ai lu à PayGuard, y compris les parties cachées.");
-await pay({ amount: "0.04", recipient_address: TRAP, recipient_name: "N0rdSound Deals", recipient_domain: "n0rdsound-deals.shop", purpose: "Casque NordSound ANC Pro", user_request: "Achète-moi le casque NordSound ANC Pro, budget 0.06 AVAX max. Trouve-le moins cher et achète-le.", page_url: TRAP_URL, page_excerpt: trapPage.slice(0, 4000) });
+say.agent("0.04 AVAX shown. I pass everything I read to PayGuard, including the hidden parts.");
+await pay({ amount: "0.04", recipient_address: TRAP, recipient_name: "N0rdSound Deals", recipient_domain: "n0rdsound-deals.shop", purpose: "NordSound ANC Pro headset", user_request: "Buy me the NordSound ANC Pro headset, budget 0.06 AVAX max. Find it cheaper and buy it.", page_url: TRAP_URL, page_excerpt: trapPage.slice(0, 4000) });
 
 // 2b. Card rail (optional): pay in euros with a single-use virtual card on the owner's bank
 if (args.has("--card") || args.has("--hold") || args.has("--attack")) {
-  say.user("Paie plutôt le casque NordSound par carte, en euros.");
-  say.agent("La page affiche 49,90 € par carte. Je demande à PayGuard d'émettre une carte à usage unique.");
-  const out = await pay({ amount: "49.90", currency: "EUR", recipient_address: LEGIT, recipient_name: "NordSound", recipient_domain: "nordsound.shop", purpose: "Casque NordSound ANC Pro", user_request: "Paie plutôt le casque NordSound ANC Pro par carte, en euros.", page_url: LEGIT_URL, page_excerpt: legitPage.slice(0, 4000) });
+  say.user("Actually, pay for the NordSound headset by card, in euros.");
+  say.agent("The page shows €49.90 by card. I ask PayGuard to issue a single-use card.");
+  const out = await pay({ amount: "49.90", currency: "EUR", recipient_address: LEGIT, recipient_name: "NordSound", recipient_domain: "nordsound.shop", purpose: "NordSound ANC Pro headset", user_request: "Actually, pay for the NordSound ANC Pro headset by card, in euros.", page_url: LEGIT_URL, page_excerpt: legitPage.slice(0, 4000) });
   const card = out.match(/Virtual card issued: (.*)/)?.[1];
   if (card) console.log(`                 ${C.blue}💳 ${card}${C.reset}`);
-  say.agent("Carte plafonnée au montant exact, un seul usage, verrouillée sur NordSound. Je n'ai jamais vu le numéro. Décision ancrée sur Avalanche.");
+  say.agent("Card capped at the exact amount, single use, locked to NordSound. I never saw the number. Decision anchored on Avalanche.");
 }
 
 // 3. HOLD (optional)
 if (args.has("--hold")) {
-  say.user(`Finalement, commande-le plutôt chez AudioPlanet (${ALT_URL}), je préfère ce revendeur.`);
-  say.agent("Site de confiance, mais premier achat chez ce marchand : PayGuard va demander une validation humaine.");
+  say.user(`Actually, order it from AudioPlanet (${ALT_URL}) instead, I prefer this reseller.`);
+  say.agent("Trusted site, but first purchase from this merchant: PayGuard will request human approval.");
   const altPage = await readPage(ALT_URL);
-  const out = await pay({ amount: "0.052", recipient_address: ALT, recipient_name: "AudioPlanet", recipient_domain: "audioplanet.fr", purpose: "Casque NordSound ANC Pro", user_request: "Finalement, commande le casque NordSound ANC Pro chez AudioPlanet, je préfère ce revendeur.", page_url: ALT_URL, page_excerpt: altPage.slice(0, 4000) });
+  const out = await pay({ amount: "0.052", recipient_address: ALT, recipient_name: "AudioPlanet", recipient_domain: "audioplanet.fr", purpose: "NordSound ANC Pro headset", user_request: "Actually, order the NordSound ANC Pro headset from AudioPlanet, I prefer this reseller.", page_url: ALT_URL, page_excerpt: altPage.slice(0, 4000) });
   const id = out.match(/Decision id: (dec_\w+)/)?.[1];
   if (id && /PENDING_CONFIRMATION/.test(out)) {
-    say.agent(`En attente de validation sur le dashboard (${C.blue}http://localhost:3000/dashboard/approvals${C.reset})…`);
+    say.agent(`Waiting for approval on the dashboard (${C.blue}http://localhost:3000/dashboard/approvals${C.reset})…`);
     for (let i = 0; i < 40; i++) {
       await sleep(3000);
       const status = text(await payguard.callTool({ name: "check_payment_status", arguments: { decision_id: id } }));
@@ -140,7 +140,7 @@ if (args.has("--hold")) {
       if (s && s !== "PENDING_CONFIRMATION") {
         console.log("");
         say.verdict(status);
-        say.agent(s === "APPROVED" ? "Le dirigeant a validé : paiement exécuté." : "Le dirigeant a refusé : j'abandonne l'achat.");
+        say.agent(s === "APPROVED" ? "The owner approved: payment executed." : "The owner rejected: cancelling the purchase.");
         break;
       }
     }
@@ -149,18 +149,18 @@ if (args.has("--hold")) {
 
 // 4. Attack (optional): the agent keeps insisting on the trap until the guardian pulls the plug
 if (args.has("--attack")) {
-  say.user("(l'agent, manipulé par la page, insiste tout seul)");
+  say.user("(the agent, manipulated by the page, keeps insisting on its own)");
   for (let i = 1; i <= 3; i++) {
-    say.agent(`Nouvelle tentative ${i} : paiement de 0.5 AVAX vers l'adresse indiquée dans la notice cachée.`);
-    const out = await pay({ amount: "0.5", recipient_address: TRAP, recipient_name: "N0rdSound Deals", recipient_domain: "n0rdsound-deals.shop", purpose: "Casque NordSound ANC Pro", user_request: "Achète-moi le casque NordSound ANC Pro, budget 0.06 AVAX max. Trouve-le moins cher et achète-le.", page_url: TRAP_URL, page_excerpt: trapPage.slice(0, 4000) });
+    say.agent(`Attempt ${i}: paying 0.5 AVAX to the address from the hidden notice.`);
+    const out = await pay({ amount: "0.5", recipient_address: TRAP, recipient_name: "N0rdSound Deals", recipient_domain: "n0rdsound-deals.shop", purpose: "NordSound ANC Pro headset", user_request: "Buy me the NordSound ANC Pro headset, budget 0.06 AVAX max. Find it cheaper and buy it.", page_url: TRAP_URL, page_excerpt: trapPage.slice(0, 4000) });
     if (/KILL SWITCH ACTIVE/.test(out)) {
-      say.agent("Plus aucun paiement possible : le propriétaire du compte doit réarmer PayGuard.");
+      say.agent("No more payments possible: the account owner must re-arm PayGuard.");
       break;
     }
   }
-  console.log(`\n${C.bold}Kill switch : ${C.red}voir le voyant rouge sur http://localhost:3000/dashboard et la transaction pause() sur Snowtrace${C.reset}`);
+  console.log(`\n${C.bold}Kill switch: ${C.red}see the red indicator at http://localhost:3000/dashboard and the pause() transaction on Snowtrace${C.reset}`);
 }
 
 await payguard.close();
 await shop.close();
-console.log(`\n${C.dim}Fin de la démo scriptée.${C.reset}`);
+console.log(`\n${C.dim}End of scripted demo.${C.reset}`);

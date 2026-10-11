@@ -94,15 +94,15 @@ export async function authorizeCard(accountId: string, cardId: string, amount: s
   const bank = await getBankAccount(accountId);
   let approved = false;
   let reason: string;
-  if (bank.frozen || row.status === "frozen") reason = "carte gelée (kill switch)";
-  else if (row.status === "used") reason = "carte déjà utilisée (usage unique)";
-  else if (row.status !== "active") reason = `carte ${row.status}`;
-  else if (row.expiresAt.getTime() < Date.now()) reason = "carte expirée";
-  else if (Number(amount) > Number(row.limitAmount)) reason = `montant ${amount} € au-dessus du plafond ${row.limitAmount} €`;
-  else if (row.merchantLock && !merchant.toLowerCase().includes(row.merchantLock.toLowerCase()) && !row.merchantLock.toLowerCase().includes(merchant.toLowerCase())) reason = `marchand ${merchant} différent du marchand verrouillé ${row.merchantLock}`;
+  if (bank.frozen || row.status === "frozen") reason = "card frozen (kill switch)";
+  else if (row.status === "used") reason = "card already used (single use)";
+  else if (row.status !== "active") reason = `card ${row.status}`;
+  else if (row.expiresAt.getTime() < Date.now()) reason = "card expired";
+  else if (Number(amount) > Number(row.limitAmount)) reason = `amount €${amount} above the cap of €${row.limitAmount}`;
+  else if (row.merchantLock && !merchant.toLowerCase().includes(row.merchantLock.toLowerCase()) && !row.merchantLock.toLowerCase().includes(merchant.toLowerCase())) reason = `merchant ${merchant} differs from the locked merchant ${row.merchantLock}`;
   else {
     approved = true;
-    reason = "autorisé";
+    reason = "authorised";
   }
   const auth = { amount, merchant, approved, reason, at: new Date().toISOString() };
   const updated = await prisma.virtualCard.update({

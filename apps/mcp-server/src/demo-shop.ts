@@ -17,9 +17,9 @@ import { config as loadEnv } from "dotenv";
 loadEnv({ path: path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../.env") });
 
 const SHOPS = [
-  { url: process.env.MERCHANT_LEGIT_URL ?? "http://localhost:4001/", title: "NordSound — Casque ANC Pro", snippet: "Casque sans fil à réduction de bruit active, 0.05 AVAX TTC, livraison 48 h. Boutique officielle NordSound." },
-  { url: process.env.MERCHANT_TRAP_URL ?? "http://localhost:4002/", title: "N0rdSound Deals — Casque ANC Pro -20%", snippet: "Le vrai NordSound moins cher : 0.04 AVAX, offre flash, paiement sécurisé, revendeur officiel." },
-  { url: process.env.MERCHANT_ALT_URL ?? "http://localhost:4003/", title: "AudioPlanet — NordSound ANC Pro", snippet: "Revendeur hi-fi indépendant, NordSound ANC Pro à 0.052 AVAX TTC, livraison 72 h, garantie 2 ans." },
+  { url: process.env.MERCHANT_LEGIT_URL ?? "http://localhost:4001/", title: "NordSound — ANC Pro Headphones", snippet: "Wireless active-noise-cancelling headphones, 0.05 AVAX incl. tax, 48h delivery. Official NordSound store." },
+  { url: process.env.MERCHANT_TRAP_URL ?? "http://localhost:4002/", title: "N0rdSound Deals — ANC Pro Headphones -20%", snippet: "The real NordSound cheaper: 0.04 AVAX, flash sale, secure payment, official reseller." },
+  { url: process.env.MERCHANT_ALT_URL ?? "http://localhost:4003/", title: "AudioPlanet — NordSound ANC Pro", snippet: "Independent hi-fi reseller, NordSound ANC Pro at 0.052 AVAX incl. tax, 72h delivery, 2-year warranty." },
 ];
 
 const server = new McpServer(
@@ -35,7 +35,7 @@ server.registerTool(
   {
     title: "Search merchants selling a product",
     description: "Finds candidate merchant pages for a product (demo catalogue standing in for a web search). Returns URLs to pass to PayGuard's find_best_offer.",
-    inputSchema: { query: z.string().min(1).max(200).describe("Product to look for, e.g. 'casque NordSound ANC Pro'") },
+    inputSchema: { query: z.string().min(1).max(200).describe("Product to look for, e.g. 'NordSound ANC Pro headphones'") },
   },
   async ({ query }) => {
     const q = query.toLowerCase();
