@@ -98,49 +98,36 @@ export default function OverviewPage() {
         )}
       </Card>
 
-      {/* Balances + Decisions + Kill switch */}
+      {/* Balances + Decisions + Kill switch — one shape for every tile: label, one stat, one caption line. */}
       <div className="mb-6 grid gap-4 md:grid-cols-4">
-        <Card title="Virtual card rail · connected bank account">
+        <Card title="Virtual card rail">
           <div className="tabular text-3xl font-bold">{balance.data?.card_rail ? formatMoney(balance.data.card_rail.balance, "EUR") : "…"}</div>
-          <div className="mt-2 text-xs text-muted">
-            {balance.data?.card_rail?.account_label ?? "…"} · {balance.data?.card_rail?.provider ?? ""}
-            {balance.data?.card_rail?.frozen ? <span className="ml-2 text-crit">frozen</span> : null}
+          <div className="mt-2 truncate text-xs text-muted">
+            {balance.data?.card_rail?.cards_active ?? 0} active card{balance.data?.card_rail?.cards_active === 1 ? "" : "s"} · {balance.data?.card_rail?.provider ?? "…"}
+            {balance.data?.card_rail?.frozen ? <span className="ml-2 font-medium text-crit">frozen</span> : null}
           </div>
-          <div className="mt-1 text-xs text-muted">{balance.data?.card_rail?.cards_active ?? 0} active single-use card(s) · funds never leave your bank</div>
         </Card>
-        <Card title="Avalanche rail · guardian wallet">
+        <Card title="Avalanche rail">
           <div className="tabular text-3xl font-bold">{balance.data ? formatAvax(balance.data.balance) : "…"}</div>
-          <div className="mt-2 text-xs text-muted">
-            {balance.data?.mode === "fuji" ? "Avalanche Fuji" : "Simulated"} · <ExplorerLink url={balance.data?.explorer_url} label={balance.data ? shortAddress(balance.data.address) : "…"} />
+          <div className="mt-2 truncate text-xs text-muted">
+            {balance.data?.mode === "fuji" ? "Fuji" : "Simulated"} · <ExplorerLink url={balance.data?.explorer_url} label={balance.data ? shortAddress(balance.data.address) : "…"} />
           </div>
-          {balance.data?.contract_url && (
-            <div className="mt-1 text-xs text-muted">
-              Contract: <ExplorerLink url={balance.data.contract_url} label={shortAddress(balance.data.contract_address)} />
-            </div>
-          )}
         </Card>
-        <Card title="Decisions in the last 24 h">
+        <Card title="Decisions · 24 h">
           <div className="tabular text-3xl font-bold">{c?.decisions.total ?? "…"}</div>
-          <div className="mt-2 flex gap-3 text-xs">
+          <div className="mt-2 flex gap-3 whitespace-nowrap text-xs">
             <span className="text-ok">{c?.decisions.approved ?? 0} paid</span>
-            <span className="text-warn">{c?.decisions.pending ?? 0} awaiting confirmation</span>
+            <span className="text-warn">{c?.decisions.pending ?? 0} pending</span>
             <span className="text-crit">{c?.decisions.blocked ?? 0} blocked</span>
           </div>
         </Card>
-        <Card title="Incidents (kill switch)">
-          {c && c.incidents.length > 0 ? (
-            <ul className="space-y-1 text-sm">
-              {c.incidents.slice(0, 3).map((i) => (
-                <li key={i.at} className={i.event === "KILL_SWITCH_ON" ? "text-crit" : "text-ok"}>
-                  <span className="tabular font-mono text-xs text-muted">{formatDate(i.at)}</span> · {i.event === "KILL_SWITCH_ON" ? "Activated" : "Re-armed"}
-                  {i.by ? ` (${i.by === "auto" ? "automatic" : "human"})` : ""}
-                  {i.reason ? ` · ${i.reason}` : ""}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-sm text-muted">No incidents in the last 24 h. A timestamped incident here feeds the DORA notification.</p>
-          )}
+        <Card title="Incidents · 24 h">
+          <div className={`tabular text-3xl font-bold ${c && c.incidents.length > 0 ? "text-crit" : ""}`}>{c?.incidents.length ?? "…"}</div>
+          <div className="mt-2 truncate text-xs text-muted">
+            {c && c.incidents.length > 0
+              ? `Last: ${formatDate(c.incidents[0].at)} · ${c.incidents[0].event === "KILL_SWITCH_ON" ? "Activated" : "Re-armed"}`
+              : "Kill switch, feeds DORA notification"}
+          </div>
         </Card>
       </div>
 

@@ -72,10 +72,10 @@ source de vérité au lieu de deux risquant de diverger.
 
 | Composant actuel | Fichier | Cible BoardUI | Priorité |
 |---|---|---|---|
-| `VerdictPill` | `ui.tsx` | `Chip` (bold), logique de « statut final » à conserver à l'identique | Maintenant |
-| `StatusBadge` | `StatusBadge.tsx` | — | À supprimer (mort : jamais importé, doublon exact de `VerdictPill`) |
+| `VerdictPill` | `ui.tsx` | `Chip` (bold) + icône monotone par statut (check/horloge/triangle d'alerte/interdit), logique de « statut final » conservée à l'identique | **Fait** |
+| `StatusBadge` | `StatusBadge.tsx` | — | **Fait** (supprimé : mort, jamais importé, doublon exact de `VerdictPill`) |
 | `FrameworkTile` (pastille `ComplianceState`) | `ui.tsx` | `StatusDot` | Après |
-| `Button` | `ui.tsx` | équivalent BoardUI (4 variantes à mapper) | Après (composant à plus large surface d'usage, donc à migrer en dernier) |
+| `Button` | `ui.tsx` | **Pas** le `Button` BoardUI — celui-ci dépend de tout son système de couleurs/dégradés (~2000 lignes de CSS, 2 dépendances de plus) et n'a pas d'équivalent à notre variante `ok`. À la place : `Button` existant élevé sur place (ombre teintée, anneau de focus, micro-animation au clic), mêmes 4 variantes, zéro changement d'appel | **Fait** (élevé, pas remplacé) |
 | `Card`, `Field`, `EmptyState` | `ui.tsx` | équivalents BoardUI | Après |
 | `ReasonList`, `RailBadge`, `ScoreBadge`, `ExplorerLink` | `ui.tsx` | pas de composant BoardUI direct équivalent, à revoir au cas par cas | Après |
 | `VolumeChart` / `SpendChart` (SVG fait main) | `dashboard/page.tsx` | librairie de graphes BoardUI/TanStack éventuelle | Hors scope pour l'instant — plus haut risque de régression, aucune librairie installée aujourd'hui |
@@ -88,12 +88,10 @@ aucun changement dans ces 3 fichiers.
 
 ## 6. Périmètre
 
-**Maintenant (premier commit de redesign)** : pastille de statut (`Chip`/`StatusDot`),
-suppression de `StatusBadge.tsx`.
+**Fait** : pastille de statut (`Chip` + icône monotone), suppression de `StatusBadge.tsx`,
+`Button` élevé sur place (pas remplacé par celui de BoardUI — voir §5).
 
-**Après, si le temps le permet** : pastille `ComplianceState` sur `StatusDot`, puis `Button`
-(dernier parce que c'est le composant le plus utilisé — le risque de régression visuelle est le
-plus large).
+**Après, si le temps le permet** : pastille `ComplianceState` sur `StatusDot`.
 
 **Hors scope** (pas avant le pitch, pas sans décision explicite de l'équipe) : mode clair,
 librairie de graphiques, librairie de tables, restructuration de la nav, composants interactifs
