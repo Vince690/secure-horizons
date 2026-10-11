@@ -44,35 +44,35 @@ export default function ApiKeysPage() {
 
   return (
     <>
-      <PageHeader title="Clés API" subtitle="La clé identifie votre compte quand un agent appelle PayGuard. Elle n'est affichée qu'une fois." />
+      <PageHeader title="API Keys" subtitle="The key identifies your account when an agent calls PayGuard. Shown only once." />
       <div className="grid gap-6 md:grid-cols-2">
-        <Card title="Créer une clé">
+        <Card title="Create a key">
           <form onSubmit={create} className="flex gap-2">
-            <input id="label" className={inputClass + " mt-0"} value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Nom (ex. claude-desktop)" />
-            <Button type="submit" disabled={busy}>Créer</Button>
+            <input id="label" className={inputClass + " mt-0"} value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Name (e.g. claude-desktop)" />
+            <Button type="submit" disabled={busy}>Create</Button>
           </form>
           {created && (
             <div className="mt-4 rounded-lg border border-warn/50 bg-warn/10 p-4">
-              <div className="text-sm font-semibold text-warn">Copiez cette clé maintenant, elle ne sera plus affichée.</div>
+              <div className="text-sm font-semibold text-warn">Copy this key now — it will not be shown again.</div>
               <code className="mt-2 block break-all rounded bg-bg p-2 font-mono text-xs">{created.key}</code>
               <div className="mt-2 flex items-center gap-3">
-                <Button variant="ghost" onClick={copy} type="button">{copied ? "Copiée ✓" : "Copier"}</Button>
-                <span className="text-xs text-muted">À mettre dans <code>.env</code> : <code>PAYGUARD_API_KEY=…</code>, puis relancer Claude Desktop.</span>
+                <Button variant="ghost" onClick={copy} type="button">{copied ? "Copied ✓" : "Copy"}</Button>
+                <span className="text-xs text-muted">Set in <code>.env</code>: <code>PAYGUARD_API_KEY=…</code>, then restart Claude Desktop.</span>
               </div>
             </div>
           )}
         </Card>
-        <Card title="Clés existantes">
-          {data && data.api_keys.length === 0 && <EmptyState>Aucune clé.</EmptyState>}
+        <Card title="Existing keys">
+          {data && data.api_keys.length === 0 && <EmptyState>No API keys yet.</EmptyState>}
           <ul className="divide-y divide-line">
             {data?.api_keys.map((k) => (
               <li key={k.id} className="flex items-center justify-between py-3">
                 <div>
                   <div className="font-mono text-sm">{k.prefix}…</div>
-                  <div className="text-xs text-muted">{k.label} · créée le {formatDate(k.created_at)}{k.revoked_at ? ` · révoquée le ${formatDate(k.revoked_at)}` : ""}</div>
+                  <div className="text-xs text-muted">{k.label} · created {formatDate(k.created_at)}{k.revoked_at ? ` · revoked ${formatDate(k.revoked_at)}` : ""}</div>
                 </div>
-                {!k.revoked_at && <Button variant="ghost" onClick={() => revoke(k.id)}>Révoquer</Button>}
-                {k.revoked_at && <span className="text-xs text-muted">révoquée</span>}
+                {!k.revoked_at && <Button variant="ghost" onClick={() => revoke(k.id)}>Revoke</Button>}
+                {k.revoked_at && <span className="text-xs text-muted">revoked</span>}
               </li>
             ))}
           </ul>

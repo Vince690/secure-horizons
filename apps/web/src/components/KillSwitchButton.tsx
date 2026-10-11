@@ -22,12 +22,12 @@ export function KillSwitchButton() {
         active: !active,
         reason: reason || (active ? "re-armed from dashboard" : "manual activation from dashboard"),
       });
-      if (res.onchain_error) setError(`Base à jour, mais la chaîne n'a pas répondu : ${res.onchain_error}`);
+      if (res.onchain_error) setError(`DB updated, but the chain did not respond: ${res.onchain_error}`);
       setConfirming(false);
       setReason("");
       await refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur");
+      setError(err instanceof Error ? err.message : "Error");
     } finally {
       setBusy(false);
     }
@@ -38,37 +38,37 @@ export function KillSwitchButton() {
       {!confirming ? (
         <button
           onClick={() => setConfirming(true)}
-          title={active ? "Tous les paiements sont suspendus. Cliquer pour réarmer." : "Arrêt d'urgence : suspend tous les paiements des agents, en base et sur le contrat."}
+          title={active ? "All payments suspended. Click to re-arm." : "Emergency stop: suspends all agent payments from the DB and the contract."}
           className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-semibold transition ${
             active ? "border-crit bg-crit/15 text-crit hover:bg-crit/25" : "border-line text-fg/80 hover:border-crit hover:text-crit"
           }`}
         >
           <span className={`h-2.5 w-2.5 rounded-full ${active ? "animate-pulse bg-crit" : "bg-ok"}`} />
-          {active ? "Paiements suspendus · réarmer" : "Kill switch"}
+          {active ? "Payments suspended · re-arm" : "Kill switch"}
         </button>
       ) : (
         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-line bg-surface-2 p-3">
-          <span className="text-sm font-semibold">{active ? "Réautoriser tous les paiements ?" : "Suspendre TOUS les paiements des agents ?"}</span>
+          <span className="text-sm font-semibold">{active ? "Re-authorise all payments?" : "Suspend ALL agent payments?"}</span>
           {!active && (
             <input
               id="killswitch-reason"
               className="rounded-lg border border-line bg-bg px-2 py-1 text-sm"
-              placeholder="Motif (optionnel)"
+              placeholder="Reason (optional)"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
             />
           )}
           <Button variant={active ? "ok" : "danger"} onClick={toggle} disabled={busy}>
-            {busy ? "Transaction en cours…" : active ? "Oui, réarmer" : "Oui, couper"}
+            {busy ? "Transaction in progress…" : active ? "Yes, re-arm" : "Yes, cut"}
           </Button>
           <Button variant="ghost" onClick={() => setConfirming(false)} disabled={busy}>
-            Annuler
+            Cancel
           </Button>
         </div>
       )}
       {active && (
         <div className="text-right text-xs text-crit">
-          Actif depuis {data?.activated_at ? new Date(data.activated_at).toLocaleTimeString("fr-FR") : "—"}
+          Active since {data?.activated_at ? new Date(data.activated_at).toLocaleTimeString("en-GB") : "—"}
           {data?.reason ? ` · ${data.reason}` : ""} · <ExplorerLink url={data?.onchain_tx?.explorer_url} label="pause() on-chain" />
         </div>
       )}

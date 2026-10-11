@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "PayGuard",
-  description: "Le gardien entre un agent IA et son argent",
+  description: "The guardian between an AI agent and its money",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

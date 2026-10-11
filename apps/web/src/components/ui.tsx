@@ -35,15 +35,15 @@ const VERDICT_STYLE: Record<Verdict, string> = {
   BLOCKED: "bg-crit/15 text-crit border-crit/40",
 };
 
-/** The pill shows the FINAL state: a HOLD approved by a human reads "Payé (humain)", not "En attente". */
+/** The pill shows the FINAL state: a HOLD approved by a human reads "Paid (human)", not "On hold". */
 export function VerdictPill({ verdict, status }: { verdict: Verdict; status?: DecisionStatus }) {
   let label = VERDICT_LABEL[verdict];
   let style = VERDICT_STYLE[verdict];
   if (status === "APPROVED") {
-    label = verdict === "HOLD" ? "Payé (humain)" : "Approuvé";
+    label = verdict === "HOLD" ? "Paid (human)" : "Approved";
     style = VERDICT_STYLE.APPROVED;
   } else if (status === "REJECTED") {
-    label = "Rejeté (humain)";
+    label = "Rejected (human)";
     style = VERDICT_STYLE.BLOCKED;
   } else if (status === "PENDING_CONFIRMATION") {
     label = STATUS_LABEL.PENDING_CONFIRMATION;
@@ -73,9 +73,9 @@ export function ScoreBadge({ score, size = "md" }: { score: number; size?: "md" 
 }
 
 const STATE_STYLE: Record<ComplianceState, { ring: string; dot: string; label: string }> = {
-  ok: { ring: "border-ok/40", dot: "bg-ok", label: "Conforme" },
-  warn: { ring: "border-warn/60", dot: "bg-warn", label: "Vigilance" },
-  fail: { ring: "border-crit/60", dot: "bg-crit", label: "Alerte" },
+  ok: { ring: "border-ok/40", dot: "bg-ok", label: "Compliant" },
+  warn: { ring: "border-warn/60", dot: "bg-warn", label: "Warning" },
+  fail: { ring: "border-crit/60", dot: "bg-crit", label: "Alert" },
 };
 
 export function FrameworkTile({ name, long, state, detail }: { name: string; long: string; state: ComplianceState; detail?: string }) {
@@ -101,7 +101,7 @@ const SEVERITY_STYLE: Record<Reason["severity"], string> = {
 };
 
 export function ReasonList({ reasons, compact = false }: { reasons: Reason[]; compact?: boolean }) {
-  if (reasons.length === 0) return <p className="text-sm text-muted">Aucun signal.</p>;
+  if (reasons.length === 0) return <p className="text-sm text-muted">No signals.</p>;
   return (
     <ul className="space-y-2">
       {reasons.map((r) => (
@@ -125,13 +125,13 @@ export function ReasonList({ reasons, compact = false }: { reasons: Reason[]; co
 export function RailBadge({ rail }: { rail: string }) {
   const card = rail === "virtual_card";
   return (
-    <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium ${card ? "border-accent/40 text-accent" : "border-line text-muted"}`} title={card ? "Carte virtuelle à usage unique sur le compte bancaire" : "Transfert AVAX depuis le wallet gardien"}>
-      {card ? "💳 Carte" : "⛓ AVAX"}
+    <span className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium ${card ? "border-accent/40 text-accent" : "border-line text-muted"}`} title={card ? "Single-use virtual card on the connected bank account" : "AVAX transfer from the guardian wallet"}>
+      {card ? "💳 Card" : "⛓ AVAX"}
     </span>
   );
 }
 
-export function ExplorerLink({ url, label = "Voir sur Snowtrace" }: { url: string | null | undefined; label?: string }) {
+export function ExplorerLink({ url, label = "View on Snowtrace" }: { url: string | null | undefined; label?: string }) {
   if (!url) return <span className="text-sm text-muted">—</span>;
   return (
     <a href={url} target="_blank" rel="noreferrer" className="text-sm text-accent underline-offset-2 hover:underline">

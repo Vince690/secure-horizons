@@ -4,6 +4,7 @@ import type { Framework, ReasonCode } from "./types";
 export interface ComplianceRule {
   frameworks: Framework[];
   label_fr: string;
+  label_en: string;
   short_fr: string;
   references: string[];
 }
@@ -16,5 +17,5 @@ export const COMPLIANCE_RULES: Record<ReasonCode, ComplianceRule> = Object.fromE
 ) as Record<ReasonCode, ComplianceRule>;
 
 export function complianceRule(code: ReasonCode): ComplianceRule {
-  return COMPLIANCE_RULES[code] ?? { frameworks: [], label_fr: code, short_fr: "", references: [] };
+  return COMPLIANCE_RULES[code] ?? { frameworks: [], label_fr: code, label_en: code, short_fr: "", references: [] };
 }

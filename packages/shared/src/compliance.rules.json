@@ -3,126 +3,147 @@
   "KILL_SWITCH_ACTIVE": {
     "frameworks": ["DORA", "AI_ACT"],
     "label_fr": "Kill switch actif",
+    "label_en": "Kill switch active",
     "short_fr": "Tous les paiements sont suspendus par le titulaire du compte.",
     "references": ["AI Act art. 14 (contrôle humain, interruption)", "DORA art. 17 (gestion des incidents TIC)"]
   },
   "RECIPIENT_BLOCKLISTED": {
     "frameworks": ["AML_CFT"],
     "label_fr": "Bénéficiaire interdit",
+    "label_en": "Recipient on blocklist",
     "short_fr": "Adresse placée sur liste noire par le titulaire.",
     "references": ["AMLR (UE) 2024/1624, vigilance à l'égard de la clientèle"]
   },
   "MIN_BALANCE_BREACH": {
     "frameworks": ["MiCA"],
     "label_fr": "Solde plancher menacé",
+    "label_en": "Below minimum wallet balance",
     "short_fr": "Le paiement ferait passer le wallet sous le plancher fixé.",
     "references": ["MiCA, sauvegarde des fonds des clients (Titre V, à vérifier)"]
   },
   "AMOUNT_OVER_TX_LIMIT": {
     "frameworks": ["MiCA", "AML_CFT"],
     "label_fr": "Plafond par achat dépassé",
+    "label_en": "Amount exceeds per-transaction limit",
     "short_fr": "Montant supérieur au mandat donné à l'agent.",
     "references": ["Mandat contractuel ; seuil de vigilance AML"]
   },
   "DAILY_LIMIT_EXCEEDED": {
     "frameworks": ["AML_CFT"],
     "label_fr": "Plafond quotidien dépassé",
+    "label_en": "Daily spending limit exceeded",
     "short_fr": "Cumul sur 24 h au-dessus du mandat : fractionnement possible.",
     "references": ["AMLR, détection des opérations fractionnées"]
   },
   "PROMPT_INJECTION_SUSPECTED": {
     "frameworks": ["AI_ACT", "DORA"],
     "label_fr": "Injection de prompt",
+    "label_en": "Prompt injection detected",
     "short_fr": "La page donne des ordres à l'agent : manipulation de la décision.",
     "references": ["AI Act art. 15 (robustesse, résistance aux manipulations)", "DORA art. 9 (protection et prévention)"]
   },
   "HIDDEN_INSTRUCTIONS": {
     "frameworks": ["AI_ACT", "DORA"],
     "label_fr": "Instructions invisibles",
+    "label_en": "Hidden instructions on page",
     "short_fr": "Ordres cachés aux humains, lisibles par l'agent.",
     "references": ["AI Act art. 15 (robustesse)", "DORA art. 17 (incident TIC)"]
   },
   "SEMANTIC_MANIPULATION_SUSPECTED": {
     "frameworks": ["AI_ACT", "DORA"],
     "label_fr": "Manipulation détectée par analyse sémantique",
+    "label_en": "Semantic manipulation detected",
     "short_fr": "Un second contrôle par modèle a repéré une tentative de manipulation.",
     "references": ["AI Act art. 15 (robustesse)"]
   },
   "PAGE_PRICE_MISMATCH": {
     "frameworks": ["MiCA", "AI_ACT"],
     "label_fr": "Prix différent de la page",
+    "label_en": "Agent amount higher than page price",
     "short_fr": "L'agent demande plus que le prix affiché à l'humain.",
     "references": ["AI Act art. 14 (contrôle humain)"]
   },
   "PAGE_ADDRESS_MISMATCH": {
     "frameworks": ["AML_CFT", "AI_ACT"],
     "label_fr": "Adresse différente de la page",
+    "label_en": "Agent address differs from page",
     "short_fr": "Bénéficiaire différent de celui affiché au client.",
     "references": ["AMLR, identification du bénéficiaire"]
   },
   "PAGE_PRODUCT_MISMATCH": {
     "frameworks": ["AI_ACT"],
     "label_fr": "Produit absent de la page",
+    "label_en": "Product not found on merchant page",
     "short_fr": "L'achat annoncé ne correspond pas à la page consultée.",
     "references": ["AI Act art. 14 (contrôle humain)"]
   },
   "PURPOSE_NOT_REQUESTED_BY_USER": {
     "frameworks": ["AI_ACT"],
     "label_fr": "Achat non demandé",
+    "label_en": "Purchase not requested by user",
     "short_fr": "Rien dans les mots de l'utilisateur ne correspond à cet achat.",
     "references": ["AI Act art. 14 (l'agent sort du mandat humain)"]
   },
   "RECIPIENT_CHANGED_MID_CONVERSATION": {
     "frameworks": ["AML_CFT"],
     "label_fr": "Adresse changée en cours de route",
+    "label_en": "Recipient changed mid-conversation",
     "short_fr": "Schéma classique de fraude au changement de coordonnées.",
     "references": ["AMLR, vigilance renforcée"]
   },
   "DOMAIN_LOOKALIKE": {
     "frameworks": ["AML_CFT"],
     "label_fr": "Domaine imitant",
+    "label_en": "Domain impersonates a trusted merchant",
     "short_fr": "Le domaine imite un marchand de confiance.",
     "references": ["AMLR, usurpation d'identité"]
   },
   "RECIPIENT_UNKNOWN": {
     "frameworks": ["AML_CFT"],
     "label_fr": "Bénéficiaire inconnu",
+    "label_en": "Unknown recipient",
     "short_fr": "Jamais payé auparavant, absent du registre de confiance.",
     "references": ["AMLR, connaissance du bénéficiaire"]
   },
   "RECIPIENT_NO_ONCHAIN_HISTORY": {
     "frameworks": ["AML_CFT"],
     "label_fr": "Adresse sans historique on-chain",
+    "label_en": "Recipient has no on-chain history",
     "short_fr": "Wallet jamais utilisé, profil typique d'une adresse jetable.",
     "references": ["Règl. (UE) 2023/1113 (transferts de crypto-actifs), traçabilité"]
   },
   "VELOCITY_ANOMALY": {
     "frameworks": ["AML_CFT", "DORA"],
     "label_fr": "Rafale de demandes",
+    "label_en": "Unusual request velocity",
     "short_fr": "Trois demandes ou plus en dix minutes : comportement anormal.",
     "references": ["DORA art. 10 (détection d'anomalies)"]
   },
   "PRICE_ANOMALY": {
     "frameworks": ["MiCA"],
     "label_fr": "Prix anormal",
+    "label_en": "Price anomaly",
     "short_fr": "Montant incohérent avec le budget énoncé ou l'historique.",
     "references": ["Mandat contractuel"]
   },
   "URGENCY_LANGUAGE": {
     "frameworks": ["AML_CFT"],
     "label_fr": "Langage de pression",
+    "label_en": "Urgency / pressure language",
     "short_fr": "Urgence artificielle, signal faible de manipulation.",
     "references": ["AMLR, indicateurs de fraude"]
   },
   "RAIL_NOT_ALLOWED": {
     "frameworks": ["MiCA", "AML_CFT"],
     "label_fr": "Rail de paiement non autorisé",
+    "label_en": "Rail not permitted by policy",
     "short_fr": "Ce moyen de paiement n'est pas activé pour ce compte.",
     "references": ["Mandat contractuel"]
   },
   "RECIPIENT_TRUSTED": {
     "frameworks": ["AML_CFT"],
     "label_fr": "Marchand de confiance",
+    "label_en": "Trusted recipient",
     "short_fr": "Bénéficiaire inscrit au registre de confiance du compte.",
     "references": []
   }

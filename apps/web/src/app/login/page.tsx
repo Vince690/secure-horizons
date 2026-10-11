@@ -21,7 +21,7 @@ export default function LoginPage() {
       await postJson("/api/dashboard/auth/login", { email, password });
       router.push("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Connexion impossible");
+      setError(err instanceof Error ? err.message : "Sign-in failed");
     } finally {
       setBusy(false);
     }
@@ -32,21 +32,21 @@ export default function LoginPage() {
       <form onSubmit={submit} className="w-full max-w-sm space-y-5 rounded-2xl border border-line bg-surface p-8">
         <div>
           <div className="text-xs font-semibold uppercase tracking-widest text-accent">PayGuard</div>
-          <h1 className="mt-1 text-2xl font-semibold">Connexion</h1>
-          <p className="mt-1 text-sm text-muted">Le gardien entre vos agents IA et votre argent.</p>
+          <h1 className="mt-1 text-2xl font-semibold">Sign in</h1>
+          <p className="mt-1 text-sm text-muted">The guardian between your AI agents and your money.</p>
         </div>
-        <Field label="E-mail">
+        <Field label="Email">
           <input id="email" className={inputClass} type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </Field>
-        <Field label="Mot de passe">
+        <Field label="Password">
           <input id="password" className={inputClass} type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </Field>
         {error && <p className="text-sm text-crit">{error}</p>}
         <Button type="submit" disabled={busy} className="w-full">
-          {busy ? "Connexion…" : "Se connecter"}
+          {busy ? "Signing in…" : "Sign in"}
         </Button>
         <p className="text-center text-sm text-muted">
-          Pas de compte ? <Link href="/signup" className="text-accent hover:underline">Créer un compte</Link>
+          No account? <Link href="/signup" className="text-accent hover:underline">Create one</Link>
         </p>
       </form>
     </main>

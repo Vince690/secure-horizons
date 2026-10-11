@@ -13,7 +13,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <Nav companyName={account.companyName} email={account.email} />
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-line bg-surface/60 px-8 py-3">
-          <div className="text-sm text-muted">Avalanche Fuji · réseau de test · aucun fonds réel</div>
+          <div className="text-sm text-muted">Avalanche Fuji · test network · no real funds</div>
           <KillSwitchButton />
         </header>
         <main className="flex-1 p-8">{children}</main>

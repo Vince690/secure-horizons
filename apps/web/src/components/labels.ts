@@ -1,24 +1,24 @@
 import { COMPLIANCE_RULES, type DecisionStatus, type Framework, type ReasonCode, type Verdict } from "@payguard/shared";
 
 export const FRAMEWORK_LABEL: Record<Framework, { short: string; long: string }> = {
-  DORA: { short: "DORA", long: "Résilience opérationnelle (DORA)" },
-  MiCA: { short: "MiCA", long: "Marchés de crypto-actifs (MiCA)" },
-  AML_CFT: { short: "AML / CFT", long: "Lutte anti-blanchiment (AML / CFT)" },
-  AI_ACT: { short: "AI Act", long: "Règlement sur l'IA (AI Act)" },
+  DORA: { short: "DORA", long: "Operational Resilience (DORA)" },
+  MiCA: { short: "MiCA", long: "Crypto-asset Markets (MiCA)" },
+  AML_CFT: { short: "AML / CFT", long: "Anti-money laundering (AML / CFT)" },
+  AI_ACT: { short: "AI Act", long: "AI Regulation (AI Act)" },
 };
 
-export const VERDICT_LABEL: Record<Verdict, string> = { APPROVED: "Approuvé", HOLD: "En attente", BLOCKED: "Bloqué" };
+export const VERDICT_LABEL: Record<Verdict, string> = { APPROVED: "Approved", HOLD: "On hold", BLOCKED: "Blocked" };
 
 export const STATUS_LABEL: Record<DecisionStatus, string> = {
-  APPROVED: "Payé",
-  PENDING_CONFIRMATION: "À confirmer",
-  REJECTED: "Rejeté",
-  BLOCKED: "Bloqué",
-  FAILED: "Échec on-chain",
+  APPROVED: "Paid",
+  PENDING_CONFIRMATION: "Awaiting confirmation",
+  REJECTED: "Rejected",
+  BLOCKED: "Blocked",
+  FAILED: "On-chain failure",
 };
 
 export const REASON_LABEL: Record<ReasonCode, string> = Object.fromEntries(
-  Object.entries(COMPLIANCE_RULES).map(([code, rule]) => [code, rule.label_fr]),
+  Object.entries(COMPLIANCE_RULES).map(([code, rule]) => [code, rule.label_en]),
 ) as Record<ReasonCode, string>;
 
 export function reasonReferences(code: ReasonCode): string[] {
@@ -26,19 +26,19 @@ export function reasonReferences(code: ReasonCode): string[] {
 }
 
 export const AUDIT_LABEL: Record<string, string> = {
-  DECISION_CREATED: "Décision créée",
-  DECISION_RESOLVED: "Décision tranchée par un humain",
-  PAYMENT_EXECUTED: "Paiement exécuté",
-  PAYMENT_FAILED: "Paiement en échec",
-  POLICY_UPDATED: "Mandat modifié",
-  KILL_SWITCH_ON: "Kill switch activé",
-  KILL_SWITCH_OFF: "Kill switch réarmé",
-  API_KEY_CREATED: "Clé API créée",
+  DECISION_CREATED: "Decision created",
+  DECISION_RESOLVED: "Decision resolved by a human",
+  PAYMENT_EXECUTED: "Payment executed",
+  PAYMENT_FAILED: "Payment failed",
+  POLICY_UPDATED: "Policy updated",
+  KILL_SWITCH_ON: "Kill switch activated",
+  KILL_SWITCH_OFF: "Kill switch re-armed",
+  API_KEY_CREATED: "API key created",
 };
 
 export function formatDate(iso: string | null | undefined): string {
   if (!iso) return "—";
-  return new Date(iso).toLocaleString("fr-FR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  return new Date(iso).toLocaleString("en-GB", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" });
 }
 
 export function shortAddress(address: string): string {
@@ -52,19 +52,19 @@ export function formatAvax(value: string): string {
 export function formatMoney(value: string, currency: string = "AVAX"): string {
   const n = Number(value);
   if (!Number.isFinite(n)) return `${value} ${currency}`;
-  if (currency === "EUR") return `${n.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`;
-  return `${n.toLocaleString("fr-FR", { maximumFractionDigits: 4 })} ${currency}`;
+  if (currency === "EUR") return `€${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  return `${n.toLocaleString("en-US", { maximumFractionDigits: 4 })} ${currency}`;
 }
 
 export const RAIL_LABEL: Record<string, string> = {
-  avalanche: "Avalanche · wallet gardien",
-  virtual_card: "Carte virtuelle à usage unique · compte bancaire",
+  avalanche: "Avalanche · guardian wallet",
+  virtual_card: "Single-use virtual card · connected bank account",
 };
 
 export const CARD_STATUS_LABEL: Record<string, string> = {
-  active: "Active, en attente du débit marchand",
-  used: "Utilisée (usage unique)",
-  cancelled: "Annulée",
-  frozen: "Gelée par le kill switch",
-  expired: "Expirée",
+  active: "Active, awaiting merchant charge",
+  used: "Used (single use)",
+  cancelled: "Cancelled",
+  frozen: "Frozen by kill switch",
+  expired: "Expired",
 };
