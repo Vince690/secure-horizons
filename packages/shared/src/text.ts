@@ -68,9 +68,11 @@ export function findLookalike(domain: string, references: Iterable<string>, opti
   // (phishers register the .store of your .shop), normal for a global brand (amazon.de vs amazon.fr).
   const otherTld = options.sameLabelOtherTldIsLookalike ?? true;
   const d = domain.toLowerCase().replace(/^www\./, "");
+  const refs = [...references].map((r) => r.toLowerCase().replace(/^www\./, ""));
+  if (refs.includes(d)) return null; // it IS one of the references
   const label = domainLabel(d);
   const normalized = homoglyphNormalize(label);
-  for (const raw of references) {
+  for (const raw of refs) {
     const ref = raw.toLowerCase().replace(/^www\./, "");
     if (ref === d) return null;
     const refLabel = domainLabel(ref);
@@ -78,7 +80,9 @@ export function findLookalike(domain: string, references: Iterable<string>, opti
     if (!refNormalized) continue;
     if (label === refLabel && !otherTld) continue;
     const sameAfterHomoglyphs = normalized === refNormalized;
-    const close = levenshtein(label, refLabel) <= 2;
+    // "etsy" vs "ebay" or "ikea" vs "nike" are 2 edits apart: short names need an exact-ish match.
+    const maxEdits = refLabel.length >= 7 ? 2 : refLabel.length >= 5 ? 1 : 0;
+    const close = maxEdits > 0 && levenshtein(label, refLabel) <= maxEdits;
     const prefixed = normalized.startsWith(refNormalized) && normalized.length <= refNormalized.length + 8;
     if (sameAfterHomoglyphs || close || prefixed) return ref;
   }
@@ -148,6 +152,7 @@ export function brandInHostname(host: string, brands: Iterable<string> = KNOWN_B
     if (reg === b || h === b || h.endsWith("." + b)) return null; // the brand's own domain
     const bl = domainLabel(b).split(".")[0];
     if (bl.length < 4) continue;
+    if (domainLabel(reg).split(".")[0] === bl) return null; // amazon.de is Amazon, not an impersonation
     for (const l of labels) {
       if (l === bl || homoglyphNormalize(l) === homoglyphNormalize(bl) || (bl.length >= 6 && levenshtein(l, bl) <= 1)) return b;
     }

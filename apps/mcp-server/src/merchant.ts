@@ -136,7 +136,7 @@ export async function checkMerchant(url: string, trustedDomains: string[] = []):
     add("BOT_PROTECTED", 0, "low", `The site answered ${status} to our reader (bot protection); judged on domain signals only.`);
   } else if (status >= 400) add("HTTP_ERROR", -20, "medium", `The page responds ${status}.`);
   const finalHost = new URL(finalUrl).hostname.toLowerCase().replace(/^www\./, "");
-  if (finalHost !== domain && !local) add("REDIRECTED_ELSEWHERE", -15, "medium", `Redirected to a different domain: ${finalHost}.`);
+  if (registrableDomain(finalHost) !== registrableDomain(domain) && !local) add("REDIRECTED_ELSEWHERE", -15, "medium", `Redirected to a different domain: ${finalHost}.`);
 
   // 2. Page text, visible vs hidden
   const fullText = extractText(html);
@@ -152,7 +152,8 @@ export async function checkMerchant(url: string, trustedDomains: string[] = []):
   const tld = domain.split(".").pop() ?? "";
   if (RISKY_TLDS.has(tld)) add("RISKY_TLD", -10, "low", `The .${tld} extension is heavily used by fraudulent sites.`);
   const hosting = local ? null : freeHostingSuffix(domain);
-  if (hosting) add("FREE_HOSTING", -25, "high", `Hosted on ${hosting}: anyone can publish there in minutes, no identity.`);
+  // -32: alone it lands at 68, i.e. a human confirms before buying from a site anyone can publish in minutes.
+  if (hosting) add("FREE_HOSTING", -32, "high", `Hosted on ${hosting}: anyone can publish there in minutes, no identity.`);
   if (!local && !hosting) {
     const age = await domainAgeDays(domain);
     if (age !== null && age < 30) add("DOMAIN_VERY_NEW", -30, "high", `Domain registered ${age} day(s) ago.`);
