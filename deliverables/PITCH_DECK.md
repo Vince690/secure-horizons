@@ -1,4 +1,4 @@
-# PayGuard — Pitch Deck (8 slides)
+# PayGuard — Pitch Deck (speaker notes; the PDF is PayGuard_Pitch.pdf, 5 slides)
 
 Track 1 — Guardians of Value · ESSEC Secure Horizons 2026 · 5 min + 2 min Q&A
 
