@@ -20,7 +20,8 @@ import {
  * 19.0 – 40.0 s  Screen: Claude Desktop recording (public/screen.mov) on a tilted card over a
  *                blurred background, slow zoom + drift, three callouts timed to what happens
  *                on screen (checks, scam rejected, paid + proof).
- * 40.0 – 47.0 s  End card: PayGuard, tagline, three pillars.
+ * 38.5 – 44.0 s  Outro: the headphones arrive, "Silence." (Remotion + product photo)
+ * 44.0 – 51.0 s  End card: PayGuard, tagline, three pillars.
  *
  * Timings are in CUES below so they can be adjusted to the recording.
  */
@@ -42,8 +43,10 @@ export const CUES = {
     paid: 20,            // APPROVED + Snowtrace link
     end: 27.5,
   },
-  endCardStart: 38.5,
-  total: 45.5,
+  /** Payoff: the headphones arrive, silence. */
+  outroStart: 38.5,
+  endCardStart: 44,
+  total: 51,
 } as const;
 
 export const PROMO_DURATION_FRAMES = S(CUES.total);
@@ -197,7 +200,7 @@ const Callout = ({ label, sub, tone }: { label: string; sub: string; tone: "ok" 
 const Screen = ({ file }: { file: string }) => {
   const frame = useCurrentFrame();
   const sec = frame / PROMO_FPS;
-  const dur = CUES.endCardStart - CUES.screenStart;
+  const dur = CUES.outroStart - CUES.screenStart;
   // Slow "handheld" drift: zoom 1.0 -> 1.22, pan from the prompt box to the answer.
   const zoom = interpolate(sec, [0, dur], [0.96, 1.12], { easing: Easing.inOut(Easing.quad), extrapolateRight: "clamp" });
   const panX = interpolate(sec, [0, dur], [0, -3], { easing: Easing.inOut(Easing.quad), extrapolateRight: "clamp" });
@@ -252,6 +255,35 @@ const Screen = ({ file }: { file: string }) => {
   );
 };
 
+/** Payoff scene, made in Remotion with the product photo (Higgsfield daily quota was reached). */
+const Outro = () => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const sec = frame / PROMO_FPS;
+  const dur = CUES.endCardStart - CUES.outroStart;
+  const pop = spring({ frame, fps, config: { damping: 14, stiffness: 100 } });
+  const drift = interpolate(sec, [0, dur], [1.0, 1.08], { easing: Easing.inOut(Easing.quad), extrapolateRight: "clamp" });
+  const line1 = interpolate(sec, [0.6, 1.3], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const line2 = interpolate(sec, [2.2, 2.9], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  const fadeOut = interpolate(sec, [dur - 0.4, dur], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  return (
+    <AbsoluteFill style={{ background: "#f6f4ef", opacity: fadeOut }}>
+      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", flexDirection: "row", gap: 90, padding: 120 }}>
+        <div style={{ width: 620, height: 620, borderRadius: 32, overflow: "hidden", background: "white", boxShadow: "0 40px 100px rgba(0,0,0,.18)", transform: `scale(${(0.9 + 0.1 * pop) * drift})` }}>
+          <img src={staticFile("headset.jpg")} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+        </div>
+        <div style={{ ...font, color: "#1b1f26", maxWidth: 760 }}>
+          <div style={{ fontSize: 24, letterSpacing: 5, textTransform: "uppercase", color: "#2fbf71", fontWeight: 700, opacity: line1 }}>Delivered · 48 h</div>
+          <div style={{ fontSize: 86, fontWeight: 800, lineHeight: 1.05, letterSpacing: -2, marginTop: 14, opacity: line1, transform: `translateY(${(1 - line1) * 20}px)` }}>Silence.</div>
+          <div style={{ fontSize: 34, color: "#5f6b7a", marginTop: 26, lineHeight: 1.3, opacity: line2, transform: `translateY(${(1 - line2) * 20}px)` }}>
+            Best price found. Scam avoided.<br />Paid within the mandate. Proof on-chain.
+          </div>
+        </div>
+      </AbsoluteFill>
+    </AbsoluteFill>
+  );
+};
+
 const EndCard = () => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -281,8 +313,19 @@ const EndCard = () => {
 };
 
 // A type alias (not an interface) so it stays assignable to Remotion's Record<string, unknown> props.
+/** Shown while public/screen.mov is not there yet. */
+const MissingScreen = () => (
+  <AbsoluteFill style={{ background: "#0b0f17", alignItems: "center", justifyContent: "center" }}>
+    <div style={{ ...font, color: "#8b97ad", fontSize: 40, textAlign: "center", lineHeight: 1.4 }}>
+      Screen recording missing<br /><span style={{ fontSize: 24 }}>drop it at apps/promo/public/screen.mov and set hasScreen: true</span>
+    </div>
+  </AbsoluteFill>
+);
+
 export type PromoProps = {
   introFile: string;
+  /** true once public/screen.mov exists */
+  hasScreen: boolean;
   /** true once public/intro.mp4 exists (filmed or generated clip) */
   hasIntroClip: boolean;
   screenFile: string;
@@ -291,7 +334,7 @@ export type PromoProps = {
   hasMusic: boolean;
 };
 
-export const Promo = ({ introFile, hasIntroClip, screenFile, musicFile, hasMusic }: PromoProps) => (
+export const Promo = ({ introFile, hasIntroClip, hasScreen, screenFile, musicFile, hasMusic }: PromoProps) => (
   <AbsoluteFill style={{ background: "#0b0f17" }}>
     {hasMusic && <Audio src={staticFile(musicFile)} volume={(f) => interpolate(f, [0, 30, PROMO_DURATION_FRAMES - 60, PROMO_DURATION_FRAMES], [0, 0.8, 0.8, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />}
     <Sequence from={0} durationInFrames={S(CUES.introEnd)}>
@@ -303,8 +346,11 @@ export const Promo = ({ introFile, hasIntroClip, screenFile, musicFile, hasMusic
     <Sequence from={S(CUES.promptStart)} durationInFrames={S(CUES.promptEnd - CUES.promptStart)}>
       <BigPrompt />
     </Sequence>
-    <Sequence from={S(CUES.screenStart)} durationInFrames={S(CUES.endCardStart - CUES.screenStart)}>
-      <Screen file={screenFile} />
+    <Sequence from={S(CUES.screenStart)} durationInFrames={S(CUES.outroStart - CUES.screenStart)}>
+      {hasScreen ? <Screen file={screenFile} /> : <MissingScreen />}
+    </Sequence>
+    <Sequence from={S(CUES.outroStart)} durationInFrames={S(CUES.endCardStart - CUES.outroStart)}>
+      <Outro />
     </Sequence>
     <Sequence from={S(CUES.endCardStart)} durationInFrames={S(CUES.total - CUES.endCardStart)}>
       <EndCard />

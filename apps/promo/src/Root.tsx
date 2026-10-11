@@ -9,6 +9,6 @@ export const RemotionRoot = () => (
     fps={PROMO_FPS}
     width={1920}
     height={1080}
-    defaultProps={{ introFile: "intro.mp4", hasIntroClip: true, screenFile: "screen.mov", musicFile: "music.mp3", hasMusic: true }}
+    defaultProps={{ introFile: "intro.mp4", hasIntroClip: true, hasScreen: false, screenFile: "screen.mov", musicFile: "music.mp3", hasMusic: true }}
   />
 );
