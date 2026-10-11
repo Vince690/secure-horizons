@@ -32,10 +32,9 @@ export default function DecisionsPage() {
     3000,
   );
 
-  const rows = (data?.decisions ?? []).filter((d) => {
-    if (!daysAgo) return true;
-    return new Date(d.created_at).getTime() >= Date.now() - daysAgo * 86_400_000;
-  });
+  // eslint-disable-next-line react-hooks/purity -- a clock read for a display filter is fine here
+  const cutoff = daysAgo ? Date.now() - daysAgo * 86_400_000 : 0;
+  const rows = (data?.decisions ?? []).filter((d) => !daysAgo || new Date(d.created_at).getTime() >= cutoff);
 
   return (
     <>

@@ -5,7 +5,7 @@ import type { BalanceResponse, Decision, Framework } from "@payguard/shared";
 import { usePolling } from "@/components/hooks";
 import { FRAMEWORK_LABEL, formatAvax, formatDate, formatMoney, REASON_LABEL, shortAddress } from "@/components/labels";
 import type { ReasonCode } from "@payguard/shared";
-import { Button, Card, DecisionLink, EmptyState, ExplorerLink, FrameworkTile, PageHeader, RailBadge, ScoreBadge, VerdictPill } from "@/components/ui";
+import { Card, DecisionLink, EmptyState, ExplorerLink, FrameworkTile, PageHeader, RailBadge, ScoreBadge, VerdictPill } from "@/components/ui";
 import { PendingApprovals } from "@/components/PendingApprovals";
 import type { ComplianceReport } from "@/lib/dashboard/service";
 import type { DashboardMetrics, DailyBucket, DailySpend } from "@/lib/analytics/metrics";
