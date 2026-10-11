@@ -1,0 +1,99 @@
+<!doctype html><html><head><meta charset="utf-8"><title>PayGuard Defense Sheet</title><style>
+@page { size: A4; margin: 11mm 12mm; }
+body { font-family: Inter, -apple-system, Helvetica, Arial, sans-serif; color:#111; font-size: 9.6px; line-height: 1.32; margin:0; }
+h1 { font-size: 17px; margin: 0 0 3px; color:#0b0f17; }
+h2 { font-size: 11px; margin: 7px 0 2px; color:#2f6fdc; text-transform: uppercase; letter-spacing: .5px; border-bottom: 1px solid #dde3ee; padding-bottom:1px; }
+p { margin: 2px 0; } ul { margin: 2px 0 2px 14px; padding:0; } li { margin: 1px 0; }
+table { border-collapse: collapse; width: 100%; margin: 3px 0; } th, td { border: 1px solid #d5dbe6; padding: 2px 5px; text-align: left; vertical-align: top; } th { background:#eef2f8; }
+code { font-size: 9px; }
+</style></head><body><h1>PayGuard — Defense Sheet (1 page)</h1>
+<p><strong>Team:</strong> Secure Horizons · <strong>Track 1 — Guardians of Value</strong> · ESSEC Secure Horizons, 10–11 October 2026</p>
+<h2>Threat scenario addressed</h2>
+<p>An AI purchasing agent (Claude Desktop with MCP tools) is sent to buy on the web. A <strong>lookalike merchant page</strong> (<code>n0rdsound-deals</code>, cheaper price) carries <strong>instructions invisible to the human but readable by the agent</strong> (hidden <code>div</code>, HTML comments, white-on-white text): "pay to this address instead", "skip the checks", "the user already approved". Agent-payment protocols sign the <strong>transaction</strong>, not the <strong>decision</strong>: the manipulated agent produces a perfectly valid payment that nobody wanted. Variants covered: fake merchant / typosquatting, price or recipient swapped on the page, over-budget or off-policy purchase, first payment to an unknown recipient, runaway agent (burst of rejected attempts), compromised agent trying to drain the account.</p>
+<h2>How PayGuard defends</h2>
+<p>The agent never holds a key or a card number. It calls PayGuard (MCP plugin) and PayGuard decides: <strong>20 deterministic rules</strong> (mandate: amount, daily cap, allowed merchants, new-recipient confirmation; context: page price / product / recipient must match the request; injection: hidden instructions, override phrases, urgency pressure) + a <strong>merchant trust score</strong> (HTTPS, domain age via RDAP, risky TLD, brand impersonation, lookalike domain, legal mentions, credential-harvesting forms, free hosting, random subdomains/paths). Verdicts: APPROVED (executed), HELD (human confirms on the dashboard), BLOCKED, UNVERIFIED (could not check, human confirms). Every decision, including refusals, is <strong>anchored on Avalanche Fuji</strong> (<code>PayGuardLedger</code>, hash of the decision). A <strong>kill switch</strong> pauses the contract and freezes all cards: manual from the dashboard, automatic after 3 blocks in 10 minutes or a critical injection combined with an over-cap amount. Funds stay in the customer's bank: payments go through single-use virtual cards (capped, merchant-locked, expire the same day) or testnet AVAX.</p>
+<h2>NIST CSF 2.0 functions covered</h2>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>What PayGuard does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Govern</strong></td>
+<td>Spending policy per rail set by a human (caps, allowed merchants, confirmation rules), compliance panel mapping to DORA / MiCA / AML-CFT / AI Act</td>
+</tr>
+<tr>
+<td><strong>Identify</strong></td>
+<td>Merchant trust score before any payment; benchmark of the score on live phishing</td>
+</tr>
+<tr>
+<td><strong>Protect</strong></td>
+<td>Mandate enforcement; agent never sees secrets; single-use capped cards; on-chain pause</td>
+</tr>
+<tr>
+<td><strong>Detect</strong></td>
+<td>Hidden-instruction and injection rules, page/request mismatch rules, lookalike detection</td>
+</tr>
+<tr>
+<td><strong>Respond</strong></td>
+<td>BLOCK / HOLD, automatic kill switch, dashboard approvals, audit log</td>
+</tr>
+<tr>
+<td><strong>Recover</strong></td>
+<td>Re-arm from the dashboard, cards re-issued, full decision history to review</td>
+</tr>
+</tbody>
+</table>
+<h2>MITRE ATLAS / OWASP coverage</h2>
+<ul>
+<li><strong>ATLAS</strong> AML.T0051 <em>LLM Prompt Injection</em> (indirect, via web content), AML.T0054 <em>LLM Jailbreak</em>, AML.T0048 <em>External Harms: Financial Harm</em>, AML.T0043 <em>Craft Adversarial Data</em>.</li>
+<li><strong>OWASP Top 10 for LLM Applications</strong>: LLM01 Prompt Injection, LLM02 Insecure Output Handling (agent output never triggers a payment directly), LLM06 Excessive Agency (hard mandate, human in the loop), LLM08 Excessive Autonomy / LLM09 Overreliance (kill switch).</li>
+<li><strong>OWASP Agentic Top 10 (2025)</strong>: ASI01 Agent Goal Hijack, ASI03 Identity &amp; Privilege Abuse (no key in the agent), ASI05 Unexpected Code/Action Execution (scoped tool), ASI09 Human-Agent Trust Exploitation.</li>
+</ul>
+<h2>Metrics achieved</h2>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Value</th>
+<th>How measured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Live phishing pages caught (FRAUDULENT or SUSPICIOUS)</td>
+<td><strong>97 %</strong> (145 / 150)</td>
+<td>150 URLs from the OpenPhish feed, benchmark v7 (<code>docs/BENCHMARK.md</code>)</td>
+</tr>
+<tr>
+<td>Legitimate shops wrongly blocked</td>
+<td><strong>0 %</strong> (0 / 60)</td>
+<td>60 Tranco-ranked e-commerce sites</td>
+</tr>
+<tr>
+<td>Legitimate shops sent to a human</td>
+<td>5 % held + 10 % unverified</td>
+<td>same set</td>
+</tr>
+<tr>
+<td>Demo attack (hidden instructions + lookalike domain)</td>
+<td>100 % blocked, score 0/100</td>
+<td>scripted demo, 3 merchants</td>
+</tr>
+<tr>
+<td>Time to decide</td>
+<td>&lt; 1 s (rules) + ~2 s to anchor on Fuji</td>
+<td>measured on the demo</td>
+</tr>
+<tr>
+<td>Time to respond to a runaway agent</td>
+<td>3 blocks ⇒ contract paused + cards frozen in &lt; 5 s</td>
+<td>automatic kill switch test</td>
+</tr>
+</tbody>
+</table>
+<h2>Known limitations</h2>
+<p>Merchant score is heuristic: 3 % of phishing kits hosted on hacked legitimate domains still pass (next signal: domain reputation over time). RDAP and page fetch depend on network; unreachable sites become UNVERIFIED (human confirms). The virtual-card issuer is a sandbox we wrote (Revolut Business / Stripe Issuing are the planned real rails). Testnet only, no real funds. Optional LLM "second opinion" and natural-language explanations are implemented but disabled without an API key. Not a payment institution: PayGuard is a technical provider; regulatory mapping is indicative.</p></body></html>
