@@ -17,7 +17,10 @@ const SETTINGS_ITEMS = [
   { href: "/dashboard/api-keys", label: "API Keys" },
 ];
 
-const BOTTOM_ITEMS = [{ href: "/dashboard/audit", label: "Audit Log" }];
+const BOTTOM_ITEMS = [
+  { href: "/dashboard/benchmark", label: "Benchmark" },
+  { href: "/dashboard/audit", label: "Audit Log" },
+];
 
 export function Nav({ companyName, email }: { companyName: string; email: string }) {
   const pathname = usePathname();

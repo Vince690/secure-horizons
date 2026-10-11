@@ -1,0 +1,3277 @@
+{
+  "summary": {
+    "label": "v1",
+    "generated_at": "2026-10-11T08:38:29.156Z",
+    "scam": {
+      "count": 150,
+      "mean_score": 52,
+      "verdicts": {
+        "TRUSTED": 69,
+        "SUSPICIOUS": 73,
+        "FRAUDULENT": 8
+      },
+      "reachable": 103,
+      "top_signals": [
+        {
+          "code": "DOMAIN_AGE_UNKNOWN",
+          "count": 120,
+          "pct": 80
+        },
+        {
+          "code": "NO_LEGAL_MENTIONS",
+          "count": 118,
+          "pct": 79
+        },
+        {
+          "code": "NO_PRICE_FOUND",
+          "count": 111,
+          "pct": 74
+        },
+        {
+          "code": "NO_HTTPS",
+          "count": 31,
+          "pct": 21
+        },
+        {
+          "code": "UNREACHABLE",
+          "count": 30,
+          "pct": 20
+        },
+        {
+          "code": "HTTP_ERROR",
+          "count": 17,
+          "pct": 11
+        },
+        {
+          "code": "REDIRECTED_ELSEWHERE",
+          "count": 11,
+          "pct": 7
+        },
+        {
+          "code": "RISKY_TLD",
+          "count": 3,
+          "pct": 2
+        }
+      ]
+    },
+    "legit": {
+      "count": 60,
+      "mean_score": 54,
+      "verdicts": {
+        "TRUSTED": 23,
+        "SUSPICIOUS": 31,
+        "FRAUDULENT": 6
+      },
+      "reachable": 31,
+      "top_signals": [
+        {
+          "code": "DOMAIN_AGE_UNKNOWN",
+          "count": 57,
+          "pct": 95
+        },
+        {
+          "code": "NO_LEGAL_MENTIONS",
+          "count": 53,
+          "pct": 88
+        },
+        {
+          "code": "NO_PRICE_FOUND",
+          "count": 46,
+          "pct": 77
+        },
+        {
+          "code": "HTTP_ERROR",
+          "count": 26,
+          "pct": 43
+        },
+        {
+          "code": "DOMAIN_LOOKALIKE",
+          "count": 5,
+          "pct": 8
+        },
+        {
+          "code": "REDIRECTED_ELSEWHERE",
+          "count": 4,
+          "pct": 7
+        },
+        {
+          "code": "UNREACHABLE",
+          "count": 3,
+          "pct": 5
+        },
+        {
+          "code": "HIDDEN_INSTRUCTIONS",
+          "count": 3,
+          "pct": 5
+        }
+      ]
+    },
+    "fooled_rate_pct": 46,
+    "detection_rate_pct": 54,
+    "false_block_rate_pct": 10,
+    "false_hold_rate_pct": 52
+  },
+  "rows": [
+    {
+      "url": "http://kxt8244z.demox.site/",
+      "domain": "kxt8244z.demox.site",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://sp1ct10-dorval-biz-zulzo-pelri.pages.dev/",
+      "domain": "sp1ct10-dorval-biz-zulzo-pelri.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://voicemail.tsisd.ca/index.html",
+      "domain": "voicemail.tsisd.ca",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://diskcacambasdetroit.com.br/auth/rackespace/",
+      "domain": "diskcacambasdetroit.com.br",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://b592af96.click.kit-mail3.com/lmup7gdw6khmhn9nv4wu6h8wko4wkugh4ozgo/qvh8h7hdpek6edbl/aHR0cHM6Ly9kaXNrY2FjYW1iYXNkZXRyb2l0LmNvbS5ici9hdXRoL3JhY2tlc3BhY2U=/",
+      "domain": "b592af96.click.kit-mail3.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://therealbackporch.com/a/pages/login.php",
+      "domain": "therealbackporch.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "FRAUDULENT",
+      "score": 30,
+      "signals": [
+        "HTTP_ERROR",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 404,
+      "error": null
+    },
+    {
+      "url": "http://pzhxr7fvyc.hdply.com/",
+      "domain": "pzhxr7fvyc.hdply.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://www.violationverificationgroup186.vercel.app/",
+      "domain": "violationverificationgroup186.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "http://www-deliverthewin-wpe-stage.usps.mrm-client.com/",
+      "domain": "www-deliverthewin-wpe-stage.usps.mrm-client.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://www.fllicensehealthpdf-viewer.vercel.app/",
+      "domain": "fllicensehealthpdf-viewer.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "http://www.gang-1.vercel.app/",
+      "domain": "gang-1.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "http://gang-1.vercel.app/",
+      "domain": "gang-1.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://start-io-trzre.typedream.app/",
+      "domain": "start-io-trzre.typedream.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://roblox-4kx.pages.dev/",
+      "domain": "roblox-4kx.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "FRAUDULENT",
+      "score": 30,
+      "signals": [
+        "HTTP_ERROR",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "http://fllicensehealthpdf-viewer.vercel.app/",
+      "domain": "fllicensehealthpdf-viewer.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://whatsapp.acceso.me/",
+      "domain": "whatsapp.acceso.me",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://www.roblox.com.bi/games/121165298854655/DONT-LET-HIM-IN-NEW-MAP?privateServerLinkCode=65227985513451888732300630201761",
+      "domain": "roblox.com.bi",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://g5.lu/favkx",
+      "domain": "g5.lu",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://zufefutiw.webhop.me/ococi/",
+      "domain": "zufefutiw.webhop.me",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://hulobag.servehalflife.com/awigot/",
+      "domain": "hulobag.servehalflife.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://nadaku.onthewifi.com/movegu/",
+      "domain": "nadaku.onthewifi.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://ravniko-zul594207.vercel.app/index1.html",
+      "domain": "ravniko-zul594207.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 451,
+      "error": null
+    },
+    {
+      "url": "https://ravniko-zul594207.vercel.app/",
+      "domain": "ravniko-zul594207.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 451,
+      "error": null
+    },
+    {
+      "url": "https://kv-cont-blared.pages.dev/help/contact/317928204491396%2525252525252525252CN/A%2525252525252525252Chttps%2525252525252525253A/openphis/",
+      "domain": "kv-cont-blared.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://nihalaneesh.github.io/amazon-homepage-clone/",
+      "domain": "nihalaneesh.github.io",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 80,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://lnk.ink/jt1ff",
+      "domain": "lnk.ink",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://adobeinstaller-virid.vercel.app/",
+      "domain": "adobeinstaller-virid.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://signin-adobe-x4ou12j0f7c-3d031dfa-9ygwqx748489-4a60f031a-b62a.vercel.app/",
+      "domain": "signin-adobe-x4ou12j0f7c-3d031dfa-9ygwqx748489-4a60f031a-b62a.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 451,
+      "error": null
+    },
+    {
+      "url": "https://kebemus.serveirc.com/wodaje/",
+      "domain": "kebemus.serveirc.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://security-check-secure.cfd/",
+      "domain": "security-check-secure.cfd",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 65,
+      "signals": [
+        "RISKY_TLD",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://online-portal-bzst.cfd/",
+      "domain": "online-portal-bzst.cfd",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://theguesstimate.com/camcam",
+      "domain": "theguesstimate.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://hp9316.craftum.io/",
+      "domain": "hp9316.craftum.io",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://121jio.senes.at/stakings?b=YTo0OntzOjU6ImxhYmVsIjtzOjE6IjkiO3M6MzoidXNyIjtpOjE1NjtzOjQ6Im5vcGQiO3M6MTU6InJzczMucmVhZGxlcy5hdCI7czoxOiJvIjtpOjExMzY7fQ==",
+      "domain": "121jio.senes.at",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://spotify.assetdeploy.com/",
+      "domain": "spotify.assetdeploy.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://treursuite.square.site/",
+      "domain": "treursuite.square.site",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://hizecida.zapto.org/heton/",
+      "domain": "hizecida.zapto.org",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://udorofuse.zapto.org/mufo/",
+      "domain": "udorofuse.zapto.org",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://palet.com.ua/de/app/login.php",
+      "domain": "palet.com.ua",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://palet.com.ua/de/app",
+      "domain": "palet.com.ua",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://cuhatar.webhop.me/dike/",
+      "domain": "cuhatar.webhop.me",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://tevofo.redirectme.net/supime/",
+      "domain": "tevofo.redirectme.net",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://not-enought-feeding-animals.vercel.app/",
+      "domain": "not-enought-feeding-animals.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://roblox.com.bn/communities/577644623018/One-Time-YT",
+      "domain": "roblox.com.bn",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://that.is.maleare.121z3.ralind.at/trs/",
+      "domain": "that.is.maleare.121z3.ralind.at",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://thatismaleare.121z3.ralind.at/trs/",
+      "domain": "thatismaleare.121z3.ralind.at",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://thatismaleare121z3.ralind.at/trs/",
+      "domain": "thatismaleare121z3.ralind.at",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "http://perfumenapromo.lovable.app/",
+      "domain": "perfumenapromo.lovable.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://mercadopaneladrepressao.lovable.app/",
+      "domain": "mercadopaneladrepressao.lovable.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://faecbook.vn/sakuarastudio-tuyen-dung-chuyen-nghiep-79?d8",
+      "domain": "faecbook.vn",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://www-deliverthewin-wpe-stage.usps.mrm-client.com/research-center/political-planning-tool/#/question/1",
+      "domain": "www-deliverthewin-wpe-stage.usps.mrm-client.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://34abx.anixas.at:443/newtransfer",
+      "domain": "34abx.anixas.at",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://rss2.sayler.at/go/y2C4Y254/z264X254",
+      "domain": "rss2.sayler.at",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://www.roblox.com.gr/games/8737602449/PLS-DONATE-?privateServerLinkCode=60869683094735370675006673192210",
+      "domain": "roblox.com.gr",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://915893.xyz/",
+      "domain": "915893.xyz",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 65,
+      "signals": [
+        "RISKY_TLD",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://890091.xyz/",
+      "domain": "890091.xyz",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 65,
+      "signals": [
+        "RISKY_TLD",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://meine-app.login-utilizator.de/portal/openlogin/",
+      "domain": "meine-app.login-utilizator.de",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://nbddut-i6esa064.vercel.app/landing.html",
+      "domain": "nbddut-i6esa064.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://faecbook.vn/khoa-hoc-nen-tang-hoa-12?a&l",
+      "domain": "faecbook.vn",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://val1dar3656.freepage.cc/",
+      "domain": "val1dar3656.freepage.cc",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://binance-account-login.vercel.app/",
+      "domain": "binance-account-login.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://suntrust-onlinebanking.blogspot.com/",
+      "domain": "suntrust-onlinebanking.blogspot.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://www.roblox.com.mu/communities/7720581830/Blade-Ball-Community-Support",
+      "domain": "roblox.com.mu",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://schooltec.net/tcgm/",
+      "domain": "schooltec.net",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://mietenhambugrform.my/form/e7af8a24-d47e-4a10-800b-bd3a17d95bc0",
+      "domain": "mietenhambugrform.my",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://being-trezr-io.framer.ai/",
+      "domain": "being-trezr-io.framer.ai",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "FRAUDULENT",
+      "score": 30,
+      "signals": [
+        "HTTP_ERROR",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 404,
+      "error": null
+    },
+    {
+      "url": "http://app-trezre-io-en.framer.ai/",
+      "domain": "app-trezre-io-en.framer.ai",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "FRAUDULENT",
+      "score": 30,
+      "signals": [
+        "HTTP_ERROR",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 404,
+      "error": null
+    },
+    {
+      "url": "https://g5.lu/m8c7v",
+      "domain": "g5.lu",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://www.roblox.com.bn/communities/713566933616/OXOXNS-YT#!/about",
+      "domain": "roblox.com.bn",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://exoduswalletcc.pages.dev/%22%3EExodus",
+      "domain": "exoduswalletcc.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://upholdapp.wasmer.app/",
+      "domain": "upholdapp.wasmer.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "FRAUDULENT",
+      "score": 30,
+      "signals": [
+        "HTTP_ERROR",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 410,
+      "error": null
+    },
+    {
+      "url": "https://hanrahans.com/web/login.php?911ad&section=signinpage&ip=90b6d23d491ec570b9b691d7d4764d76&cookiecheck=yes&em=&device=AcceptComputer&destination=signin",
+      "domain": "hanrahans.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://hanrahans.com/web?911ad",
+      "domain": "hanrahans.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://advitgoel.github.io/netflix-clone",
+      "domain": "advitgoel.github.io",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://www.r.oblox.com.et/users/5467244032/profile%5C",
+      "domain": "r.oblox.com.et",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://roblnhoodverifychanges.duckdns.org/c3a6e85b8053a2436a1ba835063a063aef8cb57a/signin",
+      "domain": "roblnhoodverifychanges.duckdns.org",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 500,
+      "error": null
+    },
+    {
+      "url": "https://roblnhoodverifychanges.duckdns.org/9ebd7595c9dbd552cfb58875d81c96e131a00776/signin",
+      "domain": "roblnhoodverifychanges.duckdns.org",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 500,
+      "error": null
+    },
+    {
+      "url": "https://roblox.com.bi/games/127775478639865/upd2-machine-party?game_id=127775478639865&game_name=upd2-machine-party&privateserverlinkcode=93675272480267701055445615338672",
+      "domain": "roblox.com.bi",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://lnk.ink/robloxcom-users-421557740630-profile",
+      "domain": "lnk.ink",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://trezr-bridgee-sso.wasmer.app/",
+      "domain": "trezr-bridgee-sso.wasmer.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://strts-ledgr.pages.dev/",
+      "domain": "strts-ledgr.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "FRAUDULENT",
+      "score": 30,
+      "signals": [
+        "HTTP_ERROR",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "http://magazadamaga.com/magaoff/produto",
+      "domain": "magazadamaga.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 65,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://clementspools.github.io/page",
+      "domain": "clementspools.github.io",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 90,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://mihaeldidu20-debug.github.io/net-with-tailwind.css-and-html/",
+      "domain": "mihaeldidu20-debug.github.io",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://mihaeldidu20-debug.github.io/net-with-tailwind.css-and-html",
+      "domain": "mihaeldidu20-debug.github.io",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://roblox.com.kz/users/1713082251/profile%23creations",
+      "domain": "roblox.com.kz",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://www.roblox.et/users/9153595208/profile",
+      "domain": "roblox.et",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://maintenance-portal.com/",
+      "domain": "maintenance-portal.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "FRAUDULENT",
+      "score": 30,
+      "signals": [
+        "HTTP_ERROR",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://s3.us-east-1.amazonaws.com/steve.griffing.usna/dropbox+(6).html",
+      "domain": "s3.us-east-1.amazonaws.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://parth5466.github.io/My-Phish-Site",
+      "domain": "parth5466.github.io",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://access-ledgr-desktop.pages.dev/favicon.ico",
+      "domain": "access-ledgr-desktop.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "http://www.kraken-job.com/",
+      "domain": "kraken-job.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://rbcode.net/v/1db576be7b231c830c8c02d313f9f2fc",
+      "domain": "rbcode.net",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://pt-shopee347.blogspot.com/",
+      "domain": "pt-shopee347.blogspot.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://s.team-he.com/lp/sst-cgj/svbzuzsr/",
+      "domain": "s.team-he.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://cn.memxzf.com/home/register?code=54263/",
+      "domain": "cn.memxzf.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://warayana.com.pe/publicaciones/2023/10/25/de-la-pelicula-a-la-realidad-francotirador-y-el-trastorno-de-estres-postraumatico",
+      "domain": "warayana.com.pe",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://form.jotform.com/262591344749366",
+      "domain": "form.jotform.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 65,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "CONTACT_EMAIL_MISMATCH",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://www.4aoep89w.sanpinjia.com/",
+      "domain": "4aoep89w.sanpinjia.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "http://www.spotify-clone-eta-nine.vercel.app/",
+      "domain": "spotify-clone-eta-nine.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "http://3g.5.ztbdkj.com/",
+      "domain": "3g.5.ztbdkj.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 50,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "CONTACT_EMAIL_MISMATCH",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://scorpiosbodrum.spahotel.guru/",
+      "domain": "scorpiosbodrum.spahotel.guru",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 80,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://scorpios.spahotel.guru/",
+      "domain": "scorpios.spahotel.guru",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 50,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://grparklara.spahotel.guru/",
+      "domain": "grparklara.spahotel.guru",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 80,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://grandparklara.spahotel.guru/",
+      "domain": "grandparklara.spahotel.guru",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 50,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://rbcode.net/v/46521b55a16b4c0d28700abd70d2db2a",
+      "domain": "rbcode.net",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 404,
+      "error": null
+    },
+    {
+      "url": "https://www.amazonjobvip.com/",
+      "domain": "amazonjobvip.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 40,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "DOMAIN_LOOKALIKE",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://www.onedrive-4-nine.vercel.app/",
+      "domain": "onedrive-4-nine.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "http://sp1ct10-berrek-biz-zalzo-vemti.pages.dev/",
+      "domain": "sp1ct10-berrek-biz-zalzo-vemti.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "FRAUDULENT",
+      "score": 30,
+      "signals": [
+        "HTTP_ERROR",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://secure--blockfi--cdn--auth.webflow.io/",
+      "domain": "secure--blockfi--cdn--auth.webflow.io",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://belgravess.spahotel.guru/",
+      "domain": "belgravess.spahotel.guru",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://belgravesands.spahotel.guru/",
+      "domain": "belgravesands.spahotel.guru",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://dawsondubl.spahotel.guru/",
+      "domain": "dawsondubl.spahotel.guru",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 80,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://dawsondublin.spahotel.guru/",
+      "domain": "dawsondublin.spahotel.guru",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 50,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://facebocks.com.vn/bo-cau-hoi-soan-moi-bam-sat?a&l",
+      "domain": "facebocks.com.vn",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://rhub.in/fezmd",
+      "domain": "rhub.in",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://ur-exods.pages.dev/%5DExodus/%5BOfficial%20Exodus%20Privacy%20Policy%20Link%2010%5D",
+      "domain": "ur-exods.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://ur-exods.pages.dev/%5DExodus/%5BOfficial%20Exodus%20Assets%20Link%209%5D",
+      "domain": "ur-exods.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://ur-exods.pages.dev/%5DExodus/%5BOfficial%20Exodus%20Download%20Link%203%5D",
+      "domain": "ur-exods.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://pey-ahx.pages.dev/",
+      "domain": "pey-ahx.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://ur-exods.pages.dev/%5DExodus/%5BOfficial%20Exodus%20Mobile%20App%20Link%208%5D",
+      "domain": "ur-exods.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://gmn4b1d.github.io/No/",
+      "domain": "gmn4b1d.github.io",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://ur-exods.pages.dev/%5DExodus/%5BOfficial%20Exodus%20Trezor%20Guide%20Link%206%5D",
+      "domain": "ur-exods.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://ur-exods.pages.dev/%5DExodus/%5BOfficial%20Exodus%20Support%20Link%202%5D",
+      "domain": "ur-exods.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://ur-exods.pages.dev/%5DExodus/%5BOfficial%20Exodus%20FAQ%20Link%204%5D",
+      "domain": "ur-exods.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://ur-exods.pages.dev/%5DExodus/%5BOfficial%20Exodus%20Customer%20Support%20Link%2012%5D",
+      "domain": "ur-exods.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://ur-exods.pages.dev/%5DExodus/%5BOfficial%20Exodus%20Wallet%20Setup%20Link%207%5D",
+      "domain": "ur-exods.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://ur-exods.pages.dev/%5DExodus/%5BOfficial%20Exodus%20Security%20Link%201%5D",
+      "domain": "ur-exods.pages.dev",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "http://www.acl.saintjohnmedicals.com/",
+      "domain": "acl.saintjohnmedicals.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "NO_HTTPS",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://abhishek3012-ab.github.io/netflix-landing-page/",
+      "domain": "abhishek3012-ab.github.io",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 90,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://www.codedetrichelattaquedeszombieroblox.blogspot.com/",
+      "domain": "codedetrichelattaquedeszombieroblox.blogspot.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://violationverificationgroup186.vercel.app/careers.html",
+      "domain": "violationverificationgroup186.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://violationverificationgroup186.vercel.app/",
+      "domain": "violationverificationgroup186.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://violationverificationgroup186.vercel.app/required.html",
+      "domain": "violationverificationgroup186.vercel.app",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://tepojeniw.serveblog.net/ecube/",
+      "domain": "tepojeniw.serveblog.net",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://unecited.redirectme.net/togip/",
+      "domain": "unecited.redirectme.net",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://free1.givefreegifteos.vip/eos",
+      "domain": "free1.givefreegifteos.vip",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 80,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://ijewineli.servepics.com/oboha/",
+      "domain": "ijewineli.servepics.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://naridojew.3utilities.com/wijofu/",
+      "domain": "naridojew.3utilities.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://zasehajote.myftp.org/bozo/",
+      "domain": "zasehajote.myftp.org",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://hagivi.serveftp.com/zavo/",
+      "domain": "hagivi.serveftp.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://jilijumuj.servebeer.com/udofod/",
+      "domain": "jilijumuj.servebeer.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://makopom.webhop.me/adigiw/",
+      "domain": "makopom.webhop.me",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://ocajokalu.myvnc.com/pizozo/",
+      "domain": "ocajokalu.myvnc.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://kubanehus.hopto.org/riwo/",
+      "domain": "kubanehus.hopto.org",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://kuvofu.ddns.net/rekewo/",
+      "domain": "kuvofu.ddns.net",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://alubuti.hopto.org/tovuce/",
+      "domain": "alubuti.hopto.org",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://donido.servemp3.com/wurov/",
+      "domain": "donido.servemp3.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://rbcode.net/v/a4d1a70be4ba8d9055b39b0002ff9652",
+      "domain": "rbcode.net",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://zicoroc.ddnsking.com/amekaj/",
+      "domain": "zicoroc.ddnsking.com",
+      "truth": "scam",
+      "tranco_rank": null,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://amazon.fr/",
+      "domain": "amazon.fr",
+      "truth": "legit",
+      "tranco_rank": 634,
+      "verdict": "TRUSTED",
+      "score": 80,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://amazon.com/",
+      "domain": "amazon.com",
+      "truth": "legit",
+      "tranco_rank": 27,
+      "verdict": "SUSPICIOUS",
+      "score": 40,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "DOMAIN_LOOKALIKE",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://amazon.de/",
+      "domain": "amazon.de",
+      "truth": "legit",
+      "tranco_rank": 402,
+      "verdict": "SUSPICIOUS",
+      "score": 40,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "DOMAIN_LOOKALIKE",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://fnac.com/",
+      "domain": "fnac.com",
+      "truth": "legit",
+      "tranco_rank": 4201,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://cdiscount.com/",
+      "domain": "cdiscount.com",
+      "truth": "legit",
+      "tranco_rank": 1286,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://darty.com/",
+      "domain": "darty.com",
+      "truth": "legit",
+      "tranco_rank": 6634,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://boulanger.com/",
+      "domain": "boulanger.com",
+      "truth": "legit",
+      "tranco_rank": 7458,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 400,
+      "error": null
+    },
+    {
+      "url": "https://ldlc.com/",
+      "domain": "ldlc.com",
+      "truth": "legit",
+      "tranco_rank": 31624,
+      "verdict": "TRUSTED",
+      "score": 95,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://materiel.net/",
+      "domain": "materiel.net",
+      "truth": "legit",
+      "tranco_rank": 99601,
+      "verdict": "TRUSTED",
+      "score": 80,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://rueducommerce.fr/",
+      "domain": "rueducommerce.fr",
+      "truth": "legit",
+      "tranco_rank": 41056,
+      "verdict": "TRUSTED",
+      "score": 80,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://zalando.fr/",
+      "domain": "zalando.fr",
+      "truth": "legit",
+      "tranco_rank": 6903,
+      "verdict": "TRUSTED",
+      "score": 95,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://apple.com/",
+      "domain": "apple.com",
+      "truth": "legit",
+      "tranco_rank": 9,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://samsung.com/",
+      "domain": "samsung.com",
+      "truth": "legit",
+      "tranco_rank": 112,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://bose.fr/",
+      "domain": "bose.fr",
+      "truth": "legit",
+      "tranco_rank": 345999,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://sony.fr/",
+      "domain": "sony.fr",
+      "truth": "legit",
+      "tranco_rank": 66941,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://etsy.com/",
+      "domain": "etsy.com",
+      "truth": "legit",
+      "tranco_rank": 330,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://ebay.fr/",
+      "domain": "ebay.fr",
+      "truth": "legit",
+      "tranco_rank": 5072,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://leboncoin.fr/",
+      "domain": "leboncoin.fr",
+      "truth": "legit",
+      "tranco_rank": 1213,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://decathlon.fr/",
+      "domain": "decathlon.fr",
+      "truth": "legit",
+      "tranco_rank": 6468,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://ikea.com/",
+      "domain": "ikea.com",
+      "truth": "legit",
+      "tranco_rank": 640,
+      "verdict": "SUSPICIOUS",
+      "score": 40,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "DOMAIN_LOOKALIKE",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://leroymerlin.fr/",
+      "domain": "leroymerlin.fr",
+      "truth": "legit",
+      "tranco_rank": 1387,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://castorama.fr/",
+      "domain": "castorama.fr",
+      "truth": "legit",
+      "tranco_rank": 16875,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 503,
+      "error": null
+    },
+    {
+      "url": "https://sephora.fr/",
+      "domain": "sephora.fr",
+      "truth": "legit",
+      "tranco_rank": 27782,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://nike.com/",
+      "domain": "nike.com",
+      "truth": "legit",
+      "tranco_rank": 660,
+      "verdict": "FRAUDULENT",
+      "score": 25,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND",
+        "HIDDEN_INSTRUCTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://adidas.fr/",
+      "domain": "adidas.fr",
+      "truth": "legit",
+      "tranco_rank": 38875,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://asos.com/",
+      "domain": "asos.com",
+      "truth": "legit",
+      "tranco_rank": 3377,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://aliexpress.com/",
+      "domain": "aliexpress.com",
+      "truth": "legit",
+      "tranco_rank": 463,
+      "verdict": "FRAUDULENT",
+      "score": 10,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND",
+        "HIDDEN_INSTRUCTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://bestbuy.com/",
+      "domain": "bestbuy.com",
+      "truth": "legit",
+      "tranco_rank": 792,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://walmart.com/",
+      "domain": "walmart.com",
+      "truth": "legit",
+      "tranco_rank": 481,
+      "verdict": "TRUSTED",
+      "score": 80,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://target.com/",
+      "domain": "target.com",
+      "truth": "legit",
+      "tranco_rank": 612,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 429,
+      "error": null
+    },
+    {
+      "url": "https://newegg.com/",
+      "domain": "newegg.com",
+      "truth": "legit",
+      "tranco_rank": 4481,
+      "verdict": "TRUSTED",
+      "score": 80,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://bhphotovideo.com/",
+      "domain": "bhphotovideo.com",
+      "truth": "legit",
+      "tranco_rank": 6090,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://backmarket.fr/",
+      "domain": "backmarket.fr",
+      "truth": "legit",
+      "tranco_rank": 39486,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    },
+    {
+      "url": "https://rakuten.fr/",
+      "domain": "rakuten.fr",
+      "truth": "legit",
+      "tranco_rank": null,
+      "verdict": "SUSPICIOUS",
+      "score": 60,
+      "signals": [
+        "REDIRECTED_ELSEWHERE",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://veepee.fr/",
+      "domain": "veepee.fr",
+      "truth": "legit",
+      "tranco_rank": 37762,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://laredoute.fr/",
+      "domain": "laredoute.fr",
+      "truth": "legit",
+      "tranco_rank": 15538,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://conforama.fr/",
+      "domain": "conforama.fr",
+      "truth": "legit",
+      "tranco_rank": 8029,
+      "verdict": "FRAUDULENT",
+      "score": 25,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND",
+        "HIDDEN_INSTRUCTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://but.fr/",
+      "domain": "but.fr",
+      "truth": "legit",
+      "tranco_rank": 7698,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://alltricks.fr/",
+      "domain": "alltricks.fr",
+      "truth": "legit",
+      "tranco_rank": 54073,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://thomann.de/",
+      "domain": "thomann.de",
+      "truth": "legit",
+      "tranco_rank": 11283,
+      "verdict": "TRUSTED",
+      "score": 95,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://son-video.com/",
+      "domain": "son-video.com",
+      "truth": "legit",
+      "tranco_rank": 102746,
+      "verdict": "TRUSTED",
+      "score": 95,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://cultura.com/",
+      "domain": "cultura.com",
+      "truth": "legit",
+      "tranco_rank": 15355,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://uniqlo.com/",
+      "domain": "uniqlo.com",
+      "truth": "legit",
+      "tranco_rank": 3767,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://hm.com/",
+      "domain": "hm.com",
+      "truth": "legit",
+      "tranco_rank": 970,
+      "verdict": "FRAUDULENT",
+      "score": 30,
+      "signals": [
+        "HTTP_ERROR",
+        "REDIRECTED_ELSEWHERE",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://zara.com/",
+      "domain": "zara.com",
+      "truth": "legit",
+      "tranco_rank": 3278,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://mango.com/",
+      "domain": "mango.com",
+      "truth": "legit",
+      "tranco_rank": 5154,
+      "verdict": "FRAUDULENT",
+      "score": 30,
+      "signals": [
+        "HTTP_ERROR",
+        "REDIRECTED_ELSEWHERE",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 429,
+      "error": null
+    },
+    {
+      "url": "https://kiabi.com/",
+      "domain": "kiabi.com",
+      "truth": "legit",
+      "tranco_rank": 7193,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://maisonsdumonde.com/",
+      "domain": "maisonsdumonde.com",
+      "truth": "legit",
+      "tranco_rank": 13936,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://vinted.fr/",
+      "domain": "vinted.fr",
+      "truth": "legit",
+      "tranco_rank": 1199,
+      "verdict": "TRUSTED",
+      "score": 80,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://manomano.fr/",
+      "domain": "manomano.fr",
+      "truth": "legit",
+      "tranco_rank": 8997,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://otto.de/",
+      "domain": "otto.de",
+      "truth": "legit",
+      "tranco_rank": 964,
+      "verdict": "SUSPICIOUS",
+      "score": 40,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "DOMAIN_LOOKALIKE",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://bol.com/",
+      "domain": "bol.com",
+      "truth": "legit",
+      "tranco_rank": 1018,
+      "verdict": "FRAUDULENT",
+      "score": 10,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "DOMAIN_LOOKALIKE",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://coolblue.nl/",
+      "domain": "coolblue.nl",
+      "truth": "legit",
+      "tranco_rank": 13255,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://mediamarkt.de/",
+      "domain": "mediamarkt.de",
+      "truth": "legit",
+      "tranco_rank": 5913,
+      "verdict": "TRUSTED",
+      "score": 80,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://pccomponentes.com/",
+      "domain": "pccomponentes.com",
+      "truth": "legit",
+      "tranco_rank": 15610,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://elcorteingles.es/",
+      "domain": "elcorteingles.es",
+      "truth": "legit",
+      "tranco_rank": 5062,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://johnlewis.com/",
+      "domain": "johnlewis.com",
+      "truth": "legit",
+      "tranco_rank": 4794,
+      "verdict": "TRUSTED",
+      "score": 75,
+      "signals": [
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "url": "https://argos.co.uk/",
+      "domain": "argos.co.uk",
+      "truth": "legit",
+      "tranco_rank": 1301,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://currys.co.uk/",
+      "domain": "currys.co.uk",
+      "truth": "legit",
+      "tranco_rank": 6018,
+      "verdict": "SUSPICIOUS",
+      "score": 45,
+      "signals": [
+        "HTTP_ERROR",
+        "DOMAIN_AGE_UNKNOWN",
+        "NO_LEGAL_MENTIONS",
+        "NO_PRICE_FOUND"
+      ],
+      "http_status": 403,
+      "error": null
+    },
+    {
+      "url": "https://shop.hifiman.com/",
+      "domain": "shop.hifiman.com",
+      "truth": "legit",
+      "tranco_rank": 329973,
+      "verdict": "SUSPICIOUS",
+      "score": 0,
+      "signals": [
+        "UNREACHABLE"
+      ],
+      "http_status": 0,
+      "error": "fetch failed"
+    }
+  ]
+}

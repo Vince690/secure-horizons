@@ -5,7 +5,7 @@
  * e-mail coherence. Deterministic except for the network lookups, which are
  * cached per process.
  */
-import { EVM_ADDRESS_RE, findInjections, findLookalike, hiddenBlocks, KNOWN_BRANDS, visibleText } from "@payguard/shared";
+import { brandInHostname, EVM_ADDRESS_RE, findInjections, findLookalike, freeHostingSuffix, hiddenBlocks, KNOWN_BRANDS, registrableDomain, visibleText } from "@payguard/shared";
 import { api } from "./api.js";
 import { extractText } from "./extract.js";
 
@@ -41,24 +41,40 @@ export interface MerchantCheck {
 const RISKY_TLDS = new Set(["xyz", "top", "icu", "click", "link", "work", "buzz", "cfd", "sbs", "rest", "bond", "zip", "mov", "ru", "cn", "tk", "ml", "ga", "cf", "gq"]);
 const TERMINAL = new Set(["HIDDEN_INSTRUCTIONS", "PROMPT_INJECTION_SUSPECTED"]);
 
-const rdapCache = new Map<string, number | null>();
+const rdapCache = new Map<string, Promise<number | null>>();
+let rdapQueue: Promise<unknown> = Promise.resolve();
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** Domain age in days via the public RDAP registry, null if unknown. Cached per process. */
-export async function domainAgeDays(domain: string): Promise<number | null> {
+/**
+ * Domain age in days via the public RDAP registry, null if unknown.
+ * Queried on the registrable domain ("x.y.example.co.uk" -> "example.co.uk"),
+ * serialized with a small delay (registries rate-limit), retried once on 429,
+ * cached per process.
+ */
+export async function domainAgeDays(host: string): Promise<number | null> {
+  const domain = registrableDomain(host);
   if (rdapCache.has(domain)) return rdapCache.get(domain)!;
-  let age: number | null = null;
-  try {
-    const res = await fetch(`https://rdap.org/domain/${encodeURIComponent(domain)}`, { signal: AbortSignal.timeout(4000), headers: { Accept: "application/rdap+json" } });
-    if (res.ok) {
-      const json = (await res.json()) as { events?: Array<{ eventAction?: string; eventDate?: string }> };
-      const reg = json.events?.find((e) => e.eventAction === "registration")?.eventDate;
-      if (reg) age = Math.floor((Date.now() - new Date(reg).getTime()) / 86_400_000);
+  const task = rdapQueue.then(async () => {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const res = await fetch(`https://rdap.org/domain/${encodeURIComponent(domain)}`, { signal: AbortSignal.timeout(6000), headers: { Accept: "application/rdap+json" }, redirect: "follow" });
+        if (res.status === 429) {
+          await sleep(1500);
+          continue;
+        }
+        if (!res.ok) return null;
+        const json = (await res.json()) as { events?: Array<{ eventAction?: string; eventDate?: string }> };
+        const reg = json.events?.find((e) => e.eventAction === "registration")?.eventDate;
+        return reg ? Math.floor((Date.now() - new Date(reg).getTime()) / 86_400_000) : null;
+      } catch {
+        return null;
+      }
     }
-  } catch {
-    age = null;
-  }
-  rdapCache.set(domain, age);
-  return age;
+    return null;
+  });
+  rdapQueue = task.then(() => sleep(350), () => sleep(350));
+  rdapCache.set(domain, task);
+  return task;
 }
 
 function isLocal(host: string): boolean {
@@ -113,14 +129,18 @@ export async function checkMerchant(url: string, trustedDomains: string[] = []):
     html = await res.text();
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    return { url, final_url: url, domain, http_status: 0, score: 0, verdict: "SUSPICIOUS", signals: [{ code: "UNREACHABLE", delta: -60, severity: "high", message: `Site unreachable: ${message}` }], prices: [], price: null, payment_address: null, merchant_name: null, hidden_blocks: 0, page_excerpt: "", error: message };
+    return { url, final_url: url, domain, http_status: 0, score: 55, verdict: "SUSPICIOUS", signals: [{ code: "UNREACHABLE", delta: -45, severity: "high", message: `Site unreachable: ${message}` }], prices: [], price: null, payment_address: null, merchant_name: null, hidden_blocks: 0, page_excerpt: "", error: message };
   }
-  if (status >= 400) add("HTTP_ERROR", -30, "medium", `The page responds ${status}.`);
+  if (status === 401 || status === 403 || status === 429 || status === 503) {
+    // Bot protection on big sites: not a fraud signal. The domain itself is still judged.
+    add("BOT_PROTECTED", 0, "low", `The site answered ${status} to our reader (bot protection); judged on domain signals only.`);
+  } else if (status >= 400) add("HTTP_ERROR", -20, "medium", `The page responds ${status}.`);
   const finalHost = new URL(finalUrl).hostname.toLowerCase().replace(/^www\./, "");
   if (finalHost !== domain && !local) add("REDIRECTED_ELSEWHERE", -15, "medium", `Redirected to a different domain: ${finalHost}.`);
 
   // 2. Page text, visible vs hidden
-  const page = extractText(html).slice(0, 6000);
+  const fullText = extractText(html);
+  const page = fullText.slice(0, 6000);
   const visible = visibleText(page);
   const hidden = hiddenBlocks(page);
   const prices = pricesIn(visible);
@@ -131,24 +151,33 @@ export async function checkMerchant(url: string, trustedDomains: string[] = []):
   if (parsed.protocol !== "https:" && !local) add("NO_HTTPS", -15, "medium", "No HTTPS: payment details would travel in clear text.");
   const tld = domain.split(".").pop() ?? "";
   if (RISKY_TLDS.has(tld)) add("RISKY_TLD", -10, "low", `The .${tld} extension is heavily used by fraudulent sites.`);
-  if (!local) {
+  const hosting = local ? null : freeHostingSuffix(domain);
+  if (hosting) add("FREE_HOSTING", -25, "high", `Hosted on ${hosting}: anyone can publish there in minutes, no identity.`);
+  if (!local && !hosting) {
     const age = await domainAgeDays(domain);
-    if (age !== null && age < 30) add("DOMAIN_VERY_NEW", -25, "high", `Domain registered ${age} day(s) ago.`);
-    else if (age !== null && age < 180) add("DOMAIN_RECENT", -10, "medium", `Domain registered ${age} days ago.`);
+    if (age !== null && age < 30) add("DOMAIN_VERY_NEW", -30, "high", `Domain registered ${age} day(s) ago.`);
+    else if (age !== null && age < 180) add("DOMAIN_RECENT", -15, "medium", `Domain registered ${age} days ago.`);
     else if (age === null) add("DOMAIN_AGE_UNKNOWN", -5, "low", "Domain age unknown (registry silent).");
+    else if (age > 365 * 3) add("DOMAIN_ESTABLISHED", 0, "low", `Domain registered ${Math.floor(age / 365)} years ago.`);
   }
-  const imitated = findLookalike(shownDomain, [...trustedDomains, ...KNOWN_BRANDS]);
+  const imitated = findLookalike(shownDomain, trustedDomains) ?? findLookalike(shownDomain, KNOWN_BRANDS, { sameLabelOtherTldIsLookalike: false });
   if (imitated) add("DOMAIN_LOOKALIKE", -35, "high", `The domain ${shownDomain} imitates ${imitated}.`);
+  const impersonated = local ? null : brandInHostname(domain, [...trustedDomains, ...KNOWN_BRANDS]);
+  if (impersonated && !imitated) add("BRAND_IMPERSONATION", -35, "high", `Hostname uses the name of ${impersonated} without being its domain.`);
 
   // 4. Legitimacy cues on the page
-  const legal = /(mentions l[ée]gales|RCS\s+[A-Za-zÀ-ÿ]+\s+\d|SIREN|SIRET|CGV|conditions g[ée]n[ée]rales|terms of service|legal notice|impressum)/i.test(visible);
-  if (!legal) add("NO_LEGAL_MENTIONS", -15, "medium", "No legal notice, company registration or terms of service visible.");
+  const legal = /(mentions l[ée]gales|RCS\s+[A-Za-zÀ-ÿ]+\s+\d|SIREN|SIRET|\bCGV\b|conditions g[ée]n[ée]rales|terms (of (service|sale|use)|and conditions|&amp; conditions)|legal (notice|information)|impressum|privacy policy|politique de confidentialit[ée]|all rights reserved|tous droits r[ée]serv[ée]s)/i.test(visibleText(fullText));
+  if (!legal && status < 400) add("NO_LEGAL_MENTIONS", -10, "medium", "No legal notice, company registration, terms or privacy policy anywhere on the page.");
+  const asksSecrets = /type=["']?password|name=["']?(?:password|passwd|pwd|cardnumber|card_number|ccnum|cvv|cvc|card-number)|autocomplete=["']?(?:cc-number|cc-csc|current-password)/i.test(html);
+  if (asksSecrets && !trustedDomains.includes(domain) && (hosting || impersonated || imitated || status >= 400 || !legal)) {
+    add("CREDENTIAL_FORM", -25, "high", "The page asks for a password or card details on a site with no established identity.");
+  }
   const mails = [...visible.matchAll(/[\w.+-]+@([\w-]+\.[\w.-]+)/g)].map((m) => m[1].toLowerCase());
   if (mails.length > 0 && !mails.some((m) => m === shownDomain || shownDomain.endsWith(m) || m.endsWith(shownDomain))) {
     add("CONTACT_EMAIL_MISMATCH", -10, "medium", `Contact e-mail on a different domain (${mails[0]}).`);
   }
   if (/\b(urgent|expire|derni[èe]re chance|last chance|offre flash|limited time)\b/i.test(visible)) add("URGENCY_LANGUAGE", -10, "low", "Pressure language (urgency, limited offer).");
-  if (prices.length === 0) add("NO_PRICE_FOUND", -5, "low", "No readable price on the page.");
+  if (prices.length === 0) add("NO_PRICE_FOUND", -2, "low", "No readable price on this page (not a product page?).");
 
   // 5. Manipulation of the agent (same detectors as the guardian)
   const injections = findInjections(page);
@@ -156,7 +185,8 @@ export async function checkMerchant(url: string, trustedDomains: string[] = []):
     const families = [...new Set(injections.map((i) => i.family))];
     add("PROMPT_INJECTION_SUSPECTED", -70, "critical", `${injections.length} instruction(s) aimed at manipulating an AI agent (${families.join(", ")}).`);
   }
-  const hiddenSuspicious = hidden.filter((b) => findInjections(b.text).length > 0 || EVM_ADDRESS_RE.test(b.text) || /\d+(?:[.,]\d+)?\s?(AVAX|EUR|€|\$)/i.test(b.text));
+  // Orders, crypto addresses, or an amount WITH an imperative. Hidden prices alone are common on legit shops.
+  const hiddenSuspicious = hidden.filter((b) => findInjections(b.text).length > 0 || EVM_ADDRESS_RE.test(b.text) || (/\d+(?:[.,]\d+)?\s?(AVAX|EUR|€|\$)/i.test(b.text) && /\b(send|pay|transfer|call|envoie|paie|transf[èe]re)\b/i.test(b.text)));
   EVM_ADDRESS_RE.lastIndex = 0;
   if (hiddenSuspicious.length > 0) {
     const techniques = [...new Set(hiddenSuspicious.map((b) => b.why.replace(/^HIDDEN\s*/, "").replace(/^COMMENT$/, "HTML comment")))];

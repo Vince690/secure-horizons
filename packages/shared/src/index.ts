@@ -14,7 +14,7 @@ export type { ComplianceRule } from "./compliance";
 export { COMPLIANCE_RULES, complianceRule } from "./compliance";
 export {
   EVM_ADDRESS_RE, HIDDEN_BLOCK_RE, normalizeAddress, tokens, levenshtein, homoglyphNormalize, domainLabel,
-  findLookalike, visibleText, hiddenBlocks, KNOWN_BRANDS,
+  findLookalike, visibleText, hiddenBlocks, KNOWN_BRANDS, FREE_HOSTING_SUFFIXES, registrableDomain, freeHostingSuffix, brandInHostname,
 } from "./text";
 export type { InjectionMatch } from "./injection";
 export { INJECTION_PATTERNS, findInjections } from "./injection";

@@ -1,5 +1,6 @@
 import {
   AbsoluteFill,
+  Audio,
   Easing,
   interpolate,
   OffthreadVideo,
@@ -55,10 +56,34 @@ const font = { fontFamily: "Inter, -apple-system, Helvetica, Arial, sans-serif" 
 
 // ---------------------------------------------------------------------------
 
-const Intro = ({ file }: { file: string }) => {
+/** Fallback intro when no filmed clip is provided: the noise, as sound bars, then the line. */
+const GeneratedIntro = () => {
+  const frame = useCurrentFrame();
+  const sec = frame / PROMO_FPS;
+  const bars = 28;
+  return (
+    <AbsoluteFill style={{ background: "#0b0f17", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ display: "flex", gap: 10, alignItems: "flex-end", height: 260 }}>
+        {Array.from({ length: bars }, (_, i) => {
+          const h = 40 + 180 * Math.abs(Math.sin(sec * (7 + (i % 5)) + i)) * (sec < 5 ? 1 : Math.max(0, 1 - (sec - 5) * 1.5));
+          return <div key={i} style={{ width: 22, height: h, borderRadius: 11, background: i % 3 === 0 ? "#ef5350" : "#30343c" }} />;
+        })}
+      </div>
+      <div style={{ ...font, color: "white", fontSize: 54, fontWeight: 700, marginTop: 60, opacity: interpolate(sec, [1, 2], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>
+        Drilling upstairs. Again.
+      </div>
+      <div style={{ ...font, color: "#8b97ad", fontSize: 30, marginTop: 16, opacity: interpolate(sec, [4.5, 5.5], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>
+        Time for noise-cancelling headphones.
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+const Intro = ({ file, hasClip }: { file: string; hasClip: boolean }) => {
   const frame = useCurrentFrame();
   const fadeIn = interpolate(frame, [0, 20], [0, 1], { extrapolateRight: "clamp" });
   const fadeOut = interpolate(frame, [S(CUES.introEnd) - 15, S(CUES.introEnd)], [1, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  if (!hasClip) return <AbsoluteFill style={{ opacity: Math.min(fadeIn, fadeOut) }}><GeneratedIntro /></AbsoluteFill>;
   return (
     <AbsoluteFill style={{ background: "#0b0f17", opacity: Math.min(fadeIn, fadeOut) }}>
       <OffthreadVideo src={staticFile(file)} style={{ width: "100%", height: "100%", objectFit: "cover" }} muted={false} />
@@ -149,10 +174,17 @@ const Typewriter = ({ text, startFrame, charsPerSecond = 22 }: { text: string; s
   );
 };
 
+/** Quick white flash on a cut, like the reference edit. */
+const Flash = () => {
+  const frame = useCurrentFrame();
+  const o = interpolate(frame, [0, 3, 12], [0.9, 0.5, 0], { extrapolateRight: "clamp" });
+  return <AbsoluteFill style={{ background: "white", opacity: o, pointerEvents: "none" }} />;
+};
+
 const Callout = ({ label, sub, tone }: { label: string; sub: string; tone: "ok" | "crit" | "accent" }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const enter = spring({ frame, fps, config: { damping: 16, stiffness: 140 } });
+  const enter = spring({ frame, fps, config: { damping: 12, stiffness: 180 } });
   const color = tone === "ok" ? "#2fbf71" : tone === "crit" ? "#ef5350" : "#5b8cff";
   return (
     <div style={{ ...font, transform: `translateY(${(1 - enter) * 24}px)`, opacity: enter, background: "rgba(11,15,23,.92)", border: `2px solid ${color}`, borderRadius: 18, padding: "22px 30px", maxWidth: 620, boxShadow: "0 20px 60px rgba(0,0,0,.45)" }}>
@@ -173,6 +205,9 @@ const Screen = ({ file }: { file: string }) => {
   const c = CUES.screen;
   const enter = interpolate(sec, [0, 0.8], [0, 1], { extrapolateRight: "clamp" });
   const tilt = interpolate(sec, [0, dur], [-9, -3], { easing: Easing.inOut(Easing.quad), extrapolateRight: "clamp" });
+  // punch-in: a short zoom kick when each callout lands, then settle
+  const kicks = [c.toolsCalled, c.scamRejected, c.paid];
+  const punch = kicks.reduce((acc, k) => acc + (sec >= k ? interpolate(sec - k, [0, 0.12, 0.7], [0, 0.06, 0], { extrapolateRight: "clamp" }) : 0), 0);
   return (
     <AbsoluteFill style={{ background: "#0b0f17", perspective: 1600 }}>
       {/* blurred copy of the recording as ambient background */}
@@ -181,7 +216,7 @@ const Screen = ({ file }: { file: string }) => {
       </AbsoluteFill>
       {/* the recording on a tilted card, slowly zooming and drifting like a handheld shot of the screen */}
       <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", opacity: enter }}>
-        <div style={{ width: 1560, height: 878, borderRadius: 22, overflow: "hidden", boxShadow: "0 40px 120px rgba(0,0,0,.6), 0 0 0 2px rgba(255,255,255,.08)", transform: `rotateY(${tilt}deg) rotateX(2deg) scale(${zoom}) translate(${panX}%, ${panY}%)`, transformOrigin: "50% 50%" }}>
+        <div style={{ width: 1560, height: 878, borderRadius: 22, overflow: "hidden", boxShadow: "0 40px 120px rgba(0,0,0,.6), 0 0 0 2px rgba(255,255,255,.08)", transform: `rotateY(${tilt}deg) rotateX(2deg) scale(${zoom + punch}) translate(${panX}%, ${panY}%)`, transformOrigin: "50% 50%" }}>
           <OffthreadVideo src={staticFile(file)} style={{ width: "100%", height: "100%", objectFit: "cover" }} muted />
         </div>
       </AbsoluteFill>
@@ -193,6 +228,11 @@ const Screen = ({ file }: { file: string }) => {
           </div>
         </AbsoluteFill>
       </Sequence>
+      {[c.toolsCalled, c.scamRejected, c.paid].map((k) => (
+        <Sequence key={k} from={S(k)} durationInFrames={14} layout="none">
+          <Flash />
+        </Sequence>
+      ))}
       <Sequence from={S(c.toolsCalled)} durationInFrames={S(c.scamRejected - c.toolsCalled)} layout="none">
         <AbsoluteFill style={{ justifyContent: "flex-start", alignItems: "flex-end", padding: 70 }}>
           <Callout tone="accent" label="PayGuard · 3 merchants checked" sub="Prices compared, sites verified." />
@@ -240,10 +280,22 @@ const EndCard = () => {
   );
 };
 
-export const Promo = ({ introFile, screenFile }: { introFile: string; screenFile: string }) => (
+// A type alias (not an interface) so it stays assignable to Remotion's Record<string, unknown> props.
+export type PromoProps = {
+  introFile: string;
+  /** true once public/intro.mp4 exists (filmed or generated clip) */
+  hasIntroClip: boolean;
+  screenFile: string;
+  musicFile: string;
+  /** true once public/music.mp3 exists (royalty-free track) */
+  hasMusic: boolean;
+};
+
+export const Promo = ({ introFile, hasIntroClip, screenFile, musicFile, hasMusic }: PromoProps) => (
   <AbsoluteFill style={{ background: "#0b0f17" }}>
+    {hasMusic && <Audio src={staticFile(musicFile)} volume={(f) => interpolate(f, [0, 30, PROMO_DURATION_FRAMES - 60, PROMO_DURATION_FRAMES], [0, 0.8, 0.8, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />}
     <Sequence from={0} durationInFrames={S(CUES.introEnd)}>
-      <Intro file={introFile} />
+      <Intro file={introFile} hasClip={hasIntroClip} />
     </Sequence>
     <Sequence from={S(CUES.introEnd)} durationInFrames={S(CUES.titleEnd - CUES.introEnd)}>
       <TitleCard />
