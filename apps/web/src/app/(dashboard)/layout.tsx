@@ -11,7 +11,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!account) redirect("/login");
   return (
     <div className="flex min-h-screen">
-      <Nav companyName={account.companyName} email={account.email} />
+      <Nav companyName={account.companyName} />
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-line bg-surface/60 px-8 py-3">
           <div className="text-sm text-muted">Avalanche Fuji · test network · no real funds</div>

@@ -237,9 +237,14 @@ function DecisionFlowSvg({
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: H }}>
       <defs>
+        <linearGradient id="sankey-root" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" style={{ stopColor: "var(--ok)" }} />
+          <stop offset="50%" style={{ stopColor: "var(--warn)" }} />
+          <stop offset="100%" style={{ stopColor: "var(--crit)" }} />
+        </linearGradient>
         {groups.map((g) => (
           <linearGradient key={`a-${g.verdict}`} id={`sankey-a-${g.verdict}`} x1="0" x2="1" y1="0" y2="0">
-            <stop offset="0%" style={{ stopColor: "var(--accent)" }} stopOpacity={0.6} />
+            <stop offset="0%" style={{ stopColor: `var(${CHIP_COLOR_VAR[g.color]})` }} stopOpacity={0.6} />
             <stop offset="100%" style={{ stopColor: `var(${CHIP_COLOR_VAR[g.color]})` }} stopOpacity={0.6} />
           </linearGradient>
         ))}
@@ -292,7 +297,7 @@ function DecisionFlowSvg({
         }),
       )}
 
-      <rect x={col0X} y={marginY} width={nodeW} height={plotH} rx={3} style={{ fill: "var(--accent)" }} />
+      <rect x={col0X} y={marginY} width={nodeW} height={plotH} rx={3} fill="url(#sankey-root)" />
       <text x={col0X} y={marginY - 2} className="fill-muted" fontSize={10}>
         {total} requests
       </text>
