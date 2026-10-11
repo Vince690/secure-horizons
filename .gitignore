@@ -33,3 +33,5 @@ packages/contracts/broadcast/
 .vscode/
 .idea/
 packages/contracts/dist/
+# agent work artifacts (workflow plans, task notes)
+.agents/
