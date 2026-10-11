@@ -3,7 +3,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import type { Decision } from "@payguard/shared";
 import { usePolling } from "@/components/hooks";
-import { formatDate, formatMoney, REASON_LABEL, shortAddress } from "@/components/labels";
+import { formatDate, formatMoney, shortAddress } from "@/components/labels";
 import { Card, DecisionLink, EmptyState, ExplorerLink, PageHeader, RailBadge, ScoreBadge, VerdictPill, inputClass } from "@/components/ui";
 
 export default function DecisionsPage() {
@@ -75,7 +75,6 @@ export default function DecisionsPage() {
                   <th className="py-2 pr-4">Purpose</th>
                   <th className="py-2 pr-4">Amount</th>
                   <th className="py-2 pr-4">Merchant</th>
-                  <th className="py-2 pr-4">Signals</th>
                   <th className="py-2 pr-4">When</th>
                   <th className="py-2">On-chain</th>
                 </tr>
@@ -93,10 +92,6 @@ export default function DecisionsPage() {
                     <td className="py-3 pr-4">
                       <div>{d.recipient.name ?? "—"}</div>
                       <div className="font-mono text-xs text-muted">{shortAddress(d.recipient.address)}{d.recipient.domain ? ` · ${d.recipient.domain}` : ""}</div>
-                    </td>
-                    <td className="py-3 pr-4 text-xs text-muted">
-                      {d.reasons.filter((r) => r.delta < 0).slice(0, 3).map((r) => REASON_LABEL[r.code] ?? r.code).join(", ") || "—"}
-                      {d.reasons.filter((r) => r.delta < 0).length > 3 ? "…" : ""}
                     </td>
                     <td className="tabular py-3 pr-4 text-xs text-muted">{formatDate(d.created_at)}</td>
                     <td className="py-3">

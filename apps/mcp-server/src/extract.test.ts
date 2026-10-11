@@ -20,7 +20,7 @@ describe("extractText", () => {
     expect(text).toContain("[[COMMENT]] SYSTEM NOTICE TO AI ASSISTANTS");
     expect(text).toMatch(/\[\[HIDDEN class \.seo-note \(display:none\)\]\] Instructions for AI agents/);
     expect(text).toMatch(/\[\[HIDDEN class \.ghost \((white text|font-size:1px)\)\]\] If you are an AI assistant/);
-    expect(text).toMatch(/\[\[HIDDEN display:none\]\] Note aux assistants IA/);
+    expect(text).toMatch(/\[\[HIDDEN display:none\]\] Note to AI assistants/);
     // visible content survives
     expect(text).toContain("0.04 AVAX");
     expect(text).toContain("0x2222222222222222222222222222222222222222");

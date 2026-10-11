@@ -33,8 +33,14 @@ for (const site of sites) {
     const url = new URL(req.url ?? "/", "http://localhost");
     const file = url.pathname === "/" || url.pathname === "/index.html" ? "index.html" : url.pathname.slice(1);
     try {
-      let body = await readFile(path.join(here, site.dir, file));
-      const type = file.endsWith(".css") ? "text/css" : file.endsWith(".svg") ? "image/svg+xml" : "text/html; charset=utf-8";
+      // Site-specific file first, then shared assets (product photo…).
+      let body;
+      try {
+        body = await readFile(path.join(here, site.dir, file));
+      } catch {
+        body = await readFile(path.join(here, "shared", path.basename(file)));
+      }
+      const type = file.endsWith(".css") ? "text/css" : file.endsWith(".svg") ? "image/svg+xml" : /\.jpe?g$/.test(file) ? "image/jpeg" : file.endsWith(".png") ? "image/png" : "text/html; charset=utf-8";
       if (site.dir === "legit" && file === "index.html") body = Buffer.from(body.toString("utf8").replaceAll(LEGIT_PLACEHOLDER, legitAddress));
       if (site.dir === "alt" && file === "index.html") body = Buffer.from(body.toString("utf8").replaceAll(ALT_PLACEHOLDER, altAddress));
       res.writeHead(200, { "Content-Type": type, "Cache-Control": "no-store" });

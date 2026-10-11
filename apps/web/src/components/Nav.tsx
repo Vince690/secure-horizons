@@ -8,6 +8,7 @@ import { postJson, usePolling } from "./hooks";
 
 const TOP_ITEMS = [
   { href: "/dashboard", label: "Overview" },
+  { href: "/dashboard/orders", label: "Orders" },
   { href: "/dashboard/decisions", label: "History" },
 ];
 
