@@ -11,6 +11,52 @@ import type { ComplianceReport } from "@/lib/dashboard/service";
 import type { DashboardMetrics, DailyBucket, DailySpend } from "@/lib/analytics/metrics";
 import { scoreColor } from "@/components/ui";
 
+type TileIcon = (props: { className?: string }) => React.ReactNode;
+
+/** Simple monotone (currentColor) category glyphs for the overview tiles — no icon library. */
+const CardRailIcon: TileIcon = ({ className }) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <rect x="1.5" y="4" width="13" height="9" rx="1.5" />
+    <path d="M1.5 7h13" />
+  </svg>
+);
+const ChainRailIcon: TileIcon = ({ className }) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6.5 9.5l3-3" />
+    <path d="M6 4.5H4.5A2.5 2.5 0 002 7a2.5 2.5 0 002.5 2.5H6" />
+    <path d="M10 11.5h1.5A2.5 2.5 0 0014 9a2.5 2.5 0 00-2.5-2.5H10" />
+  </svg>
+);
+const ActivityIcon: TileIcon = ({ className }) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M1.5 8.5h2.3l1.3-4 2 7 1.4-5 .9 2h3.1" />
+  </svg>
+);
+const ShieldIcon: TileIcon = ({ className }) => (
+  <svg viewBox="0 0 16 16" className={className} fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+    <path d="M8 1.5l5.5 2v4c0 4-2.7 6.1-5.5 7-2.8-.9-5.5-3-5.5-7v-4z" />
+  </svg>
+);
+
+function TileTitle({ icon: Icon, children }: { icon: TileIcon; children: React.ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <Icon className="h-3.5 w-3.5 shrink-0 text-muted" />
+      {children}
+    </span>
+  );
+}
+
+const DOT_COLOR = { ok: "bg-ok", warn: "bg-warn", crit: "bg-crit" } as const;
+function CountDot({ color, count, label }: { color: keyof typeof DOT_COLOR; count: number; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1 whitespace-nowrap">
+      <span className={`h-1.5 w-1.5 rounded-full ${DOT_COLOR[color]}`} />
+      {count} {label}
+    </span>
+  );
+}
+
 /** Five evenly-spaced indices across a series, so axis labels fit any period length. */
 function axisTicks(length: number): number[] {
   if (length <= 1) return length === 1 ? [0] : [];
@@ -98,35 +144,35 @@ export default function OverviewPage() {
         )}
       </Card>
 
-      {/* Balances + Decisions + Kill switch — one shape for every tile: label, one stat, one caption line. */}
+      {/* Balances + Decisions + Kill switch — one shape for every tile: icon + label, one stat, one caption line. */}
       <div className="mb-6 grid gap-4 md:grid-cols-4">
-        <Card title="Virtual card rail">
+        <Card title={<TileTitle icon={CardRailIcon}>Virtual card rail</TileTitle>}>
           <div className="tabular text-3xl font-bold">{balance.data?.card_rail ? formatMoney(balance.data.card_rail.balance, "EUR") : "…"}</div>
           <div className="mt-2 truncate text-xs text-muted">
-            {balance.data?.card_rail?.cards_active ?? 0} active card{balance.data?.card_rail?.cards_active === 1 ? "" : "s"} · {balance.data?.card_rail?.provider ?? "…"}
+            {balance.data?.card_rail?.cards_active ?? 0} active card{balance.data?.card_rail?.cards_active === 1 ? "" : "s"}
             {balance.data?.card_rail?.frozen ? <span className="ml-2 font-medium text-crit">frozen</span> : null}
           </div>
         </Card>
-        <Card title="Avalanche rail">
+        <Card title={<TileTitle icon={ChainRailIcon}>Avalanche rail</TileTitle>}>
           <div className="tabular text-3xl font-bold">{balance.data ? formatAvax(balance.data.balance) : "…"}</div>
           <div className="mt-2 truncate text-xs text-muted">
-            {balance.data?.mode === "fuji" ? "Fuji" : "Simulated"} · <ExplorerLink url={balance.data?.explorer_url} label={balance.data ? shortAddress(balance.data.address) : "…"} />
+            <ExplorerLink url={balance.data?.explorer_url} label={balance.data ? shortAddress(balance.data.address) : "…"} />
           </div>
         </Card>
-        <Card title="Decisions · 24 h">
+        <Card title={<TileTitle icon={ActivityIcon}>Decisions · 24 h</TileTitle>}>
           <div className="tabular text-3xl font-bold">{c?.decisions.total ?? "…"}</div>
-          <div className="mt-2 flex gap-3 whitespace-nowrap text-xs">
-            <span className="text-ok">{c?.decisions.approved ?? 0} paid</span>
-            <span className="text-warn">{c?.decisions.pending ?? 0} pending</span>
-            <span className="text-crit">{c?.decisions.blocked ?? 0} blocked</span>
+          <div className="mt-2 flex gap-3 text-xs text-muted">
+            <CountDot color="ok" count={c?.decisions.approved ?? 0} label="paid" />
+            <CountDot color="warn" count={c?.decisions.pending ?? 0} label="pending" />
+            <CountDot color="crit" count={c?.decisions.blocked ?? 0} label="blocked" />
           </div>
         </Card>
-        <Card title="Incidents · 24 h">
+        <Card title={<TileTitle icon={ShieldIcon}>Incidents · 24 h</TileTitle>}>
           <div className={`tabular text-3xl font-bold ${c && c.incidents.length > 0 ? "text-crit" : ""}`}>{c?.incidents.length ?? "…"}</div>
           <div className="mt-2 truncate text-xs text-muted">
             {c && c.incidents.length > 0
               ? `Last: ${formatDate(c.incidents[0].at)} · ${c.incidents[0].event === "KILL_SWITCH_ON" ? "Activated" : "Re-armed"}`
-              : "Kill switch, feeds DORA notification"}
+              : "No incidents"}
           </div>
         </Card>
       </div>
@@ -285,7 +331,9 @@ export default function OverviewPage() {
                 </div>
               </div>
               <VerdictPill verdict={d.verdict} status={d.status} />
-              <ExplorerLink url={d.payment_tx?.explorer_url ?? d.ledger_tx?.explorer_url} label="tx" />
+              {(d.payment_tx?.explorer_url ?? d.ledger_tx?.explorer_url) && (
+                <ExplorerLink url={d.payment_tx?.explorer_url ?? d.ledger_tx?.explorer_url} label="tx" />
+              )}
             </li>
           ))}
         </ul>

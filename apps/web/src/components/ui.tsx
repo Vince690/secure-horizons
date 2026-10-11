@@ -4,7 +4,7 @@ import type { ComplianceState, DecisionStatus, Reason, Verdict } from "@payguard
 import { Chip } from "./base/badges/chip";
 import { REASON_LABEL, reasonReferences, STATUS_LABEL, VERDICT_LABEL } from "./labels";
 
-export function Card({ title, children, className = "", action }: { title?: string; children: ReactNode; className?: string; action?: ReactNode }) {
+export function Card({ title, children, className = "", action }: { title?: ReactNode; children: ReactNode; className?: string; action?: ReactNode }) {
   return (
     <section className={`rounded-xl border border-line bg-surface p-5 ${className}`}>
       {(title || action) && (
