@@ -58,43 +58,36 @@ const BlockedIcon: ChipIcon = ({ className }) => (
   </svg>
 );
 
-const VERDICT_CHIP_COLOR: Record<Verdict, "lime" | "yellow" | "rose"> = {
-  APPROVED: "lime",
-  HOLD: "yellow",
-  BLOCKED: "rose",
-};
-const VERDICT_CHIP_ICON: Record<Verdict, ChipIcon> = {
-  APPROVED: CheckIcon,
-  HOLD: ClockIcon,
-  BLOCKED: BlockedIcon,
-};
+export type DecisionOutcomeKey = "approved" | "paid_human" | "rejected_human" | "pending" | "failed" | "blocked";
 
-/** The pill shows the FINAL state: a HOLD approved by a human reads "Paid (human)", not "On hold". */
-export function VerdictPill({ verdict, status }: { verdict: Verdict; status?: DecisionStatus }) {
-  let label = VERDICT_LABEL[verdict];
-  let color = VERDICT_CHIP_COLOR[verdict];
-  let Icon = VERDICT_CHIP_ICON[verdict];
+/** CSS var backing each chip color, so charts can reuse the exact same color as the pill. */
+export const CHIP_COLOR_VAR = { lime: "--ok", yellow: "--warn", rose: "--crit" } as const;
+
+/**
+ * Single source of truth for "what does this decision actually look like to a human", shared by
+ * VerdictPill and any chart that breaks decisions down by outcome (e.g. the overview Sankey) —
+ * it shows the FINAL state: a HOLD approved by a human is "Paid (human)", not "On hold".
+ */
+export function classifyDecision(
+  verdict: Verdict,
+  status?: DecisionStatus,
+): { key: DecisionOutcomeKey; label: string; color: "lime" | "yellow" | "rose"; icon: ChipIcon } {
   if (status === "APPROVED") {
-    label = verdict === "HOLD" ? "Paid (human)" : "Approved";
-    color = VERDICT_CHIP_COLOR.APPROVED;
-    Icon = CheckIcon;
-  } else if (status === "REJECTED") {
-    label = "Rejected (human)";
-    color = VERDICT_CHIP_COLOR.BLOCKED;
-    Icon = BlockedIcon;
-  } else if (status === "PENDING_CONFIRMATION") {
-    label = STATUS_LABEL.PENDING_CONFIRMATION;
-    color = VERDICT_CHIP_COLOR.HOLD;
-    Icon = ClockIcon;
-  } else if (status === "FAILED") {
-    label = STATUS_LABEL.FAILED;
-    color = VERDICT_CHIP_COLOR.HOLD;
-    Icon = AlertIcon;
-  } else if (status === "BLOCKED") {
-    label = VERDICT_LABEL.BLOCKED;
-    color = VERDICT_CHIP_COLOR.BLOCKED;
-    Icon = BlockedIcon;
+    return verdict === "HOLD"
+      ? { key: "paid_human", label: "Paid (human)", color: "lime", icon: CheckIcon }
+      : { key: "approved", label: "Approved", color: "lime", icon: CheckIcon };
   }
+  if (status === "REJECTED") return { key: "rejected_human", label: "Rejected (human)", color: "rose", icon: BlockedIcon };
+  if (status === "PENDING_CONFIRMATION") return { key: "pending", label: STATUS_LABEL.PENDING_CONFIRMATION, color: "yellow", icon: ClockIcon };
+  if (status === "FAILED") return { key: "failed", label: STATUS_LABEL.FAILED, color: "yellow", icon: AlertIcon };
+  if (status === "BLOCKED" || verdict === "BLOCKED") return { key: "blocked", label: VERDICT_LABEL.BLOCKED, color: "rose", icon: BlockedIcon };
+  return verdict === "APPROVED"
+    ? { key: "approved", label: VERDICT_LABEL.APPROVED, color: "lime", icon: CheckIcon }
+    : { key: "pending", label: VERDICT_LABEL.HOLD, color: "yellow", icon: ClockIcon };
+}
+
+export function VerdictPill({ verdict, status }: { verdict: Verdict; status?: DecisionStatus }) {
+  const { label, color, icon: Icon } = classifyDecision(verdict, status);
   return (
     <Chip color={color} variant="bold" className="gap-1">
       <Icon className="h-3.5 w-3.5 shrink-0" />

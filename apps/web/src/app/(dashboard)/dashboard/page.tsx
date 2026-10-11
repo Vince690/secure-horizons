@@ -5,7 +5,7 @@ import type { BalanceResponse, Decision, Framework } from "@payguard/shared";
 import { usePolling } from "@/components/hooks";
 import { FRAMEWORK_LABEL, formatAvax, formatDate, formatMoney, REASON_LABEL, shortAddress } from "@/components/labels";
 import type { ReasonCode } from "@payguard/shared";
-import { Card, DecisionLink, EmptyState, ExplorerLink, FrameworkTile, PageHeader, RailBadge, ScoreBadge, VerdictPill } from "@/components/ui";
+import { CHIP_COLOR_VAR, Card, classifyDecision, DecisionLink, EmptyState, ExplorerLink, FrameworkTile, PageHeader, RailBadge, ScoreBadge, VerdictPill } from "@/components/ui";
 import { PendingApprovals } from "@/components/PendingApprovals";
 import type { ComplianceReport } from "@/lib/dashboard/service";
 import type { DashboardMetrics, DailyBucket, DailySpend } from "@/lib/analytics/metrics";
@@ -115,40 +115,49 @@ function SpendChart({ data }: { data: DailySpend[] }) {
   );
 }
 
-/** Requests → verdict, as flowing ribbons (gradient from accent to each verdict color). */
-function DecisionFlowSankey({ metrics }: { metrics: DashboardMetrics | undefined }) {
-  const W = 560;
-  const H = 180;
+/** Fixed top-to-bottom order: good outcomes first, bad outcomes last. */
+const OUTCOME_ORDER = ["approved", "paid_human", "pending", "failed", "rejected_human", "blocked"] as const;
+
+/** Requests → final outcome (incl. human overrides on a HOLD), as flowing gradient ribbons. */
+function DecisionFlowSankey({ decisions }: { decisions: Decision[] }) {
+  const W = 640;
+  const H = 240;
   const marginY = 10;
-  const nodeW = 10;
+  const nodeW = 8;
   const leftX = 4;
-  const rightX = W - 4 - nodeW;
-  const innerGap = 10;
+  const rightMargin = 180;
+  const rightX = W - rightMargin - nodeW;
+  const innerGap = 8;
   const plotH = H - marginY * 2;
 
-  const segments = [
-    { key: "approved", value: metrics?.approved ?? 0, cssVar: "--ok", label: "Approved" },
-    { key: "held", value: metrics?.held ?? 0, cssVar: "--warn", label: "Held" },
-    { key: "blocked", value: metrics?.blocked ?? 0, cssVar: "--crit", label: "Blocked" },
-  ].filter((s) => s.value > 0);
+  const counts = new Map<string, { count: number; label: string; cssVar: string }>();
+  for (const d of decisions) {
+    const outcome = classifyDecision(d.verdict, d.status);
+    const prev = counts.get(outcome.key);
+    counts.set(outcome.key, { count: (prev?.count ?? 0) + 1, label: outcome.label, cssVar: CHIP_COLOR_VAR[outcome.color] });
+  }
 
-  if (!metrics || segments.length === 0) {
+  const segments = OUTCOME_ORDER.flatMap((key) => {
+    const c = counts.get(key);
+    return c ? [{ key, value: c.count, label: c.label, cssVar: c.cssVar }] : [];
+  });
+
+  if (segments.length === 0) {
     return <p className="text-sm text-muted">No data yet.</p>;
   }
 
   const sum = segments.reduce((a, s) => a + s.value, 0);
   const rightAvailable = plotH - innerGap * (segments.length - 1);
 
-  let srcCursor = marginY;
-  let dstCursor = marginY;
-  const flows = segments.map((s) => {
-    const srcH = (s.value / sum) * plotH;
-    const dstH = (s.value / sum) * rightAvailable;
-    const flow = { ...s, srcY: srcCursor, srcH, dstY: dstCursor, dstH };
-    srcCursor += srcH;
-    dstCursor += dstH + innerGap;
-    return flow;
-  });
+  const { flows } = segments.reduce(
+    (acc, s) => {
+      const srcH = (s.value / sum) * plotH;
+      const dstH = (s.value / sum) * rightAvailable;
+      const flow = { ...s, srcY: acc.srcCursor, srcH, dstY: acc.dstCursor, dstH };
+      return { srcCursor: acc.srcCursor + srcH, dstCursor: acc.dstCursor + dstH + innerGap, flows: [...acc.flows, flow] };
+    },
+    { srcCursor: marginY, dstCursor: marginY, flows: [] as Array<(typeof segments)[number] & { srcY: number; srcH: number; dstY: number; dstH: number }> },
+  );
 
   const midX = (leftX + nodeW + rightX) / 2;
   const ribbon = (f: (typeof flows)[number]) =>
@@ -195,8 +204,12 @@ export default function OverviewPage() {
   const decisions = usePolling<{ decisions: Decision[] }>("/api/dashboard/decisions?limit=6", 3000);
   const pendingPoll = usePolling<{ decisions: Decision[] }>("/api/dashboard/decisions?status=PENDING_CONFIRMATION&limit=50", 3000);
   const metrics = usePolling<DashboardMetrics>(`/api/dashboard/metrics?days=${days}`, 30_000);
+  const allDecisions = usePolling<{ decisions: Decision[] }>("/api/dashboard/decisions?limit=200", 30_000);
   const c = compliance.data;
   const m = metrics.data;
+  // eslint-disable-next-line react-hooks/purity -- a clock read for a display filter is fine here
+  const cutoff = Date.now() - days * 86_400_000;
+  const periodDecisions = (allDecisions.data?.decisions ?? []).filter((d) => new Date(d.created_at).getTime() >= cutoff);
   const pendingDecisions = pendingPoll.data?.decisions ?? [];
   const pending = pendingDecisions.length;
 
@@ -319,7 +332,7 @@ export default function OverviewPage() {
 
       {/* Decision flow */}
       <Card title={`Decision flow (${days} d)`} className="mb-6">
-        {m ? <DecisionFlowSankey metrics={m} /> : <p className="text-sm text-muted">Loading…</p>}
+        {allDecisions.data ? <DecisionFlowSankey decisions={periodDecisions} /> : <p className="text-sm text-muted">Loading…</p>}
       </Card>
 
       {/* Top merchants + top rules */}
