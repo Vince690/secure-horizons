@@ -17,7 +17,7 @@ export const domainLookalike: Rule = (ctx) => {
     code: "DOMAIN_LOOKALIKE",
     severity: "high",
     delta: -30,
-    message: `Le domaine ${domain} imite un marchand de confiance (${imitated}).`,
+    message: `The domain ${domain} imitates a trusted merchant (${imitated}).`,
     frameworks: ["AML_CFT"],
   };
 };

@@ -9,7 +9,7 @@ export const recipientTrusted: Rule = (ctx) => {
     code: "RECIPIENT_TRUSTED",
     severity: "low",
     delta: 0,
-    message: "Le marchand est dans le registre de confiance.",
+    message: "The merchant is in the trust registry.",
     frameworks: ["AML_CFT"],
   };
 };

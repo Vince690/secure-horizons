@@ -20,7 +20,7 @@ export const pageProductMismatch: Rule = (ctx) => {
     code: "PAGE_PRODUCT_MISMATCH",
     severity: "medium",
     delta: -20,
-    message: "Le produit annoncé par l'agent n'apparaît pas sur la page lue.",
+    message: "The product stated by the agent does not appear on the page it read.",
     frameworks: ["AI_ACT"],
   };
 };

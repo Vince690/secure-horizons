@@ -20,12 +20,12 @@ export const hiddenInstructions: Rule = (ctx) => {
     return findInjections(b.text).length > 0 || hasAddress || (AMOUNT_RE.test(b.text) && IMPERATIVE_RE.test(b.text));
   });
   if (suspicious.length === 0) return null;
-  const techniques = [...new Set(suspicious.map((b) => b.why.replace(/^HIDDEN\s*/, "").replace(/^COMMENT$/, "commentaire HTML")))];
+  const techniques = [...new Set(suspicious.map((b) => b.why.replace(/^HIDDEN\s*/, "").replace(/^COMMENT$/, "HTML comment")))];
   return {
     code: "HIDDEN_INSTRUCTIONS",
     severity: "critical",
     delta: -50,
-    message: `La page contient ${suspicious.length === 1 ? "une instruction invisible" : `${suspicious.length} instructions invisibles`} pour un visiteur humain (${techniques.join(", ")}).`,
+    message: `The page contains ${suspicious.length === 1 ? "an instruction invisible" : `${suspicious.length} instructions invisible`} to a human visitor (${techniques.join(", ")}).`,
     frameworks: ["AI_ACT", "DORA"],
   };
 };

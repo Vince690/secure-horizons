@@ -9,7 +9,7 @@ export const recipientBlocklisted: Rule = (ctx) => {
     code: "RECIPIENT_BLOCKLISTED",
     severity: "critical",
     delta: -100,
-    message: "Le bénéficiaire figure sur la liste des adresses interdites.",
+    message: "The recipient is on the blocked-addresses list.",
     frameworks: ["AML_CFT"],
   };
 };

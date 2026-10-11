@@ -19,7 +19,7 @@ export const urgency: Rule = (ctx) => {
     code: "URGENCY_LANGUAGE",
     severity: "low",
     delta: -10,
-    message: "La page ou un outil utilise un langage de pression (urgence, délai).",
+    message: "The page or a tool uses pressure language (urgency, deadline).",
     frameworks: ["AML_CFT"],
   };
 };

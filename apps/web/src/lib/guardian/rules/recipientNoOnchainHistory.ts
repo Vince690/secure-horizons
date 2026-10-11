@@ -17,7 +17,7 @@ export const recipientNoOnchainHistory: Rule = (ctx) => {
     code: "RECIPIENT_NO_ONCHAIN_HISTORY",
     severity: "medium",
     delta: -15,
-    message: "L'adresse du bénéficiaire n'a aucun historique sur Avalanche (jamais utilisée, solde nul).",
+    message: "The recipient address has no on-chain history on Avalanche (never used, zero balance).",
     frameworks: ["AML_CFT"],
   };
 };

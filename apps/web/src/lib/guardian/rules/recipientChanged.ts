@@ -14,7 +14,7 @@ export const recipientChanged: Rule = (ctx) => {
     code: "RECIPIENT_CHANGED_MID_CONVERSATION",
     severity: "high",
     delta: -35,
-    message: "Une autre adresse de paiement apparaît dans la page ou la conversation.",
+    message: "A different payment address appears in the page or the conversation.",
     frameworks: ["AML_CFT"],
   };
 };

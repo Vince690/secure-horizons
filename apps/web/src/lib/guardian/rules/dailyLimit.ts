@@ -15,7 +15,7 @@ export const dailyLimit: Rule = (ctx) => {
     code: "DAILY_LIMIT_EXCEEDED",
     severity: "high",
     delta: -40,
-    message: `Cumul sur 24 h de ${formatAvax(total)} ${ctx.request.currency}, au-dessus du plafond quotidien (${ctx.policy.max_daily} ${ctx.request.currency}).`,
+    message: `24h total of ${formatAvax(total)} ${ctx.request.currency}, above the daily limit (${ctx.policy.max_daily} ${ctx.request.currency}).`,
     frameworks: ["AML_CFT"],
   };
 };

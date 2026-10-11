@@ -15,8 +15,8 @@ export const semanticInjection: Rule = (ctx) => {
     severity: "high",
     delta: -40,
     message: screen.summary
-      ? `Analyse sémantique : ${screen.summary.replace(/\.$/, "")} (confiance ${Math.round(screen.confidence * 100)} %).`
-      : `Analyse sémantique : la page tente de manipuler l'agent (confiance ${Math.round(screen.confidence * 100)} %).`,
+      ? `Semantic analysis: ${screen.summary.replace(/\.$/, "")} (confidence ${Math.round(screen.confidence * 100)}%).`
+      : `Semantic analysis: the page appears to be attempting to manipulate the agent (confidence ${Math.round(screen.confidence * 100)}%).`,
     frameworks: ["AI_ACT", "DORA"],
   };
 };

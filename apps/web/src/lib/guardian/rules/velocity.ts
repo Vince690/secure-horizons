@@ -12,7 +12,7 @@ export const velocity: Rule = (ctx) => {
     code: "VELOCITY_ANOMALY",
     severity: "medium",
     delta: -20,
-    message: `${recent + 1} demandes de paiement en moins de 10 minutes.`,
+    message: `${recent + 1} payment requests in under 10 minutes.`,
     frameworks: ["AML_CFT", "DORA"],
   };
 };

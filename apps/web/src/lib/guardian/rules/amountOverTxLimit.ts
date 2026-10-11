@@ -7,7 +7,7 @@ export const amountOverTxLimit: Rule = (ctx) => {
     code: "AMOUNT_OVER_TX_LIMIT",
     severity: "high",
     delta: -40,
-    message: `Montant ${ctx.request.amount} ${ctx.request.currency} supérieur au plafond par achat (${ctx.policy.max_per_tx} ${ctx.request.currency}).`,
+    message: `Amount ${ctx.request.amount} ${ctx.request.currency} exceeds the per-transaction limit (${ctx.policy.max_per_tx} ${ctx.request.currency}).`,
     frameworks: ["MiCA", "AML_CFT"],
   };
 };

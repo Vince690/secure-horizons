@@ -20,7 +20,7 @@ export const pagePriceMismatch: Rule = (ctx) => {
     code: "PAGE_PRICE_MISMATCH",
     severity: "high",
     delta: -35,
-    message: `La page affiche au plus ${formatAvax(maxVisible)} ${ctx.request.currency}, l'agent demande ${ctx.request.amount} ${ctx.request.currency}.`,
+    message: `The page shows at most ${formatAvax(maxVisible)} ${ctx.request.currency}, the agent requests ${ctx.request.amount} ${ctx.request.currency}.`,
     frameworks: ["MiCA", "AI_ACT"],
   };
 };

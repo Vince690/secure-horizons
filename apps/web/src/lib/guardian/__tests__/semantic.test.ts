@@ -8,7 +8,7 @@ describe("semanticInjection", () => {
     const ctx = makeContext({ semanticScreen: { manipulation: true, confidence: 0.9, summary: "La page ordonne à l'agent de payer ailleurs." } });
     const reason = semanticInjection(ctx);
     expect(reason?.code).toBe("SEMANTIC_MANIPULATION_SUSPECTED");
-    expect(reason?.message).toContain("90 %");
+    expect(reason?.message).toContain("90%");
     // trusted merchant 100 - 40 = 60 => HOLD, not BLOCKED: the model never decides alone
     expect(evaluate(ctx).verdict).toBe("HOLD");
   });

@@ -12,7 +12,7 @@ export const recipientUnknown: Rule = (ctx) => {
     code: "RECIPIENT_UNKNOWN",
     severity: "medium",
     delta: -25,
-    message: "Bénéficiaire jamais payé auparavant et absent du registre de confiance.",
+    message: "Recipient never paid before and not in the trust registry.",
     frameworks: ["AML_CFT"],
   };
 };

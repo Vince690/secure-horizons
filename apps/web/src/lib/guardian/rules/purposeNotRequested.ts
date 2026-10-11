@@ -18,7 +18,7 @@ export const purposeNotRequested: Rule = (ctx) => {
     code: "PURPOSE_NOT_REQUESTED_BY_USER",
     severity: "high",
     delta: -35,
-    message: "Rien dans les messages de l'utilisateur ne correspond à cet achat.",
+    message: "Nothing in the user's messages corresponds to this purchase.",
     frameworks: ["AI_ACT"],
   };
 };

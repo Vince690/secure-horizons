@@ -6,7 +6,7 @@ export const killSwitch: Rule = (ctx) => {
     code: "KILL_SWITCH_ACTIVE",
     severity: "critical",
     delta: -100,
-    message: "Le kill switch est actif : tous les paiements sont suspendus par le titulaire du compte.",
+    message: "The kill switch is active: all payments are suspended by the account owner.",
     frameworks: ["DORA", "AI_ACT"],
   };
 };

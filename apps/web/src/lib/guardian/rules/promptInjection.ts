@@ -25,8 +25,8 @@ export const promptInjection: Rule = (ctx) => {
     delta: -70,
     message:
       hits.length === 1
-        ? "La page ou un résultat d'outil contient une instruction destinée à manipuler l'agent."
-        : `La page ou un résultat d'outil contient ${hits.length} instructions destinées à manipuler l'agent (${families.join(", ")}).`,
+        ? "The page or a tool result contains an instruction aimed at manipulating the agent."
+        : `The page or a tool result contains ${hits.length} instructions aimed at manipulating the agent (${families.join(", ")}).`,
     frameworks: ["AI_ACT", "DORA"],
   };
 };

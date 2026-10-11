@@ -29,7 +29,7 @@ export const priceAnomaly: Rule = (ctx) => {
       code: "PRICE_ANOMALY",
       severity: "medium",
       delta: -15,
-      message: "Le montant dépasse le budget énoncé par l'utilisateur.",
+      message: "The amount exceeds the budget stated by the user.",
       frameworks: ["MiCA"],
     };
   }
@@ -40,7 +40,7 @@ export const priceAnomaly: Rule = (ctx) => {
       code: "PRICE_ANOMALY",
       severity: "medium",
       delta: -15,
-      message: "Le montant est plus de trois fois supérieur aux achats habituels.",
+      message: "The amount is more than three times the usual purchase value.",
       frameworks: ["MiCA"],
     };
   }

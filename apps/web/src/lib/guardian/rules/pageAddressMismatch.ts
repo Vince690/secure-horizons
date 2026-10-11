@@ -14,7 +14,7 @@ export const pageAddressMismatch: Rule = (ctx) => {
     code: "PAGE_ADDRESS_MISMATCH",
     severity: "high",
     delta: -35,
-    message: "L'adresse demandée n'est pas celle affichée sur la page du marchand.",
+    message: "The requested address is not the one shown on the merchant page.",
     frameworks: ["AML_CFT", "AI_ACT"],
   };
 };
