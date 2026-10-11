@@ -28,12 +28,12 @@ export const PROMO_FPS = 30;
 const S = (seconds: number) => Math.round(seconds * PROMO_FPS);
 
 export const CUES = {
-  introEnd: 8,
-  titleEnd: 10.5,
+  introEnd: 6.5,
+  titleEnd: 9,
   /** Big typed prompt on dark, filmed at a slight angle (reference-ad style). */
-  promptStart: 10.5,
-  promptEnd: 19,
-  screenStart: 19,
+  promptStart: 9,
+  promptEnd: 17.5,
+  screenStart: 17.5,
   /** seconds into the SCREEN RECORDING at which each thing happens (adjust after recording) */
   screen: {
     promptTyped: 0,      // the prompt is typed over the first ~5 s
@@ -42,8 +42,8 @@ export const CUES = {
     paid: 20,            // APPROVED + Snowtrace link
     end: 27.5,
   },
-  endCardStart: 40,
-  total: 47,
+  endCardStart: 38.5,
+  total: 45.5,
 } as const;
 
 export const PROMO_DURATION_FRAMES = S(CUES.total);
@@ -88,8 +88,8 @@ const Intro = ({ file, hasClip }: { file: string; hasClip: boolean }) => {
     <AbsoluteFill style={{ background: "#0b0f17", opacity: Math.min(fadeIn, fadeOut) }}>
       <OffthreadVideo src={staticFile(file)} style={{ width: "100%", height: "100%", objectFit: "cover" }} muted={false} />
       <AbsoluteFill style={{ justifyContent: "flex-end", padding: 80 }}>
-        <div style={{ ...font, color: "white", fontSize: 44, fontWeight: 600, textShadow: "0 2px 24px rgba(0,0,0,.6)", opacity: interpolate(frame, [S(4), S(5)], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>
-          Noisy neighbours. Again.
+        <div style={{ ...font, color: "white", fontSize: 44, fontWeight: 600, textShadow: "0 2px 24px rgba(0,0,0,.6)", opacity: interpolate(frame, [S(2.5), S(3.5)], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>
+          Drilling upstairs. Again.
         </div>
       </AbsoluteFill>
     </AbsoluteFill>

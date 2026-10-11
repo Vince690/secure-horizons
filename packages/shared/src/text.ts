@@ -121,6 +121,10 @@ export const FREE_HOSTING_SUFFIXES = [
   "freepage.cc", "my.canva.site", "carrd.co", "r2.dev", "workers.dev", "herokuapp.com", "onrender.com", "fly.dev",
   "ddns.net", "ddnsking.com", "zapto.org", "serveirc.com", "redirectme.net", "webhop.me", "hopto.org", "no-ip.org",
   "servemp3.com", "sytes.net", "myftp.org", "duckdns.org", "ngrok.io", "ngrok-free.app", "trycloudflare.com",
+  "amazonaws.com", "storage.googleapis.com", "blob.core.windows.net", "web.core.windows.net", "cloudfront.net",
+  "jotform.com", "forms.gle", "typeform.com", "formstack.com", "yolasite.com", "weeblysite.com", "godaddysites.com",
+  "mystrikingly.com", "square.site", "webnode.page", "webador.com", "site123.me", "simdif.com", "blogger.com",
+  "wixstudio.io", "framer.app", "framer.website", "lovable.app", "bolt.host", "base44.app",
 ];
 
 const MULTI_PART_TLDS = new Set(["co.uk", "org.uk", "ac.uk", "com.br", "com.au", "com.mx", "com.ar", "co.jp", "co.kr", "com.tr", "com.ua", "com.pe", "com.bi", "com.gr", "com.mu", "com.bn", "co.za", "com.sg", "com.my", "gouv.fr", "asso.fr"]);

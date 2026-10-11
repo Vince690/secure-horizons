@@ -38,7 +38,13 @@ export interface MerchantCheck {
   error?: string;
 }
 
-const RISKY_TLDS = new Set(["xyz", "top", "icu", "click", "link", "work", "buzz", "cfd", "sbs", "rest", "bond", "zip", "mov", "ru", "cn", "tk", "ml", "ga", "cf", "gq"]);
+const RISKY_TLDS = new Set(["xyz", "top", "icu", "click", "link", "work", "buzz", "cfd", "sbs", "rest", "bond", "zip", "mov", "ru", "cn", "tk", "ml", "ga", "cf", "gq", "guru", "vip", "cyou", "lol", "monster", "quest", "cam", "bar", "su", "pw", "ws", "men", "loan", "date", "racing", "stream", "download", "gdn", "bid", "win", "review", "party", "trade", "science", "accountant", "faith", "cricket", "ml", "my", "et", "bi", "gr", "mu", "bn"]);
+/** Login / verification paths: a product page is never there. */
+const PHISHY_PATH_RE = /\/(login|signin|sign-in|log-in|verify|verification|validate|secure|security|update|confirm|account|wallet|recover|unlock|auth|password|billing|invoice|payment-update|reactivate)(\/|\.|-|_|$)/i;
+/** Page copy of a credential-harvesting page, not of a shop. */
+const PHISHY_CONTENT_RE = /\b(sign in to (your|continue)|log ?in to (your|continue)|verify your (account|identity|email)|confirm your (account|identity|password)|enter your (password|pin|recovery phrase|seed phrase|private key)|recovery phrase|seed phrase|secret phrase|12-word|24-word|your account (has been|will be) (suspended|locked|limited|closed)|unusual (activity|sign-in)|update your (payment|billing)|unlock your account|two-factor|one-time (code|password)|verification code)\b/i;
+/** "121jio", "34abx", "hp9316": machine-generated labels. */
+const RANDOM_LABEL_RE = /^(?=.*\d)(?=.*[a-z])[a-z0-9]{5,}$/i;
 const TERMINAL = new Set(["HIDDEN_INSTRUCTIONS", "PROMPT_INJECTION_SUSPECTED"]);
 
 const rdapCache = new Map<string, Promise<number | null>>();
@@ -148,9 +154,16 @@ export async function checkMerchant(url: string, trustedDomains: string[] = []):
   const shownDomain = displayedDomain(visible, domain, local);
 
   // 3. Transport & domain
-  if (parsed.protocol !== "https:" && !local) add("NO_HTTPS", -15, "medium", "No HTTPS: payment details would travel in clear text.");
+  if (parsed.protocol !== "https:" && !local) add("NO_HTTPS", -20, "medium", "No HTTPS: payment details would travel in clear text.");
+  if (!local && PHISHY_PATH_RE.test(parsed.pathname)) add("PHISHY_PATH", -20, "medium", `URL path looks like a login / verification page (${parsed.pathname.slice(0, 40)}), not a product page.`);
+  if (!local) {
+    const subLabels = domain.replace(registrableDomain(domain), "").split(".").filter(Boolean);
+    if (subLabels.some((l) => RANDOM_LABEL_RE.test(l))) add("RANDOM_SUBDOMAIN", -15, "medium", "Machine-generated subdomain: typical of mass-produced phishing on compromised or rented domains.");
+  }
   const tld = domain.split(".").pop() ?? "";
-  if (RISKY_TLDS.has(tld)) add("RISKY_TLD", -10, "low", `The .${tld} extension is heavily used by fraudulent sites.`);
+  // -30: a shop on .guru / .xyz / .cfd with nothing else wrong still gets a human look (70 is the auto-trust line).
+  if (RISKY_TLDS.has(tld)) add("RISKY_TLD", -30, "medium", `The .${tld} extension is heavily used by fraudulent sites.`);
+  if (!local && /\/[0-9a-f]{16,}(\/|$)|\/[a-z]{8,}-[a-z]{3,}\/[a-z]{8,}/i.test(parsed.pathname)) add("RANDOM_PATH", -15, "medium", "Machine-generated path (long hex id or random tokens): typical of phishing kits dropped on hacked sites.");
   const hosting = local ? null : freeHostingSuffix(domain);
   // -32: alone it lands at 68, i.e. a human confirms before buying from a site anyone can publish in minutes.
   if (hosting) add("FREE_HOSTING", -32, "high", `Hosted on ${hosting}: anyone can publish there in minutes, no identity.`);
@@ -179,6 +192,9 @@ export async function checkMerchant(url: string, trustedDomains: string[] = []):
   }
   if (/\b(urgent|expire|derni[èe]re chance|last chance|offre flash|limited time)\b/i.test(visible)) add("URGENCY_LANGUAGE", -10, "low", "Pressure language (urgency, limited offer).");
   if (prices.length === 0) add("NO_PRICE_FOUND", -2, "low", "No readable price on this page (not a product page?).");
+  const wordCount = visible.split(/\s+/).filter((w) => w.length > 1).length;
+  if (status < 400 && wordCount < 25) add("EMPTY_PAGE", -25, "medium", `Almost no readable text (${wordCount} words): nothing to buy, or a page rendered only by scripts. A human must look.`);
+  if (PHISHY_CONTENT_RE.test(visible) && !trustedDomains.includes(domain)) add("PHISHY_CONTENT", -25, "high", "The page talks like a credential-harvesting page (sign in, verify your account, recovery phrase…), not like a shop.");
 
   // 5. Manipulation of the agent (same detectors as the guardian)
   const injections = findInjections(page);
