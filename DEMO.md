@@ -60,3 +60,5 @@ Avec « …buy at the best price, max 0,06 AVAX », Claude a répondu « I'm not
 
 ## Après chaque répétition
 `npm run sweep -w packages/contracts` (les 0,05 AVAX payés à NordSound reviennent au gardien), `npm run db:reset -w apps/web`, puis réarmer le kill switch si besoin. Noter ici ce qui a hésité.
+
+> **12:10 — après le gel.** Si Claude refuse de payer en AVAX, vérifier d'abord que Claude Desktop a été relancé (Cmd+Q) après le dernier changement du serveur MCP : les instructions ne sont relues qu'au démarrage. Phrase de secours : la même demande « pay by card » en euros. Après chaque répétition : `npm run sweep -w packages/contracts`.
