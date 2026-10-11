@@ -115,6 +115,77 @@ function SpendChart({ data }: { data: DailySpend[] }) {
   );
 }
 
+/** Requests → verdict, as flowing ribbons (gradient from accent to each verdict color). */
+function DecisionFlowSankey({ metrics }: { metrics: DashboardMetrics | undefined }) {
+  const W = 560;
+  const H = 180;
+  const marginY = 10;
+  const nodeW = 10;
+  const leftX = 4;
+  const rightX = W - 4 - nodeW;
+  const innerGap = 10;
+  const plotH = H - marginY * 2;
+
+  const segments = [
+    { key: "approved", value: metrics?.approved ?? 0, cssVar: "--ok", label: "Approved" },
+    { key: "held", value: metrics?.held ?? 0, cssVar: "--warn", label: "Held" },
+    { key: "blocked", value: metrics?.blocked ?? 0, cssVar: "--crit", label: "Blocked" },
+  ].filter((s) => s.value > 0);
+
+  if (!metrics || segments.length === 0) {
+    return <p className="text-sm text-muted">No data yet.</p>;
+  }
+
+  const sum = segments.reduce((a, s) => a + s.value, 0);
+  const rightAvailable = plotH - innerGap * (segments.length - 1);
+
+  let srcCursor = marginY;
+  let dstCursor = marginY;
+  const flows = segments.map((s) => {
+    const srcH = (s.value / sum) * plotH;
+    const dstH = (s.value / sum) * rightAvailable;
+    const flow = { ...s, srcY: srcCursor, srcH, dstY: dstCursor, dstH };
+    srcCursor += srcH;
+    dstCursor += dstH + innerGap;
+    return flow;
+  });
+
+  const midX = (leftX + nodeW + rightX) / 2;
+  const ribbon = (f: (typeof flows)[number]) =>
+    `M ${leftX + nodeW} ${f.srcY} C ${midX} ${f.srcY}, ${midX} ${f.dstY}, ${rightX} ${f.dstY} ` +
+    `L ${rightX} ${f.dstY + f.dstH} C ${midX} ${f.dstY + f.dstH}, ${midX} ${f.srcY + f.srcH}, ${leftX + nodeW} ${f.srcY + f.srcH} Z`;
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: H }}>
+      <defs>
+        {flows.map((f) => (
+          <linearGradient key={f.key} id={`sankey-${f.key}`} x1="0" x2="1" y1="0" y2="0">
+            <stop offset="0%" style={{ stopColor: "var(--accent)" }} stopOpacity={0.6} />
+            <stop offset="100%" style={{ stopColor: `var(${f.cssVar})` }} stopOpacity={0.6} />
+          </linearGradient>
+        ))}
+      </defs>
+      {flows.map((f) => (
+        <path key={f.key} d={ribbon(f)} fill={`url(#sankey-${f.key})`}>
+          <title>{`${f.label}: ${f.value}`}</title>
+        </path>
+      ))}
+      <rect x={leftX} y={marginY} width={nodeW} height={plotH} rx={3} style={{ fill: "var(--accent)" }} />
+      {flows.map((f) => (
+        <g key={f.key}>
+          <rect x={rightX} y={f.dstY} width={nodeW} height={f.dstH} rx={3} style={{ fill: `var(${f.cssVar})` }} />
+          <text x={rightX + nodeW + 8} y={f.dstY + f.dstH / 2 + 4} style={{ fill: `var(${f.cssVar})` }} fontSize={12} fontWeight={600}>
+            {f.label} · {f.value}
+          </text>
+        </g>
+      ))}
+      <text x={leftX} y={marginY - 2} className="fill-muted" fontSize={10}>
+        {sum} requests
+      </text>
+    </svg>
+  );
+}
+
 const PERIOD_PRESETS = [7, 30, 90, 365];
 
 export default function OverviewPage() {
@@ -245,6 +316,11 @@ export default function OverviewPage() {
           {m ? <SpendChart data={m.dailySpend} /> : <p className="text-sm text-muted">Loading…</p>}
         </Card>
       </div>
+
+      {/* Decision flow */}
+      <Card title={`Decision flow (${days} d)`} className="mb-6">
+        {m ? <DecisionFlowSankey metrics={m} /> : <p className="text-sm text-muted">Loading…</p>}
+      </Card>
 
       {/* Top merchants + top rules */}
       <div className="mb-6 grid gap-4 md:grid-cols-2">
