@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import type { Decision } from "@payguard/shared";
 import { usePolling } from "@/components/hooks";
 import { formatDate, formatMoney, REASON_LABEL, shortAddress } from "@/components/labels";
-import { Card, DecisionLink, EmptyState, ExplorerLink, PageHeader, RailBadge, ScoreBadge, VerdictPill } from "@/components/ui";
+import { Card, DecisionLink, EmptyState, PageHeader, RailBadge, ScoreBadge, VerdictPill } from "@/components/ui";
 import { FilterPills } from "@/components/FilterPills";
 
 const VERDICT_OPTIONS = [
@@ -108,7 +108,6 @@ export default function DecisionsPage() {
                   <th className="py-2 pr-4">Merchant</th>
                   <th className="py-2 pr-4">Signals</th>
                   <SortHeader label="When" sortKey="when" sort={sort} onSort={onSort} className="py-2 pr-4" />
-                  <th className="py-2">On-chain</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
@@ -120,6 +119,7 @@ export default function DecisionsPage() {
                     <td className="tabular py-3 pr-4">
                       <div>{formatMoney(d.amount, d.currency)}</div>
                       <div className="mt-1"><RailBadge rail={d.rail} /></div>
+                      {d.card && <div className="mt-1 font-mono text-xs text-muted">card ····{d.card.last4}</div>}
                     </td>
                     <td className="py-3 pr-4">
                       <div>{d.recipient.name ?? "—"}</div>
@@ -129,11 +129,7 @@ export default function DecisionsPage() {
                       {d.reasons.filter((r) => r.delta < 0).slice(0, 3).map((r) => REASON_LABEL[r.code] ?? r.code).join(", ") || "—"}
                       {d.reasons.filter((r) => r.delta < 0).length > 3 ? "…" : ""}
                     </td>
-                    <td className="tabular py-3 pr-4 text-xs text-muted">{formatDate(d.created_at)}</td>
-                    <td className="py-3">
-                      <ExplorerLink url={d.payment_tx?.explorer_url ?? d.ledger_tx?.explorer_url} label={d.payment_tx ? "payment" : "anchor"} />
-                      {d.card && <div className="mt-1 font-mono text-xs text-muted">card ····{d.card.last4}</div>}
-                    </td>
+                    <td className="tabular py-3 text-xs text-muted">{formatDate(d.created_at)}</td>
                   </tr>
                 ))}
               </tbody>

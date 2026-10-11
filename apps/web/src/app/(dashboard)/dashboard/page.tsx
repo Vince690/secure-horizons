@@ -496,9 +496,6 @@ export default function OverviewPage() {
                 </div>
               </div>
               <VerdictPill verdict={d.verdict} status={d.status} />
-              {(d.payment_tx?.explorer_url ?? d.ledger_tx?.explorer_url) && (
-                <ExplorerLink url={d.payment_tx?.explorer_url ?? d.ledger_tx?.explorer_url} label="tx" />
-              )}
             </li>
           ))}
         </ul>
