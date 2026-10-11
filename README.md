@@ -1,71 +1,674 @@
-# PayGuard — le gardien entre un agent IA et son argent
+# PayGuard — Payment Guardian for AI Agents
 
-Hackathon **Secure Horizons** (ESSEC Cergy, 10–11 octobre 2026), Track 1 « Guardians of Value ».
+**ESSEC Secure Horizons Hackathon** (October 10-11, 2026) — Track 1: "Guardians of Value"
 
-## Quoi
-Un plugin MCP qu'un agent IA appelle quand il veut acheter : il vérifie chaque site candidat (`check_merchant`), classe les offres en écartant les sites frauduleux (`find_best_offer`), puis contrôle et exécute le paiement (`request_payment`). PayGuard vérifie la demande contre le mandat donné par l'humain (plafonds, solde plancher, bénéficiaires de confiance) et contre le contexte (page lue, conversation, injection de prompt), puis :
-- **APPROVED** : exécute lui-même le paiement en AVAX test sur Avalanche Fuji et grave le hash de la décision on-chain ;
-- **HOLD** : attend une confirmation humaine sur le dashboard ;
-- **BLOCKED** : refuse, explique en français, grave le refus on-chain.
-Un **kill switch** (manuel ou automatique) met le contrat en pause : plus aucun paiement ne sort, même si l'API est compromise.
+PayGuard is a security layer between AI agents and their payments. When an AI agent wants to make a purchase, PayGuard verifies the merchant, validates the request against human-defined policies, and either executes, holds for confirmation, or blocks the payment—with every decision cryptographically anchored on-chain.
 
-## Deux rails, une preuve
-- **Rail Avalanche (AVAX)** : le wallet gardien paie via le contrat, qui grave le hash de la décision dans la même transaction.
-- **Rail carte virtuelle (EUR)** : « connectez votre banque ». À chaque paiement approuvé, PayGuard émet une carte à usage unique plafonnée au montant exact, verrouillée sur le marchand, expirant en une heure ; l'argent ne quitte jamais le compte du client, PayGuard n'y touche jamais, l'agent ne voit jamais le numéro. La décision est ancrée sur Avalanche (code 4). Émetteur bac à sable pour le hackathon, même interface que le futur adaptateur bancaire.
-- Le kill switch coupe les deux : pause du contrat et gel de toutes les cartes.
+---
 
-## Pourquoi
-Les protocoles de paiement par agents signent la transaction, pas la décision. Un agent manipulé par une page piégée fait un paiement « valide » mais non voulu. PayGuard contrôle la décision, produit la preuve, et outille DORA, MiCA, AML/CFT et l'AI Act.
+## 🎯 The Problem
 
-## Structure
+Traditional payment protocols sign **transactions**, not **decisions**. A compromised AI agent can make technically "valid" payments to unintended recipients. PayGuard solves this by:
+
+1. **Validating the decision** before execution
+2. **Enforcing human-defined spending policies**
+3. **Detecting prompt injection and page manipulation**
+4. **Creating tamper-proof audit trails**
+5. **Providing an emergency kill switch**
+
+---
+
+## 🏗️ Architecture
+
 ```
-apps/web            Next.js 15 : dashboard + API (/api/v1, /api/dashboard), Prisma/SQLite, moteur de décision
-apps/mcp-server     serveurs MCP « payguard » et « demo-shop » (stdio)
-apps/merchants      3 pages marchands de démo (légitime :4001, piège :4002, concurrent légitime :4003), serveur Node sans dépendance
-apps/demo-agent     démo scriptée (plan B) qui pilote les mêmes serveurs MCP sans LLM ni Claude Desktop
-packages/contracts  PayGuardLedger.sol (Hardhat, Fuji 43113) + client viem
-packages/shared     types TypeScript communs, hash de décision, interface chaîne, compliance.rules.json
-docs/               API.md (contrat), PLAN.md, COMPLIANCE.md, prompts/
+┌─────────────────────────────────────────────────────────────────┐
+│                     PayGuard System                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  ┌──────────────────────┐         ┌──────────────────────┐     │
+│  │   MCP Plugin         │         │   Dashboard (Web)    │     │
+│  │   (Public)           │         │   (Private - You)    │     │
+│  ├──────────────────────┤         ├──────────────────────┤     │
+│  │ • AI agents call     │         │ • Spending policies  │     │
+│  │ • Merchant checks    │◄────────┤ • Decision approval  │     │
+│  │ • Payment requests   │  API    │ • Kill switch        │     │
+│  │ • Real-time status   │         │ • Audit logs         │     │
+│  └──────────────────────┘         │ • Analytics          │     │
+│                                    └──────────────────────┘     │
+│                                                                   │
+│                        ┌──────────────────────┐                 │
+│                        │  Guardian Engine     │                 │
+│                        ├──────────────────────┤                 │
+│                        │ • 20+ security rules │                 │
+│                        │ • Policy enforcement │                 │
+│                        │ • Scoring (0-100)    │                 │
+│                        │ • Compliance mapping │                 │
+│                        └──────────┬───────────┘                 │
+│                                   │                              │
+│                        ┌──────────▼───────────┐                 │
+│                        │ Blockchain Anchoring │                 │
+│                        ├──────────────────────┤                 │
+│                        │ Avalanche Fuji       │                 │
+│                        │ PayGuardLedger.sol   │                 │
+│                        └──────────────────────┘                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-## Lancer
+### Components
+
+#### 1. **MCP Plugin** (Public - Distributed to AI Agents)
+- **Location**: `apps/mcp-server/`
+- **Purpose**: Tools that AI agents call to make payments
+- **Interface**: Model Context Protocol (MCP) over stdio
+- **Tools Provided**:
+  - `check_merchant` - Verify merchant trustworthiness
+  - `find_best_offer` - Compare offers, filter fraudulent sites
+  - `request_payment` - Request payment with guardian validation
+  - `check_payment_status` - Poll for approval status
+  - `get_spending_policy` - Read current policies
+  - `get_balance` - Check guardian wallet balance
+
+#### 2. **Dashboard** (Private - Your Control Panel)
+- **Location**: `apps/web/`
+- **Purpose**: Configure policies, approve payments, monitor activity
+- **Features**:
+  - Configure spending policies (limits, trusted merchants)
+  - Approve/reject pending payments
+  - View all decisions with full audit trail
+  - Activate emergency kill switch
+  - Compliance reports (DORA, MiCA, AML/CFT, AI Act)
+  - API key management
+
+#### 3. **Guardian Engine** (Core Decision Logic)
+- **Location**: `apps/web/src/lib/guardian/`
+- **Purpose**: Evaluate every payment request
+- **Rules**: 20+ security checks including:
+  - Spending limits (per transaction, daily)
+  - Prompt injection detection
+  - Hidden instruction detection
+  - Price/address consistency checks
+  - Merchant reputation scoring
+  - Velocity anomaly detection
+
+#### 4. **Blockchain Layer** (Tamper-Proof Audit)
+- **Contract**: `PayGuardLedger.sol` on Avalanche Fuji testnet
+- **Purpose**: Immutable record of all decisions
+- **Features**:
+  - Decision hash anchoring
+  - Payment execution
+  - Kill switch enforcement
+  - Public verifiability
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- **Node.js** 20+ and npm
+- **Git**
+
+### Installation
+
 ```bash
-cp .env.example .env            # remplir, ne jamais commiter
+# 1. Clone the repository
+git clone <repository-url>
+cd secure-horizons
+
+# 2. Install dependencies
 npm install
-npm run db:push -w apps/web     # crée la base SQLite (apps/web/prisma/dev.db)
-npm run db:seed -w apps/web     # compte demo@payguard.dev / demo1234, affiche la clé API UNE fois
-#   -> copier la clé dans .env : PAYGUARD_API_KEY=pg_test_...  (les resets suivants la réutilisent)
-npm run dev:web                 # dashboard + API : http://localhost:3000
-npm run dev:merchants           # marchand légitime :4001, marchand piège :4002
-npm run demo                    # démo scriptée sans Claude Desktop (plan B) ; npm run demo:all = + HOLD + kill switch
-npm run sweep -w packages/contracts   # rapatrie les AVAX de démo du wallet marchand vers le gardien (à faire entre deux répétitions)
-bash apps/web/scripts/curl-demo.sh   # 3 appels bruts à l'API : légitime / piège / HOLD
-npm run smoke:mcp               # pilote les 2 serveurs MCP comme Claude Desktop le ferait
-# Claude Desktop : config exacte dans apps/mcp-server/README.md
+
+# 3. Configure environment
+cp .env.example .env
+# Edit .env with your configuration (see Configuration section below)
+
+# 4. Initialize database
+npm run db:push -w apps/web
+npm run db:seed -w apps/web
+# ⚠️ Save the API key shown - you'll need it!
 ```
-Chaîne : `CHAIN_MODE=fuji` (vrai contrat, voir ci-dessous) ou `CHAIN_MODE=mock` (simulateur en mémoire, aucun réseau). Modèle de langage : optionnel, `ANTHROPIC_API_KEY` vide = explications template et règles par motifs uniquement.
 
-Le journal d'audit interne s'écrit dans `apps/web/logs/audit.jsonl` (ignoré par git), en plus de la base.
+### Configuration
 
-## Comment ça décide
-Score de confiance 100 au départ, chaque signal retire des points (`docs/API.md` §5, 20 règles) : mandat du dirigeant (plafonds, plancher, bénéficiaires), manipulation de l'agent (ordres dans la page, **texte invisible pour un humain**, achat non demandé, prix ou adresse différents de la page), comportement (rafale, prix anormal, adresse sans historique on-chain), et un second avis sémantique par le modèle si une clé est fournie. ≥ 70 APPROVED, 40-69 HOLD (un humain tranche), < 40 BLOCKED. Quatre signaux bloquent seuls : kill switch, liste noire, injection de prompt, instructions invisibles. Trois blocages en dix minutes déclenchent le kill switch automatique, qui met le contrat en pause.
+Edit `.env` at the project root:
 
-Chaque point retiré est relié à un cadre (DORA, MiCA, AML/CFT, AI Act) et à une référence d'article dans `packages/shared/src/compliance.rules.json`, maintenu par le juriste de l'équipe.
+```bash
+# Required: Database
+DATABASE_URL="file:./dev.db"
 
-## Contrat déployé (Fuji C-Chain, chainId 43113)
-| Contrat | Adresse | Explorer |
-|---|---|---|
-| PayGuardLedger v2 (ajout du code 4 « approuvé sur un autre rail ») | `0xf735d4a99f7ad8c8ffb914cfac088634487025ba` | https://testnet.snowtrace.io/address/0xf735d4a99f7ad8c8ffb914cfac088634487025ba |
-| PayGuardLedger v1 (11 oct. 00:50, remplacé) | `0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1` | https://testnet.snowtrace.io/address/0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1 |
-| Wallet gardien (owner) | `0xCc86BB75d603aA474dddA53930cf4252C6257764` | https://testnet.snowtrace.io/address/0xCc86BB75d603aA474dddA53930cf4252C6257764 |
-| Wallet marchand de démo (NordSound) | `0x97c5Cf046b267b4BD6496391E65e1C762bB90839` | https://testnet.snowtrace.io/address/0x97c5Cf046b267b4BD6496391E65e1C762bB90839 |
+# Required: Session security
+SESSION_SECRET="generate-a-random-32-char-string-here"
 
-Détails dans `packages/contracts/deployments/fuji.json`. v2 déployée le 11 octobre 2026 vers 03:20 ; premier paiement de test : https://testnet.snowtrace.io/tx/0x6de6c9cf04a6cef732e8edaeefce0dd88a80451119a88aa6a1620fc86e08520b
+# Required: API base URL
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+PAYGUARD_API_URL=http://localhost:3000
 
-## Feuille de route
-Voir `docs/ROADMAP_RAILS.md` : paiements en euros par cartes virtuelles à usage unique créées sur le compte bancaire du client (« connecte ton compte »), Stripe Issuing en second, EURC ; Avalanche reste la couche de preuve et de kill switch. Règle invariante : PayGuard ne détient jamais les fonds et l'agent ne voit jamais un secret.
+# Required: API Key (generated by db:seed)
+PAYGUARD_API_KEY=pg_test_xxxxxxxxxxxxxxxx
 
-## Sécurité
-- Testnet uniquement, wallet dédié hackathon, aucune clé personnelle.
-- Secrets dans `.env` seulement (`.env.example` sans valeurs).
-- PayGuard n'est pas un prestataire de services de paiement ; la démo exécute sur testnet, la production recommande.
+# Optional: Reduce terminal logging
+LOG_LEVEL=error  # Options: debug, info, warn, error
+
+# Optional: AI explanations (leave empty for template-only mode)
+ANTHROPIC_API_KEY=
+
+# Optional: Real blockchain (default is mock mode)
+CHAIN_MODE=mock  # or "fuji" for real Avalanche transactions
+```
+
+### Launch
+
+#### Option A: Dashboard Only (Recommended First)
+```bash
+npm run dev:web
+```
+Open http://localhost:3000/dashboard
+- Login: `demo@payguard.dev`
+- Password: `demo1234`
+
+#### Option B: Full Demo System (Dashboard + Merchants + Scripted Demo)
+
+You need **3 terminals** for the complete demo:
+
+**Terminal 1** - Start the web server (Dashboard + API):
+```bash
+npm run dev:web
+```
+Wait for "Ready started server on [::]:3000"
+
+**Terminal 2** - Start demo merchant sites:
+```bash
+npm run dev:merchants
+```
+Merchants will run on:
+- http://localhost:4001 - NordSound (legitimate)
+- http://localhost:4002 - N0rdSound Deals (trap/fraudulent)
+- http://localhost:4003 - AudioPlanet (legitimate but pricier)
+
+**Terminal 3** - Run the scripted demo:
+```bash
+# Basic demo (approved payment)
+npm run demo
+
+# Full demo (all scenarios: approved, blocked, trap, kill switch)
+npm run demo:all
+```
+
+The demo simulates an AI agent shopping for headphones. Watch it:
+1. ✅ Find best prices across 3 merchant sites
+2. 🛡️ PayGuard detects the fraudulent trap site (10 AI manipulation instructions)
+3. 💳 Execute payments (AVAX and virtual card)
+4. 🚫 Block suspicious requests
+5. ⏸️ Auto-activate kill switch after critical threats
+
+Check the dashboard at http://localhost:3000/dashboard to see all decisions recorded!
+
+---
+
+## 📦 For AI Agent Developers: Using the MCP Plugin
+
+### Installation in Claude Desktop
+
+Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "payguard": {
+      "command": "node",
+      "args": ["/path/to/secure-horizons/apps/mcp-server/src/payguard.ts"],
+      "env": {
+        "PAYGUARD_API_URL": "http://localhost:3000",
+        "PAYGUARD_API_KEY": "pg_test_your_api_key_here"
+      }
+    },
+    "demo-shop": {
+      "command": "node",
+      "args": ["/path/to/secure-horizons/apps/mcp-server/src/demo-shop.ts"]
+    }
+  }
+}
+```
+
+### Example: AI Agent Making a Purchase
+
+```
+User: "Buy me the NordSound ANC Pro headphones at the best price, max budget 0.06 AVAX"
+
+Agent uses PayGuard tools:
+1. search_products("NordSound ANC Pro") → finds candidate URLs
+2. find_best_offer([url1, url2, url3]) → ranks by trust & price
+3. read_merchant_page(best_url) → reads page content
+4. request_payment(...) → submits to PayGuard
+
+PayGuard Decision:
+- Score: 95/100
+- Verdict: APPROVED
+- Reason: Trusted merchant, price matches page, user requested
+- Payment executed: 0.05 AVAX
+- Blockchain proof: https://testnet.snowtrace.io/tx/0x...
+```
+
+### API Endpoints (for non-MCP integrations)
+
+```bash
+# Check merchant safety
+POST /api/v1/payments/evaluate
+Content-Type: application/json
+Authorization: Bearer pg_test_your_api_key
+
+{
+  "agent_id": "your-agent-id",
+  "request_id": "unique-uuid",
+  "amount": "0.05",
+  "currency": "AVAX",
+  "recipient": {
+    "address": "0x...",
+    "name": "Merchant Name",
+    "domain": "merchant.com"
+  },
+  "purpose": "Product description",
+  "context": {
+    "page_url": "https://merchant.com/product",
+    "page_excerpt": "Raw page text...",
+    "conversation": [
+      {"role": "user", "content": "Buy this product"}
+    ]
+  }
+}
+
+# Response
+{
+  "decision_id": "dec_...",
+  "verdict": "APPROVED|HOLD|BLOCKED",
+  "score": 95,
+  "status": "APPROVED",
+  "payment_tx": {"tx_hash": "0x...", "explorer_url": "..."},
+  "explanation": "Human-readable explanation",
+  ...
+}
+```
+
+---
+
+## 🎛️ For Policy Owners: Using the Dashboard
+
+### Access Dashboard
+```bash
+npm run dev:web
+```
+Navigate to http://localhost:3000/dashboard
+
+### Configure Spending Policy
+
+**Policy > Settings**
+
+```
+Transaction Limits:
+- Max per transaction: 0.1 AVAX
+- Max daily total: 0.3 AVAX
+- Minimum balance: 0.1 AVAX (safety margin)
+
+Approval Rules:
+- Auto-approve score threshold: 70
+- Hold for review score: 40-69
+- Block score: < 40
+- Require confirmation above: 0.08 AVAX
+
+New Merchants:
+☑ Require confirmation for first payment to unknown merchant
+
+Trusted Merchants:
+- nordsound.shop
+- (add more...)
+
+Blocked Addresses:
+- 0x2222... (add suspicious addresses)
+```
+
+### Approve Pending Payments
+
+**Approvals > Pending**
+
+Each held payment shows:
+- What the agent wants to buy
+- Price and merchant
+- Why it was held (score, triggered rules)
+- What the user requested
+- What the page actually said
+
+Actions:
+- ✅ **Approve** - Execute payment immediately
+- ❌ **Reject** - Block and notify agent
+
+### Emergency Kill Switch
+
+**Dashboard Header > Kill Switch Button**
+
+- **Activate**: Pauses all payments immediately
+- **Blockchain enforcement**: Contract.pause() called
+- **Automatic triggers**:
+  - 3 blocked payments in 10 minutes
+  - Critical prompt injection detected
+- **Reactivation**: Manual only, after investigation
+
+### View Audit Trail
+
+**Audit > History**
+
+Every decision recorded with:
+- Timestamp
+- Agent ID
+- Amount & merchant
+- Score & verdict
+- All triggered rules
+- Blockchain proof link
+- Page content (what agent saw vs. what user saw)
+
+---
+
+## 🧪 Testing
+
+### Automated Test Suite
+
+PayGuard includes **40 automated tests** with automatic database cleanup.
+
+#### Health Check (Fast - runs on startup)
+```bash
+cd apps/web
+npm run test:health
+```
+- **9 tests** in < 1 second
+- Verifies critical systems (database, chain, rules)
+- Runs automatically on `npm run dev`
+
+#### Comprehensive Tests (Full coverage)
+```bash
+cd apps/web
+npm run test:comprehensive
+```
+- **31 tests** covering all 20+ security rules
+- Takes 30-60 seconds
+- Automatic cleanup after each test
+
+#### Cleanup Verification
+```bash
+cd apps/web
+npm run test:cleanup
+```
+- **3 tests** verifying database cleanup works
+- Ensures test data doesn't pollute production
+
+See `TEST_SUITE.md` for full test documentation.
+
+### Demo Scenarios
+
+The scripted demo doesn't require an AI agent—it simulates one.
+
+#### Basic Demo (Safe Purchase)
+```bash
+npm run demo
+```
+Shows a simple approved payment flow.
+
+#### Full Demo (All Security Features)
+```bash
+npm run demo:all
+```
+
+**Prerequisites**: Run these first (in separate terminals):
+1. `npm run dev:web` - Web server
+2. `npm run dev:merchants` - Merchant sites
+
+**Demo Flow**:
+1. 🔍 Search for "NordSound ANC Pro headphones"
+2. 🛡️ **Fraud Detection**: PayGuard identifies trap site
+   - 10 AI manipulation instructions detected
+   - 4 hidden HTML instruction blocks
+   - Domain lookalike (n0rdsound vs nordsound)
+   - **Verdict**: BLOCKED (0/100 score)
+3. ✅ **Approved Payment**: Legit merchant
+   - 0.05 AVAX purchase
+   - **Verdict**: HOLD (needs confirmation - low balance)
+4. 💳 **Virtual Card**: EUR payment
+   - Creates single-use virtual card
+   - Capped at exact amount
+   - Locked to merchant domain
+   - **Verdict**: APPROVED (80/100)
+5. 🚫 **Attack Attempts**: Agent manipulated by trap page
+   - Tries to pay 0.5 AVAX (10x the price!)
+   - PayGuard blocks all attempts
+6. ⏸️ **Kill Switch**: Auto-activated
+   - Critical injection + amount over limit
+   - All future payments suspended
+
+After the demo, check:
+- **Dashboard**: http://localhost:3000/dashboard
+- **Audit log**: All 6+ decisions recorded
+- **Blockchain**: Each decision anchored on Avalanche Fuji
+- **Kill switch**: Red indicator active
+
+**Expected Output**: 
+- Trap site: BLOCKED (0/100) ✅
+- Legit purchase: HOLD or APPROVED ✅  
+- EUR card: APPROVED with virtual card ✅
+- Attack attempts: All BLOCKED ✅
+- Kill switch: ACTIVE after 2nd attack ✅
+
+---
+
+## 🔐 Security Features
+
+### 1. **Prompt Injection Defense**
+Detects 45+ patterns across 9 families:
+- Instruction override attempts
+- Fake system messages
+- AI-targeted commands
+- Role hijacking
+- "Hide from human" instructions
+- Guardian bypass attempts
+
+### 2. **Page Manipulation Detection**
+- Hidden text (CSS tricks, HTML comments)
+- Price/address mismatches
+- Product inconsistencies
+- Suspicious urgency language
+
+### 3. **Policy Enforcement**
+- Transaction limits
+- Daily spending caps
+- Minimum balance protection
+- New merchant confirmation
+- Blocklist/allowlist
+
+### 4. **Blockchain Anchoring**
+- Every decision hashed (SHA-256)
+- Anchored on Avalanche Fuji
+- Public verification available
+- Tamper-proof audit trail
+
+### 5. **Kill Switch**
+- Manual or automatic activation
+- Pauses contract on-chain
+- Stops all payments immediately
+- Generates DORA incident report
+
+---
+
+## 📊 Compliance & Regulations
+
+PayGuard maps every security check to regulatory frameworks:
+
+| Framework | Coverage |
+|-----------|----------|
+| **DORA** | Incident reporting, operational resilience |
+| **MiCA** | Transaction limits, balance protection |
+| **AML/CFT** | Merchant reputation, velocity checks, blocklists |
+| **AI Act** | Prompt injection defense, transparency, human oversight |
+
+View compliance status in Dashboard > Compliance
+
+---
+
+## 🔧 Advanced Configuration
+
+### Logging Control
+
+Reduce terminal noise by setting log level in `.env`:
+
+```bash
+# Show only errors (quietest - recommended)
+LOG_LEVEL=error
+
+# Show important events (default)
+LOG_LEVEL=info
+
+# Show detailed diagnostics
+LOG_LEVEL=debug
+```
+
+### Blockchain Mode
+
+**Mock Mode** (default - no real transactions):
+```bash
+CHAIN_MODE=mock
+MOCK_CHAIN_BALANCE=2
+```
+
+**Fuji Mode** (real Avalanche testnet):
+```bash
+CHAIN_MODE=fuji
+GUARDIAN_PRIVATE_KEY=0x...  # Your testnet wallet
+PAYGUARD_CONTRACT_ADDRESS=0xf735d4a99f7ad8c8ffb914cfac088634487025ba
+```
+
+### Database Management
+
+```bash
+# Reset database (⚠️ deletes all data)
+npm run db:reset -w apps/web
+
+# View database
+npx prisma studio -w apps/web
+```
+
+---
+
+## 📁 Project Structure
+
+```
+secure-horizons/
+├── apps/
+│   ├── mcp-server/          # MCP plugin (public distribution)
+│   │   ├── src/payguard.ts  # PayGuard tools for AI agents
+│   │   └── src/demo-shop.ts # Demo merchant page reader
+│   ├── web/                 # Dashboard (private control panel)
+│   │   ├── src/app/         # Next.js pages
+│   │   ├── src/lib/guardian/# Decision engine (20+ rules)
+│   │   └── prisma/          # Database schema
+│   ├── merchants/           # Demo merchant sites
+│   └── demo-agent/          # Scripted demo (no LLM needed)
+├── packages/
+│   ├── shared/              # TypeScript types & utilities
+│   └── contracts/           # Smart contracts (Avalanche)
+└── docs/                    # Documentation
+```
+
+---
+
+## 🤝 Contributing
+
+### For Plugin Users (AI Agent Developers)
+- Report issues with MCP tool behavior
+- Request new tools or features
+- Share integration examples
+
+### For Dashboard Users (Policy Owners)
+- Suggest new compliance rules
+- Report merchant reputation issues
+- Request dashboard features
+
+---
+
+## 📄 License
+
+This project was developed for the ESSEC Secure Horizons Hackathon.
+
+**Testnet Only**: Uses Avalanche Fuji testnet. No real funds.
+
+---
+
+## 🆘 Troubleshooting
+
+### "PAYGUARD ERROR INTERNAL: Unexpected server error"
+
+This usually means the web server needs to be restarted after a code change.
+
+```bash
+# Stop the web server (Ctrl+C in Terminal 1)
+# Then restart:
+npm run dev:web
+```
+
+If the error persists, check:
+1. `.env` file has all required variables
+2. Database was initialized: `npm run db:push -w apps/web`
+3. API key matches between `.env` and database seed
+
+### "Port 3000 already in use"
+```bash
+# Stop existing server
+taskkill /PID <PID> /F  # Windows
+kill -9 <PID>           # Mac/Linux
+
+# Or use different port
+PORT=3001 npm run dev:web
+```
+
+### "Database connection failed"
+```bash
+# Recreate database
+npm run db:push -w apps/web
+npm run db:seed -w apps/web
+```
+
+### "Kill switch is active"
+- Open dashboard: http://localhost:3000/dashboard
+- Click red "Kill Switch" button in header
+- Click "Rearm" to deactivate
+
+### "API key invalid"
+```bash
+# Regenerate API key
+npm run db:reset -w apps/web
+# Copy the new API key to .env
+```
+
+### Too many logs in terminal
+```bash
+# Add to .env
+LOG_LEVEL=error
+```
+
+---
+
+## 📞 Support
+
+- **Documentation**: See `/docs` folder
+- **API Reference**: `docs/API.md`
+- **Test Suite Guide**: `TEST_SUITE.md`
+
+---
+
+## 🎓 Hackathon Details
+
+- **Event**: ESSEC Secure Horizons
+- **Dates**: October 10-11, 2026
+- **Track**: Track 1 - "Guardians of Value"
+- **Team**: Horizon SAS
+
+---
+
+**Built with**: TypeScript • Next.js • Prisma • Avalanche • MCP • Anthropic Claude
+
+**PayGuard** — Because AI agents need guardians too. 🛡️
