@@ -16,7 +16,7 @@ export const domainLookalike: Rule = (ctx) => {
   return {
     code: "DOMAIN_LOOKALIKE",
     severity: "high",
-    delta: -30,
+    delta: -35, // alone it must land in HOLD (65), never APPROVED
     message: `The domain ${domain} imitates a trusted merchant (${imitated}).`,
     frameworks: ["AML_CFT"],
   };

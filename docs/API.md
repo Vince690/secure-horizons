@@ -161,7 +161,7 @@ Score de départ 100. Chaque règle qui se déclenche ajoute un `Reason` avec un
 | `PAGE_PRODUCT_MISMATCH` | aucun mot de `purpose` sur la page lue (pages ≥ 15 mots seulement) | −20 | medium | AI_ACT |
 | `PURPOSE_NOT_REQUESTED_BY_USER` | aucun message `user` ne mentionne le produit/marchand (similarité mots-clés) | −35 | high | AI_ACT |
 | `RECIPIENT_CHANGED_MID_CONVERSATION` | une autre adresse 0x apparaît dans la conversation pour le même achat | −35 | high | AML_CFT |
-| `DOMAIN_LOOKALIKE` | distance de Levenshtein ≤ 2 avec un `trusted_domain`, ou substitution 0/o, 1/l, rn/m | −30 | high | AML_CFT |
+| `DOMAIN_LOOKALIKE` | distance de Levenshtein ≤ 2 avec un `trusted_domain`, ou substitution 0/o, 1/l, rn/m | −35 (seul ⇒ 65 ⇒ HOLD, jamais APPROVED) | high | AML_CFT |
 | `RECIPIENT_UNKNOWN` | adresse ni trusted ni dans l'historique | −25 | medium | AML_CFT |
 | `SEMANTIC_MANIPULATION_SUSPECTED` | second avis du modèle sur la page (`src/lib/llm/semantic.ts`, mis en cache par texte de page) : `manipulation=true` avec confiance ≥ 0,6. Jamais terminale : le modèle ajoute des points, les règles déterministes gardent le dernier mot | −40 | high | AI_ACT, DORA |
 | `RECIPIENT_NO_ONCHAIN_HISTORY` | l'adresse n'a jamais émis de transaction et a un solde nul sur Fuji (données chaîne via `getAddressInfo`) ; muette pour les adresses de confiance | −15 | medium | AML_CFT |

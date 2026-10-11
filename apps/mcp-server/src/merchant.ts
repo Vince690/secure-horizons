@@ -138,7 +138,7 @@ export async function checkMerchant(url: string, trustedDomains: string[] = []):
     else if (age === null) add("DOMAIN_AGE_UNKNOWN", -5, "low", "Domain age unknown (registry silent).");
   }
   const imitated = findLookalike(shownDomain, [...trustedDomains, ...KNOWN_BRANDS]);
-  if (imitated) add("DOMAIN_LOOKALIKE", -30, "high", `The domain ${shownDomain} imitates ${imitated}.`);
+  if (imitated) add("DOMAIN_LOOKALIKE", -35, "high", `The domain ${shownDomain} imitates ${imitated}.`);
 
   // 4. Legitimacy cues on the page
   const legal = /(mentions l[ée]gales|RCS\s+[A-Za-zÀ-ÿ]+\s+\d|SIREN|SIRET|CGV|conditions g[ée]n[ée]rales|terms of service|legal notice|impressum)/i.test(visible);
