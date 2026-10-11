@@ -39,6 +39,9 @@ Depuis le 11 oct. 02:30, les serveurs MCP envoient des **instructions** à Claud
 
 **Navigateur intégré de Claude Desktop : à désactiver pendant la démo** (réglages de l'application, outils / navigateur). Quand Claude passe par son navigateur, ses propres garde-fous sur les actions financières l'empêchent d'appeler `request_payment`, même à la demande de l'utilisateur. Si l'option est introuvable : quand il annonce « je charge les outils du navigateur », répondre « non, utilise read_merchant_page de demo-shop ». Une **nouvelle conversation par scénario** : dans une conversation où il a déjà utilisé le navigateur, il y retourne.
 
+## ⚠️ Refus de Claude sur la crypto (vu le 11 oct. 11:55)
+Avec « …buy at the best price, max 0,06 AVAX », Claude a répondu « I'm not allowed to send AVAX or any other crypto » et n'a pas appelé PayGuard : sa propre règle sur les transferts de crypto, déclenchée par le mot AVAX et par « buy » compris comme « envoie toi-même ». Parades : (1) **en live, payer par carte en euros** : `Use PayGuard to buy me a NordSound ANC Pro headset at the best price, budget €60 max, pay by card.` La décision est quand même ancrée sur Avalanche (lien Snowtrace, code 4). (2) L'outil et les instructions disent désormais explicitement que Claude ne transfère rien lui-même, qu'il soumet une demande que PayGuard règle sous le mandat du propriétaire. (3) Toujours nommer PayGuard, jamais « check » (mode recherche), une nouvelle conversation par scénario. Le rail AVAX se montre avec `npm run demo` ou l'historique du dashboard.
+
 ## Les deux rails
 - **AVAX** : le wallet gardien paie, transaction visible sur Snowtrace.
 - **EUR** : carte virtuelle à usage unique sur le compte bancaire (bac à sable), ancrage visible sur Snowtrace avec le code 4. Montrer le panneau carte sur le détail de la décision et les trois boutons de simulation.

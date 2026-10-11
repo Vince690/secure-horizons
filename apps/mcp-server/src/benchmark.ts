@@ -65,7 +65,7 @@ const rows: Row[] = [
 
 function summarize(group: Row[]) {
   const n = group.length || 1;
-  const counts = { TRUSTED: 0, SUSPICIOUS: 0, FRAUDULENT: 0 } as Record<MerchantCheck["verdict"], number>;
+  const counts = { TRUSTED: 0, SUSPICIOUS: 0, FRAUDULENT: 0, UNVERIFIED: 0 } as Record<MerchantCheck["verdict"], number>;
   const signalCounts = new Map<string, number>();
   for (const r of group) {
     counts[r.verdict] += 1;
@@ -95,6 +95,8 @@ const summary = {
   false_block_rate_pct: Math.round((100 * legitRows.filter((r) => r.verdict === "FRAUDULENT").length) / (legitRows.length || 1)),
   /** Legit sites that would have needed a human. */
   false_hold_rate_pct: Math.round((100 * legitRows.filter((r) => r.verdict === "SUSPICIOUS").length) / (legitRows.length || 1)),
+  /** Legit sites we could not read (unreachable, bot wall, empty): told to the agent as such. */
+  legit_unverified_rate_pct: Math.round((100 * legitRows.filter((r) => r.verdict === "UNVERIFIED").length) / (legitRows.length || 1)),
 };
 
 mkdirSync(path.dirname(out), { recursive: true });

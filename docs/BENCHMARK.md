@@ -25,6 +25,8 @@ Definitions: **caught** = scam rated FRAUDULENT or SUSPICIOUS (a human confirms 
 | v5 | empty pages (nothing to buy) ⇒ human ; login / verification paths ; credential-harvesting wording (verify your account, seed phrase…) ; machine-generated subdomains ; more risky TLDs ; no HTTPS −20 | 93 % | 7 % | 0 % | 15 % |
 | **v6** | risky TLD alone ⇒ human ; machine-generated paths (long hex ids, random tokens) | **97 %** | **3 %** | **0 %** | **13 %** |
 
+| v7 | fourth verdict **UNVERIFIED** (unreachable, bot wall, empty page): reported as « could not be checked », agent tells the user, a human confirms | 97 % | 3 % | 0 % | 5 % held + 10 % unverified |
+
 v6 in one sentence: **97 % of live phishing pages are caught, no legitimate shop is blocked, 13 % of shops are sent to a human** (half of them simply unreachable from our network at that moment, the rest script-only homepages with no readable text). The 3 % still passing are legitimate-looking domains that were hacked to host a phishing kit in a sub-path: the next signal is reputation of the registrable domain over time.
 
 v4 in one sentence: **83 % of live phishing pages are caught, no legitimate shop is blocked, 1 in 10 is sent to a human** (3 of those 6 were simply unreachable from our network at that moment). The 17 % that still pass are mostly bare parked pages with no text at all: nothing to buy there, so no payment would follow anyway.

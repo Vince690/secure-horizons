@@ -11,7 +11,7 @@ interface Row { url: string; domain: string; truth: "scam" | "legit"; tranco_ran
 interface Run { summary: Summary; rows: Row[] }
 
 const pct = (n: number) => `${n} %`;
-const verdictClass = (v: string) => (v === "TRUSTED" ? "text-ok" : v === "SUSPICIOUS" ? "text-warn" : "text-crit");
+const verdictClass = (v: string) => (v === "TRUSTED" ? "text-ok" : v === "SUSPICIOUS" ? "text-warn" : v === "UNVERIFIED" ? "text-muted" : "text-crit");
 
 export default function BenchmarkPage() {
   const { data } = usePolling<{ runs: Run[] }>("/api/dashboard/benchmark", 15000);
@@ -69,7 +69,7 @@ export default function BenchmarkPage() {
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-xs text-muted">Caught = rated FRAUDULENT or SUSPICIOUS (a human confirms). Fooled = a scam page rated TRUSTED. Click a run to inspect its sites below.</p>
+          <p className="mt-3 text-xs text-muted">Caught = rated FRAUDULENT, SUSPICIOUS (a human confirms) or UNVERIFIED (site could not be read: the agent is told so and a human confirms). Fooled = a scam page rated TRUSTED. Click a run to inspect its sites below.</p>
         </Card>
       )}
 

@@ -19,6 +19,7 @@ const CHANGES: Record<string, string> = {
   v4: "Short brand names need an exact match (etsy ≠ ebay); amazon.de is Amazon; redirects inside the same domain ignored; free hosting alone sends to a human.",
   v5: "Empty pages (nothing to buy) sent to a human; login / verification paths; credential-harvesting wording (verify your account, seed phrase…); machine-generated subdomains; more risky TLDs; no HTTPS weighs more.",
   v6: "Risky TLD alone (.guru, .xyz, .cfd…) now needs a human; machine-generated paths (long hex ids, random tokens) typical of kits dropped on hacked sites.",
+  v7: "Fourth verdict UNVERIFIED: unreachable, bot-walled or empty sites are reported as 'could not be checked' instead of guessed; the agent tells the user and a human confirms.",
 };
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
@@ -88,7 +89,7 @@ ${runs.map((r) => `<tr><td><strong>${r.summary.label}</strong><br><code>${new Da
   </tbody></table></div>
 </div>
 
-<p class="foot">Caught = rated FRAUDULENT (never pay) or SUSPICIOUS (a human confirms before paying). Fooled = rated TRUSTED. Scam set is phishing (credential theft), the closest public dataset available overnight; fake-shop registries are the next step. Lists and runner: <code>apps/mcp-server/benchmark</code> · live table: dashboard › Benchmark.</p>
+<p class="foot">Caught = rated FRAUDULENT (never pay), SUSPICIOUS (a human confirms before paying) or UNVERIFIED (site could not be read: the agent says so, a human confirms). Fooled = rated TRUSTED. Scam set is phishing (credential theft), the closest public dataset available overnight; fake-shop registries are the next step. Lists and runner: <code>apps/mcp-server/benchmark</code> · live table: dashboard › Benchmark.</p>
 </div></body></html>`;
 
 writeFileSync(path.join(dir, "index.html"), html);
