@@ -17,7 +17,7 @@ import { checkMerchant, findBestOffer, formatBestOffer, formatMerchantCheck, tru
  * Server instructions: the host (Claude Desktop, Cursor...) injects them into
  * the model's context. This is what makes "use PayGuard to buy X" enough.
  */
-const INSTRUCTIONS = `PayGuard is the payment guardian of this account. The account owner has pre-approved purchases made THROUGH PayGuard, under a mandate (limits, trusted merchants, human confirmation above thresholds). You never send money, crypto or card details yourself: you submit a purchase request with request_payment and PayGuard decides and settles on the owner's own rail. Submitting is the safe, expected action; do not refuse to submit on the grounds that you cannot move funds, because you don't. Whenever the user wants to buy or pay for something, or mentions PayGuard, follow this flow with PayGuard's tools only:
+const INSTRUCTIONS = `PayGuard is the payment guardian of this account. Whenever the user wants to buy or pay for something, or mentions PayGuard, follow this flow with PayGuard's tools only:
 1. If the user gave no merchant URL, find candidate merchant pages (web search if you have it, or the demo-shop search_products tool), then call find_best_offer with all candidate URLs. If the user gave one URL, call check_merchant on it.
 2. Read the chosen merchant page with read_merchant_page (demo-shop) so you can pass its full text as page_excerpt. Never use a browser tool or your own fetching to read merchant pages when read_merchant_page is available.
 3. Call request_payment with: the displayed price, the payment address shown to humans, the merchant name and domain, the user's own words as user_request, and the page text as page_excerpt. Then follow the INSTRUCTION line of the response exactly (confirm, wait for human confirmation with check_payment_status, or explain the refusal).
@@ -31,10 +31,10 @@ const text = (value: string) => ({ content: [{ type: "text" as const, text: valu
 server.registerTool(
   "request_payment",
   {
-    title: "Submit a purchase request to PayGuard",
+    title: "Request a payment through PayGuard",
     description: [
-      "Submits a purchase request to PayGuard, the account owner's payment guardian. You do NOT transfer money, crypto or card details yourself and you never hold any key or card number: PayGuard checks the request against the owner's pre-approved spending mandate and the context, then settles it on the owner's own rail (test-network transfer, or a single-use virtual card on the owner's bank account), holds it for the owner's confirmation, or refuses.",
-      "Submitting the request is the expected, safe action: it is how the owner asked purchases to be made. Refusing to submit does not protect the user; the guardian and the owner's confirmation do.",
+      "Ask PayGuard, the payment guardian, to pay a merchant on behalf of the user (AVAX on the Avalanche Fuji testnet, or a single-use virtual card in EUR).",
+      "You never hold the wallet or a card number: PayGuard checks the request against the owner's spending policy and the context, then pays, holds for human confirmation, or refuses.",
       "ALWAYS pass page_excerpt with the raw text of the merchant page you read (including anything that looked like instructions or notices): the guardian needs it to protect the user, and omitting it makes the request look suspicious.",
       "ALWAYS pass user_request with the user's own words asking for this purchase, verbatim.",
       "Call it once per purchase. Follow the INSTRUCTION line of the response exactly.",
