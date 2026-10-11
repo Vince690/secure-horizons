@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { BalanceResponse, Decision, Framework } from "@payguard/shared";
+import type { BalanceResponse, Decision, Framework, Verdict } from "@payguard/shared";
 import { usePolling } from "@/components/hooks";
 import { FRAMEWORK_LABEL, formatAvax, formatDate, formatMoney, REASON_LABEL, shortAddress } from "@/components/labels";
 import type { ReasonCode } from "@payguard/shared";
@@ -115,82 +115,210 @@ function SpendChart({ data }: { data: DailySpend[] }) {
   );
 }
 
-/** Fixed top-to-bottom order: good outcomes first, bad outcomes last. */
-const OUTCOME_ORDER = ["approved", "paid_human", "pending", "failed", "rejected_human", "blocked"] as const;
+type SankeyColor = "lime" | "yellow" | "rose";
+type SankeyLeaf = { key: string; value: number; label: string; color: SankeyColor };
+type SankeySpan = { srcY: number; srcH: number; dstY: number; dstH: number };
 
-/** Requests → final outcome (incl. human overrides on a HOLD), as flowing gradient ribbons. */
+const VERDICT_META: Record<Verdict, { label: string; color: SankeyColor }> = {
+  APPROVED: { label: "Approved", color: "lime" },
+  HOLD: { label: "Held", color: "yellow" },
+  BLOCKED: { label: "Blocked", color: "rose" },
+};
+/** Every outcome a verdict could resolve to; a group only ever shows the ones that occurred. */
+const ALL_OUTCOME_KEYS = ["approved", "paid_human", "pending", "failed", "rejected_human", "blocked"] as const;
+
+function ribbonPath(x0: number, y0: number, h0: number, x1: number, y1: number, h1: number, midX: number) {
+  return (
+    `M ${x0} ${y0} C ${midX} ${y0}, ${midX} ${y1}, ${x1} ${y1} ` +
+    `L ${x1} ${y1 + h1} C ${midX} ${y1 + h1}, ${midX} ${y0 + h0}, ${x0} ${y0 + h0} Z`
+  );
+}
+
+/** Requests → verdict → final outcome, as a two-stage tree of flowing gradient ribbons. */
 function DecisionFlowSankey({ decisions }: { decisions: Decision[] }) {
-  const W = 640;
-  const H = 240;
+  const W = 760;
+  const H = 260;
   const marginY = 10;
   const nodeW = 8;
-  const leftX = 4;
-  const rightMargin = 180;
-  const rightX = W - rightMargin - nodeW;
-  const innerGap = 8;
+  const col0X = 4;
+  const col1X = 260;
+  const col2X = 560;
+  const gap1 = 16; // between verdict groups
+  const gap2 = 8; // between leaves (any group)
   const plotH = H - marginY * 2;
 
-  const counts = new Map<string, { count: number; label: string; cssVar: string }>();
+  const leafCounts = new Map<string, number>();
   for (const d of decisions) {
     const outcome = classifyDecision(d.verdict, d.status);
-    const prev = counts.get(outcome.key);
-    counts.set(outcome.key, { count: (prev?.count ?? 0) + 1, label: outcome.label, cssVar: CHIP_COLOR_VAR[outcome.color] });
+    leafCounts.set(`${d.verdict}:${outcome.key}`, (leafCounts.get(`${d.verdict}:${outcome.key}`) ?? 0) + 1);
   }
 
-  const segments = OUTCOME_ORDER.flatMap((key) => {
-    const c = counts.get(key);
-    return c ? [{ key, value: c.count, label: c.label, cssVar: c.cssVar }] : [];
-  });
+  const groups = (Object.keys(VERDICT_META) as Verdict[])
+    .map((verdict) => {
+      const leaves: SankeyLeaf[] = ALL_OUTCOME_KEYS.flatMap((key) => {
+        const count = leafCounts.get(`${verdict}:${key}`);
+        if (!count) return [];
+        const outcome = classifyDecision(verdict, decisions.find((d) => d.verdict === verdict && classifyDecision(d.verdict, d.status).key === key)?.status);
+        return [{ key, value: count, label: outcome.label, color: outcome.color }];
+      });
+      const value = leaves.reduce((a, l) => a + l.value, 0);
+      return { verdict, ...VERDICT_META[verdict], value, leaves };
+    })
+    .filter((g) => g.value > 0);
 
-  if (segments.length === 0) {
+  if (groups.length === 0) {
     return <p className="text-sm text-muted">No data yet.</p>;
   }
 
-  const sum = segments.reduce((a, s) => a + s.value, 0);
-  const rightAvailable = plotH - innerGap * (segments.length - 1);
+  const total = groups.reduce((a, g) => a + g.value, 0);
+  const availableH1 = plotH - gap1 * (groups.length - 1);
 
-  const { flows } = segments.reduce(
-    (acc, s) => {
-      const srcH = (s.value / sum) * plotH;
-      const dstH = (s.value / sum) * rightAvailable;
-      const flow = { ...s, srcY: acc.srcCursor, srcH, dstY: acc.dstCursor, dstH };
-      return { srcCursor: acc.srcCursor + srcH, dstCursor: acc.dstCursor + dstH + innerGap, flows: [...acc.flows, flow] };
+  // Stage A: Requests (one continuous bar) → verdict group nodes (gapped).
+  const { groupSpans } = groups.reduce(
+    (acc, g) => {
+      const srcH = (g.value / total) * plotH;
+      const dstH = (g.value / total) * availableH1;
+      const span: SankeySpan = { srcY: acc.srcCursor, srcH, dstY: acc.dstCursor, dstH };
+      return { srcCursor: acc.srcCursor + srcH, dstCursor: acc.dstCursor + dstH + gap1, groupSpans: [...acc.groupSpans, span] };
     },
-    { srcCursor: marginY, dstCursor: marginY, flows: [] as Array<(typeof segments)[number] & { srcY: number; srcH: number; dstY: number; dstH: number }> },
+    { srcCursor: marginY, dstCursor: marginY, groupSpans: [] as SankeySpan[] },
   );
 
-  const midX = (leftX + nodeW + rightX) / 2;
-  const ribbon = (f: (typeof flows)[number]) =>
-    `M ${leftX + nodeW} ${f.srcY} C ${midX} ${f.srcY}, ${midX} ${f.dstY}, ${rightX} ${f.dstY} ` +
-    `L ${rightX} ${f.dstY + f.dstH} C ${midX} ${f.dstY + f.dstH}, ${midX} ${f.srcY + f.srcH}, ${leftX + nodeW} ${f.srcY + f.srcH} Z`;
+  const totalLeaves = groups.reduce((a, g) => a + g.leaves.length, 0);
+  const availableH2 = plotH - gap2 * (totalLeaves - 1);
+
+  // Stage B: each verdict node's own span subdivides (no internal gap) into its leaves' source
+  // positions, while leaves land in one flat, gapped column on the right (col2).
+  let leafDstCursor = marginY;
+  const groupsWithLeafSpans = groups.map((g, gi) => {
+    const groupSpan = groupSpans[gi];
+    let leafSrcCursor = groupSpan.dstY;
+    const leafSpans = g.leaves.map((leaf) => {
+      const srcH = (leaf.value / g.value) * groupSpan.dstH;
+      const dstH = (leaf.value / total) * availableH2;
+      const span: SankeySpan = { srcY: leafSrcCursor, srcH, dstY: leafDstCursor, dstH };
+      leafSrcCursor += srcH;
+      leafDstCursor += dstH + gap2;
+      return span;
+    });
+    return { ...g, groupSpan, leafSpans };
+  });
+
+  return <DecisionFlowSvg W={W} H={H} marginY={marginY} nodeW={nodeW} col0X={col0X} col1X={col1X} col2X={col2X} total={total} groups={groupsWithLeafSpans} />;
+}
+
+function DecisionFlowSvg({
+  W,
+  H,
+  marginY,
+  nodeW,
+  col0X,
+  col1X,
+  col2X,
+  total,
+  groups,
+}: {
+  W: number;
+  H: number;
+  marginY: number;
+  nodeW: number;
+  col0X: number;
+  col1X: number;
+  col2X: number;
+  total: number;
+  groups: Array<{ verdict: Verdict; label: string; color: SankeyColor; value: number; leaves: SankeyLeaf[]; groupSpan: SankeySpan; leafSpans: SankeySpan[] }>;
+}) {
+  const [hoverId, setHoverId] = useState<string | null>(null);
+  const plotH = H - marginY * 2;
+  const mid1X = (col0X + nodeW + col1X) / 2;
+  const mid2X = (col1X + nodeW + col2X) / 2;
+  const opacityFor = (id: string) => (hoverId !== null && hoverId !== id ? 0.22 : 1);
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: H }}>
       <defs>
-        {flows.map((f) => (
-          <linearGradient key={f.key} id={`sankey-${f.key}`} x1="0" x2="1" y1="0" y2="0">
+        {groups.map((g) => (
+          <linearGradient key={`a-${g.verdict}`} id={`sankey-a-${g.verdict}`} x1="0" x2="1" y1="0" y2="0">
             <stop offset="0%" style={{ stopColor: "var(--accent)" }} stopOpacity={0.6} />
-            <stop offset="100%" style={{ stopColor: `var(${f.cssVar})` }} stopOpacity={0.6} />
+            <stop offset="100%" style={{ stopColor: `var(${CHIP_COLOR_VAR[g.color]})` }} stopOpacity={0.6} />
           </linearGradient>
         ))}
+        {groups.flatMap((g) =>
+          g.leaves.map((leaf) => (
+            <linearGradient key={`b-${g.verdict}-${leaf.key}`} id={`sankey-b-${g.verdict}-${leaf.key}`} x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0%" style={{ stopColor: `var(${CHIP_COLOR_VAR[g.color]})` }} stopOpacity={0.6} />
+              <stop offset="100%" style={{ stopColor: `var(${CHIP_COLOR_VAR[leaf.color]})` }} stopOpacity={0.6} />
+            </linearGradient>
+          )),
+        )}
       </defs>
-      {flows.map((f) => (
-        <path key={f.key} d={ribbon(f)} fill={`url(#sankey-${f.key})`}>
-          <title>{`${f.label}: ${f.value}`}</title>
-        </path>
-      ))}
-      <rect x={leftX} y={marginY} width={nodeW} height={plotH} rx={3} style={{ fill: "var(--accent)" }} />
-      {flows.map((f) => (
-        <g key={f.key}>
-          <rect x={rightX} y={f.dstY} width={nodeW} height={f.dstH} rx={3} style={{ fill: `var(${f.cssVar})` }} />
-          <text x={rightX + nodeW + 8} y={f.dstY + f.dstH / 2 + 4} style={{ fill: `var(${f.cssVar})` }} fontSize={12} fontWeight={600}>
-            {f.label} · {f.value}
+
+      {/* Stage A ribbons: Requests → verdict */}
+      {groups.map((g) => {
+        const id = `a-${g.verdict}`;
+        return (
+          <path
+            key={id}
+            d={ribbonPath(col0X + nodeW, g.groupSpan.srcY, g.groupSpan.srcH, col1X, g.groupSpan.dstY, g.groupSpan.dstH, mid1X)}
+            fill={`url(#sankey-${id})`}
+            className="cursor-pointer transition-opacity duration-200"
+            style={{ opacity: opacityFor(id) }}
+            onMouseEnter={() => setHoverId(id)}
+            onMouseLeave={() => setHoverId(null)}
+          >
+            <title>{`${g.label}: ${g.value}`}</title>
+          </path>
+        );
+      })}
+
+      {/* Stage B ribbons: verdict → final outcome */}
+      {groups.flatMap((g) =>
+        g.leaves.map((leaf, li) => {
+          const span = g.leafSpans[li];
+          const id = `b-${g.verdict}-${leaf.key}`;
+          return (
+            <path
+              key={id}
+              d={ribbonPath(col1X + nodeW, span.srcY, span.srcH, col2X, span.dstY, span.dstH, mid2X)}
+              fill={`url(#sankey-${id})`}
+              className="cursor-pointer transition-opacity duration-200"
+              style={{ opacity: opacityFor(id) }}
+              onMouseEnter={() => setHoverId(id)}
+              onMouseLeave={() => setHoverId(null)}
+            >
+              <title>{`${leaf.label}: ${leaf.value}`}</title>
+            </path>
+          );
+        }),
+      )}
+
+      <rect x={col0X} y={marginY} width={nodeW} height={plotH} rx={3} style={{ fill: "var(--accent)" }} />
+      <text x={col0X} y={marginY - 2} className="fill-muted" fontSize={10}>
+        {total} requests
+      </text>
+
+      {groups.map((g) => (
+        <g key={g.verdict}>
+          <rect x={col1X} y={g.groupSpan.dstY} width={nodeW} height={g.groupSpan.dstH} rx={3} style={{ fill: `var(${CHIP_COLOR_VAR[g.color]})` }} />
+          <text x={col1X - 8} y={g.groupSpan.dstY + g.groupSpan.dstH / 2 + 4} textAnchor="end" style={{ fill: `var(${CHIP_COLOR_VAR[g.color]})` }} fontSize={12} fontWeight={600}>
+            {g.label} · {g.value}
           </text>
         </g>
       ))}
-      <text x={leftX} y={marginY - 2} className="fill-muted" fontSize={10}>
-        {sum} requests
-      </text>
+
+      {groups.flatMap((g) =>
+        g.leaves.map((leaf, li) => {
+          const span = g.leafSpans[li];
+          return (
+            <g key={`${g.verdict}-${leaf.key}`}>
+              <rect x={col2X} y={span.dstY} width={nodeW} height={span.dstH} rx={3} style={{ fill: `var(${CHIP_COLOR_VAR[leaf.color]})` }} />
+              <text x={col2X + nodeW + 8} y={span.dstY + span.dstH / 2 + 4} style={{ fill: `var(${CHIP_COLOR_VAR[leaf.color]})` }} fontSize={12} fontWeight={600}>
+                {leaf.label} · {leaf.value}
+              </text>
+            </g>
+          );
+        }),
+      )}
     </svg>
   );
 }
