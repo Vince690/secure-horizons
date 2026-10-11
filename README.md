@@ -660,6 +660,28 @@ LOG_LEVEL=error
 
 ---
 
+## 📦 Hackathon Deliverables
+
+| Deliverable | Where |
+|---|---|
+| Demo video (2 min: promo + full Claude Desktop recording) | [`deliverables/payguard-demo-video.mp4`](deliverables/payguard-demo-video.mp4) · promo alone: [`deliverables/payguard-promo.mp4`](deliverables/payguard-promo.mp4) |
+| Pitch deck (8 slides) | [`deliverables/PITCH_DECK.md`](deliverables/PITCH_DECK.md) |
+| Defense sheet (1 page: threat, NIST CSF, ATLAS / OWASP, metrics, limitations) | [`deliverables/DEFENSE_SHEET.md`](deliverables/DEFENSE_SHEET.md) |
+| Track 1 deliverable: live contract on Avalanche Fuji | `PayGuardLedger` v2 `0xf735d4a99f7ad8c8ffb914cfac088634487025ba` ([Snowtrace](https://testnet.snowtrace.io/address/0xf735d4a99f7ad8c8ffb914cfac088634487025ba)) · guardian wallet `0xCc86BB75d603aA474dddA53930cf4252C6257764` |
+| Merchant-score benchmark (150 live phishing URLs vs 60 real shops) | [`docs/BENCHMARK.md`](docs/BENCHMARK.md), [`docs/MERCHANT_SCORE.md`](docs/MERCHANT_SCORE.md), dashboard **Benchmark** page |
+| Demo script, minute by minute | [`DEMO.md`](DEMO.md) |
+| Compliance mapping (DORA / MiCA / AML-CFT / AI Act) | [`docs/COMPLIANCE.md`](docs/COMPLIANCE.md) |
+
+## ⚠️ Known Limitations
+
+- **Merchant score is heuristic.** On the benchmark, 3 % of phishing kits hosted on hacked legitimate domains still pass; unreachable or bot-walled sites become `UNVERIFIED` and a human confirms.
+- **Virtual-card issuer is a sandbox we wrote.** Cards are single-use, capped and merchant-locked, but no real bank is connected yet (Revolut Business / Stripe Issuing are the planned rails, see `docs/ROADMAP_RAILS.md`).
+- **Testnet only.** Avalanche Fuji, dedicated test wallets, no real funds. The on-chain anchor is a hash of the decision, not the decision itself.
+- **LLM features are optional.** Natural-language explanations and the semantic "second opinion" need an `ANTHROPIC_API_KEY`; without it, templates and deterministic rules are used (what the demo runs on).
+- **Single tenant, SQLite.** Fine for a demo, not for production scale. Session cookie auth, one policy owner.
+- **Claude Desktop guardrails.** Claude refuses to initiate crypto transfers itself; in the live demo the agent pays by card in EUR, or the scripted demo (`npm run demo`) drives the same MCP servers without an LLM.
+- **Regulatory mapping is indicative.** PayGuard is a technical provider, not a payment institution; the compliance panel is a mapping, not legal advice.
+
 ## 🎓 Hackathon Details
 
 - **Event**: ESSEC Secure Horizons

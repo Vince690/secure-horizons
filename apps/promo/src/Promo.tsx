@@ -17,9 +17,9 @@ import {
  *  0.0 –  8.0 s  Intro: the annoyed neighbour (AI-generated clip, public/intro.mp4)
  *  8.0 – 10.5 s  Title card: "Just ask."
  * 10.5 – 19.0 s  Big typed prompt, key words in blue, filmed slightly off-axis (reference-ad style)
- * 19.0 – 40.0 s  Screen: Claude Desktop recording (public/screen.mov) on a tilted card over a
- *                blurred background, slow zoom + drift, three callouts timed to what happens
- *                on screen (checks, scam rejected, paid + proof).
+ * 17.5 – 38.5 s  Screen: the Claude Desktop recording (public/screen-1080.mp4) cut into six short
+ *                shots, each on a tilted card from a different angle, pushed-in on what matters
+ *                (prompt sent, tools called, submitted to PayGuard, scam rejected, paid, proof).
  * 38.5 – 44.0 s  Outro: the headphones arrive, "Silence." (Remotion + product photo)
  * 44.0 – 51.0 s  End card: PayGuard, tagline, three pillars.
  *
@@ -35,14 +35,6 @@ export const CUES = {
   promptStart: 9,
   promptEnd: 17.5,
   screenStart: 17.5,
-  /** seconds into the SCREEN RECORDING at which each thing happens (adjust after recording) */
-  screen: {
-    promptTyped: 0,      // the prompt is typed over the first ~5 s
-    toolsCalled: 6,      // Claude calls search_products / find_best_offer
-    scamRejected: 13,    // the ranking shows the fraudulent site rejected
-    paid: 20,            // APPROVED + Snowtrace link
-    end: 27.5,
-  },
   /** Payoff: the headphones arrive, silence. */
   outroStart: 38.5,
   endCardStart: 44,
@@ -50,6 +42,38 @@ export const CUES = {
 } as const;
 
 export const PROMO_DURATION_FRAMES = S(CUES.total);
+
+/** One cut of the screen scene: `from`/`rate` are in the SOURCE recording, the rest is the camera. */
+type Shot = {
+  /** seconds into the recording where this shot starts */
+  from: number;
+  /** shot length in the promo, seconds */
+  dur: number;
+  /** playback speed of the recording (0.5 = slow motion) */
+  rate: number;
+  /** push-in factor and the point (in % of the card) the camera pushes towards */
+  zoom: number;
+  origin: string;
+  /** card angle in degrees (alternate sides so every cut feels like a new camera) */
+  tilt: number;
+  callout?: { label: string; sub: string; tone: "ok" | "crit" | "accent" };
+};
+
+/** Cut list for the screen recording (adjust `from` if the recording changes). */
+const SHOTS: Shot[] = [
+  // the prompt is typed and sent (recording 19–22 s)
+  { from: 19.0, dur: 3.0, rate: 1, zoom: 1.55, origin: "50% 44%", tilt: -10 },
+  // Claude loads the tools and calls the demo shop + PayGuard (22.5–26.5 s)
+  { from: 22.5, dur: 4.0, rate: 1, zoom: 1.5, origin: "45% 30%", tilt: 8, callout: { tone: "accent", label: "PayGuard · 3 merchants checked", sub: "Prices compared. Sites verified." } },
+  // the purchase request is submitted to PayGuard: amount, merchant, page excerpt (34.5–38 s)
+  { from: 34.5, dur: 3.5, rate: 1, zoom: 1.5, origin: "72% 58%", tilt: -6, callout: { tone: "accent", label: "Submitted to PayGuard", sub: "€49.90 · NordSound · card." } },
+  // the answer: the lookalike shop was rejected (49.3 s, slowed down)
+  { from: 49.3, dur: 3.5, rate: 0.75, zoom: 1.7, origin: "32% 64%", tilt: 7, callout: { tone: "crit", label: "Scam rejected", sub: "Hidden instructions for AI agents. Lookalike domain." } },
+  // the answer: approved, single-use card, within the €60 limit
+  { from: 49.3, dur: 3.5, rate: 0.75, zoom: 1.8, origin: "32% 28%", tilt: -7, callout: { tone: "ok", label: "Paid · within the mandate", sub: "€49.90 on a single-use card. Never saw the number." } },
+  // Snowtrace: the decision anchored on Avalanche Fuji (54.9 s, slow motion — the clip is short)
+  { from: 54.9, dur: 3.5, rate: 0.42, zoom: 1.3, origin: "30% 48%", tilt: 5, callout: { tone: "ok", label: "Proof on Avalanche", sub: "Decision anchored on-chain." } },
+];
 
 const PROMPT = "Find me a NordSound ANC Pro headset at the best price and buy it. Budget €60 max.";
 /** Words highlighted in blue in the big typed prompt. */
@@ -165,18 +189,6 @@ const BigPrompt = () => {
   );
 };
 
-const Typewriter = ({ text, startFrame, charsPerSecond = 22 }: { text: string; startFrame: number; charsPerSecond?: number }) => {
-  const frame = useCurrentFrame();
-  const shown = Math.max(0, Math.min(text.length, Math.floor(((frame - startFrame) / PROMO_FPS) * charsPerSecond)));
-  const caret = Math.floor(frame / 15) % 2 === 0 ? "▍" : " ";
-  return (
-    <span>
-      {text.slice(0, shown)}
-      {shown < text.length ? caret : ""}
-    </span>
-  );
-};
-
 /** Quick white flash on a cut, like the reference edit. */
 const Flash = () => {
   const frame = useCurrentFrame();
@@ -197,60 +209,54 @@ const Callout = ({ label, sub, tone }: { label: string; sub: string; tone: "ok" 
   );
 };
 
-const Screen = ({ file }: { file: string }) => {
+/** One shot: the recording on a tilted card, a slow push-in towards `origin`, a flash on the cut. */
+const ScreenShot = ({ file, shot }: { file: string; shot: Shot }) => {
   const frame = useCurrentFrame();
   const sec = frame / PROMO_FPS;
-  const dur = CUES.outroStart - CUES.screenStart;
-  // Slow "handheld" drift: zoom 1.0 -> 1.22, pan from the prompt box to the answer.
-  const zoom = interpolate(sec, [0, dur], [0.96, 1.12], { easing: Easing.inOut(Easing.quad), extrapolateRight: "clamp" });
-  const panX = interpolate(sec, [0, dur], [0, -3], { easing: Easing.inOut(Easing.quad), extrapolateRight: "clamp" });
-  const panY = interpolate(sec, [0, 6, dur], [4, 1, -3], { easing: Easing.inOut(Easing.quad), extrapolateRight: "clamp" });
-  const c = CUES.screen;
-  const enter = interpolate(sec, [0, 0.8], [0, 1], { extrapolateRight: "clamp" });
-  const tilt = interpolate(sec, [0, dur], [-9, -3], { easing: Easing.inOut(Easing.quad), extrapolateRight: "clamp" });
-  // punch-in: a short zoom kick when each callout lands, then settle
-  const kicks = [c.toolsCalled, c.scamRejected, c.paid];
-  const punch = kicks.reduce((acc, k) => acc + (sec >= k ? interpolate(sec - k, [0, 0.12, 0.7], [0, 0.06, 0], { extrapolateRight: "clamp" }) : 0), 0);
+  // camera push: starts a little wider and settles into the framing, with a small drift
+  const z = interpolate(sec, [0, shot.dur], [shot.zoom * 0.94, shot.zoom], { easing: Easing.out(Easing.quad), extrapolateRight: "clamp" });
+  const drift = interpolate(sec, [0, shot.dur], [0, shot.tilt > 0 ? -1.2 : 1.2], { extrapolateRight: "clamp" });
+  const tilt = interpolate(sec, [0, shot.dur], [shot.tilt, shot.tilt * 0.6], { easing: Easing.inOut(Easing.quad), extrapolateRight: "clamp" });
   return (
     <AbsoluteFill style={{ background: "#0b0f17", perspective: 1600 }}>
       {/* blurred copy of the recording as ambient background */}
       <AbsoluteFill style={{ filter: "blur(40px) brightness(.35)", transform: "scale(1.3)" }}>
-        <OffthreadVideo src={staticFile(file)} style={{ width: "100%", height: "100%", objectFit: "cover" }} muted />
+        <OffthreadVideo src={staticFile(file)} startFrom={S(shot.from)} playbackRate={shot.rate} style={{ width: "100%", height: "100%", objectFit: "cover" }} muted />
       </AbsoluteFill>
-      {/* the recording on a tilted card, slowly zooming and drifting like a handheld shot of the screen */}
-      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", opacity: enter }}>
-        <div style={{ width: 1560, height: 878, borderRadius: 22, overflow: "hidden", boxShadow: "0 40px 120px rgba(0,0,0,.6), 0 0 0 2px rgba(255,255,255,.08)", transform: `rotateY(${tilt}deg) rotateX(2deg) scale(${zoom + punch}) translate(${panX}%, ${panY}%)`, transformOrigin: "50% 50%" }}>
-          <OffthreadVideo src={staticFile(file)} style={{ width: "100%", height: "100%", objectFit: "cover" }} muted />
+      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center" }}>
+        <div style={{ width: 1560, height: 878, borderRadius: 22, overflow: "hidden", boxShadow: "0 40px 120px rgba(0,0,0,.6), 0 0 0 2px rgba(255,255,255,.08)", transform: `rotateY(${tilt}deg) rotateX(2deg) translateX(${drift}%)`, transformOrigin: "50% 50%" }}>
+          {/* the push-in happens inside the card so the card edges stay put */}
+          <div style={{ width: "100%", height: "100%", transform: `scale(${z})`, transformOrigin: shot.origin }}>
+            <OffthreadVideo src={staticFile(file)} startFrom={S(shot.from)} playbackRate={shot.rate} style={{ width: "100%", height: "100%", objectFit: "cover" }} muted />
+          </div>
         </div>
       </AbsoluteFill>
-      {/* Reminder of the request, small, bottom left, while Claude works */}
-      <Sequence from={S(c.promptTyped)} durationInFrames={S(c.toolsCalled + 2)} layout="none">
-        <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: "flex-start", padding: 60 }}>
-          <div style={{ ...font, color: "white", fontSize: 28, fontWeight: 500, background: "rgba(11,15,23,.88)", padding: "16px 24px", borderRadius: 14, maxWidth: 900, lineHeight: 1.3 }}>
-            <Typewriter text={PROMPT} startFrame={S(c.promptTyped)} charsPerSecond={40} />
-          </div>
-        </AbsoluteFill>
+      <Sequence from={0} durationInFrames={14} layout="none">
+        <Flash />
       </Sequence>
-      {[c.toolsCalled, c.scamRejected, c.paid].map((k) => (
-        <Sequence key={k} from={S(k)} durationInFrames={14} layout="none">
-          <Flash />
-        </Sequence>
-      ))}
-      <Sequence from={S(c.toolsCalled)} durationInFrames={S(c.scamRejected - c.toolsCalled)} layout="none">
-        <AbsoluteFill style={{ justifyContent: "flex-start", alignItems: "flex-end", padding: 70 }}>
-          <Callout tone="accent" label="PayGuard · 3 merchants checked" sub="Prices compared, sites verified." />
+      {shot.callout && (
+        <AbsoluteFill style={{ justifyContent: "flex-end", alignItems: shot.tilt > 0 ? "flex-start" : "flex-end", padding: 70 }}>
+          <Callout {...shot.callout} />
         </AbsoluteFill>
-      </Sequence>
-      <Sequence from={S(c.scamRejected)} durationInFrames={S(c.paid - c.scamRejected)} layout="none">
-        <AbsoluteFill style={{ justifyContent: "flex-start", alignItems: "flex-end", padding: 70 }}>
-          <Callout tone="crit" label="Scam rejected" sub="Hidden instructions for AI agents. Lookalike domain." />
-        </AbsoluteFill>
-      </Sequence>
-      <Sequence from={S(c.paid)} durationInFrames={S(c.end - c.paid)} layout="none">
-        <AbsoluteFill style={{ justifyContent: "flex-start", alignItems: "flex-end", padding: 70 }}>
-          <Callout tone="ok" label="Paid · proof on Avalanche" sub="Within budget. Decision anchored on-chain." />
-        </AbsoluteFill>
-      </Sequence>
+      )}
+    </AbsoluteFill>
+  );
+};
+
+/** The screen scene: the shots back to back, each a hard cut. */
+const Screen = ({ file }: { file: string }) => {
+  let at = 0;
+  return (
+    <AbsoluteFill style={{ background: "#0b0f17" }}>
+      {SHOTS.map((shot, i) => {
+        const from = at;
+        at += shot.dur;
+        return (
+          <Sequence key={i} from={S(from)} durationInFrames={S(shot.dur)} layout="none">
+            <ScreenShot file={file} shot={shot} />
+          </Sequence>
+        );
+      })}
     </AbsoluteFill>
   );
 };
@@ -336,7 +342,7 @@ export type PromoProps = {
 
 export const Promo = ({ introFile, hasIntroClip, hasScreen, screenFile, musicFile, hasMusic }: PromoProps) => (
   <AbsoluteFill style={{ background: "#0b0f17" }}>
-    {hasMusic && <Audio src={staticFile(musicFile)} volume={(f) => interpolate(f, [0, 30, PROMO_DURATION_FRAMES - 60, PROMO_DURATION_FRAMES], [0, 0.8, 0.8, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />}
+    {hasMusic && <Audio src={staticFile(musicFile)} volume={(f) => interpolate(f, [0, 30, PROMO_DURATION_FRAMES - 60, PROMO_DURATION_FRAMES], [0, 0.28, 0.28, 0], { extrapolateLeft: "clamp", extrapolateRight: "clamp" })} />}
     <Sequence from={0} durationInFrames={S(CUES.introEnd)}>
       <Intro file={introFile} hasClip={hasIntroClip} />
     </Sequence>
