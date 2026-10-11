@@ -665,7 +665,7 @@ LOG_LEVEL=error
 | Deliverable | Where |
 |---|---|
 | Demo video (2 min: promo + full Claude Desktop recording) | [`deliverables/payguard-demo-video.mp4`](deliverables/payguard-demo-video.mp4) · promo alone: [`deliverables/payguard-promo.mp4`](deliverables/payguard-promo.mp4) |
-| Pitch deck (5 slides) | [`deliverables/PayGuard_Pitch.pdf`](deliverables/PayGuard_Pitch.pdf) · speaker notes [`deliverables/PITCH_DECK.md`](deliverables/PITCH_DECK.md) |
+| Pitch deck (7 slides) | [`deliverables/PayGuard_Pitch.pdf`](deliverables/PayGuard_Pitch.pdf) · speaker notes [`deliverables/PITCH_DECK.md`](deliverables/PITCH_DECK.md) |
 | Defense sheet (1 page: threat, NIST CSF, ATLAS / OWASP, metrics, limitations) | [`deliverables/PayGuard_Defense_Sheet.pdf`](deliverables/PayGuard_Defense_Sheet.pdf) · source [`deliverables/DEFENSE_SHEET.md`](deliverables/DEFENSE_SHEET.md) |
 | Track 1 deliverable: live contract on Avalanche Fuji | `PayGuardLedger` v2 `0xf735d4a99f7ad8c8ffb914cfac088634487025ba` ([Snowtrace](https://testnet.snowtrace.io/address/0xf735d4a99f7ad8c8ffb914cfac088634487025ba)) · guardian wallet `0xCc86BB75d603aA474dddA53930cf4252C6257764` |
 | Merchant-score benchmark (150 live phishing URLs vs 60 real shops) | [`docs/BENCHMARK.md`](docs/BENCHMARK.md), [`docs/MERCHANT_SCORE.md`](docs/MERCHANT_SCORE.md), dashboard **Benchmark** page |
