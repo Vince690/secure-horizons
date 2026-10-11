@@ -59,7 +59,7 @@ niveaux d'emphase `bold/subtle/caption`) :
 | `APPROVED` / verdict `HOLD` validé par un humain (« Paid (human) ») | `lime` | bold |
 | `PENDING_CONFIRMATION` / verdict `HOLD` en attente (« waiting ») | `yellow` | bold |
 | `BLOCKED`, `REJECTED` (« Rejected (human) ») | `rose` | bold |
-| `FAILED` | `neutral` | subtle |
+| `FAILED` | `yellow` | bold (comportement actuel de `VerdictPill` : `FAILED` partage le seau visuel de `HOLD`, pas un seau neutre — préservé tel quel, pas une décision de ce redesign) |
 | `ComplianceState` : `ok` / `warn` / `fail` | `lime` / `yellow` / `rose` | subtle (via `StatusDot`) |
 
 Cette table remplace les deux tables de couleur actuelles (`VERDICT_STYLE` dans

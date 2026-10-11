@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import type { ComplianceState, DecisionStatus, Reason, Verdict } from "@payguard/shared";
+import { Chip } from "./base/badges/chip";
 import { REASON_LABEL, reasonReferences, STATUS_LABEL, VERDICT_LABEL } from "./labels";
 
 export function Card({ title, children, className = "", action }: { title?: string; children: ReactNode; className?: string; action?: ReactNode }) {
@@ -29,33 +30,33 @@ export function PageHeader({ title, subtitle, action }: { title: string; subtitl
   );
 }
 
-const VERDICT_STYLE: Record<Verdict, string> = {
-  APPROVED: "bg-ok/15 text-ok border-ok/40",
-  HOLD: "bg-warn/15 text-warn border-warn/40",
-  BLOCKED: "bg-crit/15 text-crit border-crit/40",
+const VERDICT_CHIP_COLOR: Record<Verdict, "lime" | "yellow" | "rose"> = {
+  APPROVED: "lime",
+  HOLD: "yellow",
+  BLOCKED: "rose",
 };
 
 /** The pill shows the FINAL state: a HOLD approved by a human reads "Paid (human)", not "On hold". */
 export function VerdictPill({ verdict, status }: { verdict: Verdict; status?: DecisionStatus }) {
   let label = VERDICT_LABEL[verdict];
-  let style = VERDICT_STYLE[verdict];
+  let color = VERDICT_CHIP_COLOR[verdict];
   if (status === "APPROVED") {
     label = verdict === "HOLD" ? "Paid (human)" : "Approved";
-    style = VERDICT_STYLE.APPROVED;
+    color = VERDICT_CHIP_COLOR.APPROVED;
   } else if (status === "REJECTED") {
     label = "Rejected (human)";
-    style = VERDICT_STYLE.BLOCKED;
+    color = VERDICT_CHIP_COLOR.BLOCKED;
   } else if (status === "PENDING_CONFIRMATION") {
     label = STATUS_LABEL.PENDING_CONFIRMATION;
-    style = VERDICT_STYLE.HOLD;
+    color = VERDICT_CHIP_COLOR.HOLD;
   } else if (status === "FAILED") {
     label = STATUS_LABEL.FAILED;
-    style = VERDICT_STYLE.HOLD;
+    color = VERDICT_CHIP_COLOR.HOLD;
   } else if (status === "BLOCKED") {
     label = VERDICT_LABEL.BLOCKED;
-    style = VERDICT_STYLE.BLOCKED;
+    color = VERDICT_CHIP_COLOR.BLOCKED;
   }
-  return <span className={`inline-block rounded-full border px-3 py-1 text-sm font-semibold ${style}`}>{label}</span>;
+  return <Chip color={color} variant="bold">{label}</Chip>;
 }
 
 export function scoreColor(score: number): string {
