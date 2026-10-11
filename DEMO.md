@@ -1,10 +1,13 @@
 # DEMO.md — script de démo (3 min) — pitch dimanche 11 oct. 12:00
 
+> **Freeze déclaré le 11 oct. à 08:10.** Interface, messages et README en anglais (pitch en anglais) ; ce script reste en français pour l'équipe. Plus aucune fonctionnalité : fiabilité et répétitions uniquement.
+
 ## Pré-vol (15 min avant, dans cet ordre)
 - [ ] Terminal 1 : `npm run dev:web` (vérifier dans le log : `[chain] mode=fuji`).
 - [ ] Terminal 2 : `npm run dev:merchants`.
 - [ ] `npm run sweep -w packages/contracts` (rapatrie les AVAX des répétitions depuis le wallet marchand) puis `npm run balance -w packages/contracts` ≥ 0,2 AVAX (sinon faucet / Yassir avec l'adresse du gardien `0xCc86BB75d603aA474dddA53930cf4252C6257764`).
-- [ ] Depuis le terminal : `npm run db:reset -w apps/web` (vide l'historique, sinon « rafale de demandes » dès le 3e appel). La clé API de `.env` est conservée.
+- [ ] Depuis le terminal : `npm run db:reset -w apps/web` (vide l'historique : sinon « rafale de demandes » dès le 3e appel, et le plafond quotidien en euros du rail carte se remplit au fil des répétitions). La clé API de `.env` est conservée, le solde bancaire bac à sable revient à 500 €.
+- [ ] Claude Desktop : Cmd+Q puis relancer **après tout changement de code** (les serveurs MCP ne se rechargent qu'au démarrage).
 - [ ] Claude Desktop : Cmd+Q puis relancer ; vérifier que `payguard` et `demo-shop` apparaissent dans les outils.
 - [ ] Dashboard ouvert sur http://localhost:3000/dashboard, connecté (demo@payguard.dev / demo1234), kill switch au vert, file « À confirmer » vide.
 - [ ] Onglet Snowtrace sur le contrat : https://testnet.snowtrace.io/address/0xb1ee492a58e1163e47e2f10a386edb80af3f9ce1
